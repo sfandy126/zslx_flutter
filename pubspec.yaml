@@ -59,6 +59,7 @@ dependencies:
   flutter_slidable: ^4.0.0
   # 处理键盘事件 https://github.com/diegoveloper/flutter_keyboard_actions
   keyboard_actions: ^4.2.1
+  color: ^3.0.0
 
 #dart 依赖都放在此处
 dev_dependencies:
@@ -79,6 +80,12 @@ dev_dependencies:
   flutter_launcher_icons: "^0.14.4" 
   #工程配置、安全、资源、权限、发布检查
   flutter_auditor: ^1.1.0
+  flutter_gen_runner: ^5.4.0 # 资源代码生成器
+  build_runner: ^2.12.0  # 运行生成器所需的工具
+
+flutter_gen:
+  integrations:
+    flutter_svg: true 
 
 #此处与dev_dependencies平级，不能缩进
 flutter_launcher_icons:

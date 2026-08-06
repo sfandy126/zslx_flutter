@@ -1,0 +1,3 @@
+output: lib/gen/ #默认就是 lib/gen/
+integrations:
+  flutter_svg: true #生成 Image.asset 的快捷方法
