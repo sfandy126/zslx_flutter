@@ -3,11 +3,11 @@ schema_version: 1
 locale: zh-CN
 branch: main
 nodes_managed: true
-exported_at: "2026-09-20T08:05:52Z"
+exported_at: "2026-09-20T08:37:05Z"
 modules:
     "":
-        dir_name: zslx_flutter Flutter 应用工程根
-        title: zslx_flutter Flutter 应用工程根
+        dir_name: Flutter 跨平台应用根工程
+        title: Flutter 跨平台应用根工程
         scope:
             - README.md
             - pubspec.yaml
@@ -20,6 +20,7 @@ modules:
         children:
             - android
             - ios
+            - lib
             - pages
         depends_on: []
         related_to: []
@@ -31,7 +32,9 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: ios
+            - path: lib
     ios:
         dir_name: iOS Flutter 应用宿主工程 (Runner)
         title: iOS Flutter 应用宿主工程 (Runner)
@@ -40,7 +43,20 @@ modules:
         source_files: []
         children: []
         depends_on: []
-        related_to: []
+        related_to:
+            - path: android
+            - path: lib
+    lib:
+        dir_name: Flutter 应用核心模块（页面、用户状态与工具）
+        title: Flutter 应用核心模块（页面、用户状态与工具）
+        scope:
+            - lib/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: android
+            - path: ios
     pages:
         dir_name: 应用页面路由与底部导航
         title: 应用页面路由与底部导航

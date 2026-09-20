@@ -21,11 +21,33 @@ class $AssetsImagesGen {
   AssetGenImage get appLogo1024 =>
       const AssetGenImage('assets/images/appLogo1024.png');
 
+  /// Directory path: assets/images/launch
+  $AssetsImagesLaunchGen get launch => const $AssetsImagesLaunchGen();
+
   /// Directory path: assets/images/tabbar
   $AssetsImagesTabbarGen get tabbar => const $AssetsImagesTabbarGen();
 
   /// List of all assets
   List<AssetGenImage> get values => [appLogo1024];
+}
+
+class $AssetsImagesLaunchGen {
+  const $AssetsImagesLaunchGen();
+
+  /// File path: assets/images/launch/startBg.png
+  AssetGenImage get startBg =>
+      const AssetGenImage('assets/images/launch/startBg.png');
+
+  /// File path: assets/images/launch/startBot.png
+  AssetGenImage get startBot =>
+      const AssetGenImage('assets/images/launch/startBot.png');
+
+  /// File path: assets/images/launch/startCent.png
+  AssetGenImage get startCent =>
+      const AssetGenImage('assets/images/launch/startCent.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [startBg, startBot, startCent];
 }
 
 class $AssetsImagesTabbarGen {

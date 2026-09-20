@@ -1,6 +1,6 @@
 schema_version: 1
 module_path: ""
-title: zslx_flutter Flutter 应用工程根
+title: Flutter 跨平台应用根工程
 scope:
     - README.md
     - pubspec.yaml
