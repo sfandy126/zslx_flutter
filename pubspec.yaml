@@ -31,6 +31,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # 自适应不同平台的系统组件(不支持鸿蒙系统)
+  flutter_platform_widgets: ^6.1.0
   #Cupertino apple 风格的图标
   cupertino_icons: ^1.0.8
   #获取当前设备信息 https://github.com/fluttercommunity/plus_plugins/tree/main/packages/device_info_plus

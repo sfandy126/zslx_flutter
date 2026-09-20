@@ -31,38 +31,38 @@ class $AssetsImagesGen {
 class $AssetsImagesTabbarGen {
   const $AssetsImagesTabbarGen();
 
-  /// File path: assets/images/tabbar/tabbar_hight_01.svg
-  SvgGenImage get tabbarHight01 =>
-      const SvgGenImage('assets/images/tabbar/tabbar_hight_01.svg');
+  /// File path: assets/images/tabbar/tabbar_hight_1.svg
+  SvgGenImage get tabbarHight1 =>
+      const SvgGenImage('assets/images/tabbar/tabbar_hight_1.svg');
 
-  /// File path: assets/images/tabbar/tabbar_hight_02.svg
-  SvgGenImage get tabbarHight02 =>
-      const SvgGenImage('assets/images/tabbar/tabbar_hight_02.svg');
+  /// File path: assets/images/tabbar/tabbar_hight_2.svg
+  SvgGenImage get tabbarHight2 =>
+      const SvgGenImage('assets/images/tabbar/tabbar_hight_2.svg');
 
-  /// File path: assets/images/tabbar/tabbar_hight_03.svg
-  SvgGenImage get tabbarHight03 =>
-      const SvgGenImage('assets/images/tabbar/tabbar_hight_03.svg');
+  /// File path: assets/images/tabbar/tabbar_hight_3.svg
+  SvgGenImage get tabbarHight3 =>
+      const SvgGenImage('assets/images/tabbar/tabbar_hight_3.svg');
 
-  /// File path: assets/images/tabbar/tabbar_normal_01.svg
-  SvgGenImage get tabbarNormal01 =>
-      const SvgGenImage('assets/images/tabbar/tabbar_normal_01.svg');
+  /// File path: assets/images/tabbar/tabbar_normal_1.svg
+  SvgGenImage get tabbarNormal1 =>
+      const SvgGenImage('assets/images/tabbar/tabbar_normal_1.svg');
 
-  /// File path: assets/images/tabbar/tabbar_normal_02.svg
-  SvgGenImage get tabbarNormal02 =>
-      const SvgGenImage('assets/images/tabbar/tabbar_normal_02.svg');
+  /// File path: assets/images/tabbar/tabbar_normal_2.svg
+  SvgGenImage get tabbarNormal2 =>
+      const SvgGenImage('assets/images/tabbar/tabbar_normal_2.svg');
 
-  /// File path: assets/images/tabbar/tabbar_normal_03.svg
-  SvgGenImage get tabbarNormal03 =>
-      const SvgGenImage('assets/images/tabbar/tabbar_normal_03.svg');
+  /// File path: assets/images/tabbar/tabbar_normal_3.svg
+  SvgGenImage get tabbarNormal3 =>
+      const SvgGenImage('assets/images/tabbar/tabbar_normal_3.svg');
 
   /// List of all assets
   List<SvgGenImage> get values => [
-    tabbarHight01,
-    tabbarHight02,
-    tabbarHight03,
-    tabbarNormal01,
-    tabbarNormal02,
-    tabbarNormal03,
+    tabbarHight1,
+    tabbarHight2,
+    tabbarHight3,
+    tabbarNormal1,
+    tabbarNormal2,
+    tabbarNormal3,
   ];
 }
 

@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:zslx_flutter/utils/exports.dart';
 import 'package:zslx_flutter/pages/courses/learn_page.dart';
 import 'package:zslx_flutter/pages/home/home_page.dart';
@@ -13,7 +13,7 @@ class TabbarPage extends StatefulWidget {
 }
 
 class _TabbarPageState extends State<TabbarPage> {
-  int _currentIndex = 0;
+  late final PlatformTabController _tabController;
 
   final List<Widget> _pages = [
     const HomePage(),
@@ -24,83 +24,77 @@ class _TabbarPageState extends State<TabbarPage> {
   final List<_TabItem> _tabItems = [
     _TabItem(
       label: '首页',
-      normalIcon: Assets.images.tabbar.tabbarNormal01.path,
-      selectedIcon: Assets.images.tabbar.tabbarHight01.path,
+      normalIcon: Assets.images.tabbar.tabbarNormal1.path,
+      selectedIcon: Assets.images.tabbar.tabbarHight1.path,
     ),
     _TabItem(
       label: '学习',
-      normalIcon: Assets.images.tabbar.tabbarNormal02.path,
-      selectedIcon: Assets.images.tabbar.tabbarHight02.path,
+      normalIcon: Assets.images.tabbar.tabbarNormal2.path,
+      selectedIcon: Assets.images.tabbar.tabbarHight2.path,
     ),
     _TabItem(
       label: '我的',
-      normalIcon: Assets.images.tabbar.tabbarNormal03.path,
-      selectedIcon: Assets.images.tabbar.tabbarHight03.path,
+      normalIcon: Assets.images.tabbar.tabbarNormal3.path,
+      selectedIcon: Assets.images.tabbar.tabbarHight3.path,
     ),
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _tabController = PlatformTabController(initialIndex: 0);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final isCupertino = Theme.of(context).platform == TargetPlatform.iOS;
-    final backgroundColor = AppColors.white;
-    final selectedColor = Theme.of(context).primaryColor; // AppColors.theme;
-    final unselectedColor = AppColors.red;
-    if (isCupertino) {
-      return CupertinoTabScaffold(
-        tabBar: CupertinoTabBar(
-          currentIndex: _currentIndex,
-          backgroundColor: backgroundColor,
-          onTap: (index) => setState(() => _currentIndex = index),
-          items: List.generate(_tabItems.length, (index) {
-            final item = _tabItems[index];
-            final isSelected = index == _currentIndex;
+    final selectedColor = Theme.of(context).primaryColor;
+    final unselectedColor = AppColors.title;
+    final iconSize = 24.0;
 
-            return BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                isSelected ? item.selectedIcon : item.normalIcon,
-                width: 24,
-                height: 24,
-              ),
-              label: item.label,
-              backgroundColor: isSelected ? selectedColor : unselectedColor,
-            );
-          }),
-        ),
-        tabBuilder: (context, index) => _pages[index],
-      );
-    } else {
-      return Scaffold(
-        body: IndexedStack(
-          index: _currentIndex,
-          children: _pages,
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: selectedColor,
-          unselectedItemColor: unselectedColor,
-          onTap: (index) => setState(() => _currentIndex = index),
-          items: List.generate(_tabItems.length, (index) {
-            final item = _tabItems[index];
-            final isSelected = index == _currentIndex;
-
-            return BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                isSelected ? item.selectedIcon : item.normalIcon,
-                width: 24,
-                height: 24,
-              ),
-              activeIcon: SvgPicture.asset(
-                item.selectedIcon,
-                width: 24,
-                height: 24,
-              ),
-              label: item.label,
-            );
-          }),
-        ),
-      );
-    }
+    return PlatformTabScaffold(
+      tabController: _tabController,
+      pageBackgroundColor: AppColors.white,
+      tabsBackgroundColor: AppColors.white,
+      itemChanged: (index) {},
+      bodyBuilder: (context, index) => _pages[index],
+      material: (context, platform) => MaterialTabScaffoldData(),
+      materialTabs: (context, platform) => MaterialNavBarData(
+        backgroundColor: AppColors.white,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        selectedItemColor: selectedColor,
+        unselectedItemColor: unselectedColor,
+        showUnselectedLabels: true,
+      ),
+      cupertino: (context, platform) => CupertinoTabScaffoldData(),
+      cupertinoTabs: (context, platform) => CupertinoTabBarData(
+        backgroundColor: AppColors.white,
+        activeColor: selectedColor,
+        inactiveColor: unselectedColor,
+        border: const Border(top: BorderSide.none),
+      ),
+      items: _tabItems.map((item) {
+        return BottomNavigationBarItem(
+          icon: SvgPicture.asset(
+            item.normalIcon,
+            width: iconSize,
+            height: iconSize,
+          ),
+          activeIcon: SvgPicture.asset(
+            item.selectedIcon,
+            width: iconSize,
+            height: iconSize,
+          ),
+          label: item.label,
+        );
+      }).toList(),
+    );
   }
 }
 

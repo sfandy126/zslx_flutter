@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: ios
+title: iOS Flutter 应用宿主工程 (Runner)
+scope:
+    - ios/
+source_files: []
+depends_on: []
+related_to: []

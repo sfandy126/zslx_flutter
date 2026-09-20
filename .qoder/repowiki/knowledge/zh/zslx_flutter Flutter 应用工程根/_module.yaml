@@ -1,0 +1,14 @@
+schema_version: 1
+module_path: ""
+title: zslx_flutter Flutter 应用工程根
+scope:
+    - README.md
+    - pubspec.yaml
+    - pubspec.lock
+    - analysis_options.yaml
+    - devtools_options.yaml
+    - flutter_gen.yaml
+    - .gitignore
+source_files: []
+depends_on: []
+related_to: []
