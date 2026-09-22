@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:zslx_flutter/utils/exports.dart';
+import 'package:zslx_flutter/utils/utils.dart';
 import 'package:zslx_flutter/pages/starts/tabbar_page.dart';
+import 'package:zslx_flutter/pages/web/web_page.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
@@ -17,15 +19,29 @@ class StartPage extends StatefulWidget {
 
 class _StartPageState extends State<StartPage> {
   static const String _keyFirstStart = 'MD_APP_FIRST';
+  late final TapGestureRecognizer _userAgreementRecognizer;
+  late final TapGestureRecognizer _privacyPolicyRecognizer;
 
   @override
   void initState() {
     super.initState();
 
+    _userAgreementRecognizer = TapGestureRecognizer()
+      ..onTap = () => _openLegalPage(MDEnv.urlForUser, '用户协议');
+    _privacyPolicyRecognizer = TapGestureRecognizer()
+      ..onTap = () => _openLegalPage(MDEnv.urlForPrivate, '隐私政策');
+
     // 隐藏状态栏，与 Swift 端 prefersStatusBarHidden 一致
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 
     _startLaunch();
+  }
+
+  @override
+  void dispose() {
+    _userAgreementRecognizer.dispose();
+    _privacyPolicyRecognizer.dispose();
+    super.dispose();
   }
 
   Future<void> _startLaunch() async {
@@ -47,10 +63,7 @@ class _StartPageState extends State<StartPage> {
   void _goToMain() {
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
-      platformPageRoute(
-        context: context,
-        builder: (_) => const TabbarPage(),
-      ),
+      platformPageRoute(context: context, builder: (_) => const TabbarPage()),
     );
   }
 
@@ -66,6 +79,8 @@ class _StartPageState extends State<StartPage> {
               borderRadius: BorderRadius.circular(12),
             ),
             contentPadding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+            actionsPadding: EdgeInsets.zero,
+            buttonPadding: EdgeInsets.zero,
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -80,85 +95,104 @@ class _StartPageState extends State<StartPage> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              const Text(
-                '    欢迎使用本应用！为了更好地保护您的个人信息和合法权益，请您在使用我们的产品前，认真阅读并了解《用户协议》和《隐私政策》的全部内容。\n    本应用将在您同意后，收集必要信息以提供服务。',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF808080),
-                  height: 1.4,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 36,
-                      child: PlatformTextButton(
-                        onPressed: _denyPrivacy,
-                        color: AppColors.background,
-                        material: (context, platform) =>
-                            MaterialTextButtonData(
-                          style: TextButton.styleFrom(
-                            foregroundColor: AppColors.black,
-                            backgroundColor: AppColors.background,
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                        cupertino: (context, platform) =>
-                            CupertinoTextButtonData(
-                          color: AppColors.background,
-                        ),
-                        child: const Text(
-                          '退出应用',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
+              Text.rich(
+                TextSpan(
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.title,
+                    height: 1.4,
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: SizedBox(
-                      height: 36,
-                      child: PlatformElevatedButton(
-                        onPressed: _agreePrivacy,
+                  children: [
+                    const TextSpan(text: '    欢迎使用本应用！为了更好地保护您的个人信息和合法权益，请您在使用我们的产品前，认真阅读并了解'),
+                    TextSpan(
+                      text: '《用户协议》',
+                      style: TextStyle(
                         color: AppColors.theme,
-                        material: (context, platform) =>
-                            MaterialElevatedButtonData(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.theme,
-                            foregroundColor: AppColors.white,
-                            elevation: 0,
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                        cupertino: (context, platform) =>
-                            CupertinoElevatedButtonData(
-                          color: AppColors.theme,
-                        ),
-                        child: const Text(
-                          '同意并继续',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        decoration: TextDecoration.none,
                       ),
+                      recognizer: _userAgreementRecognizer,
                     ),
-                  ),
-                ],
+                    const TextSpan(text: '和'),
+                    TextSpan(
+                      text: '《隐私政策》',
+                      style: TextStyle(
+                        color: AppColors.theme,
+                        decoration: TextDecoration.none,
+                      ),
+                      recognizer: _privacyPolicyRecognizer,
+                    ),
+                    const TextSpan(text: '的全部内容。\n    本应用将在您同意后，收集必要信息以提供服务。'),
+                  ],
+                ),
+                textAlign: TextAlign.left,
               ),
             ],
           ),
+          actions: [
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Expanded(
+                  child: PlatformTextButton(
+                    onPressed: _denyPrivacy,
+                    color: AppColors.background,
+                    material: (context, platform) => MaterialTextButtonData(
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.black,
+                        backgroundColor: AppColors.background,
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size.fromHeight(32),
+                        fixedSize: const Size.fromHeight(32),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: RoundedRectangleBorder(borderRadius: .zero),
+                      ),
+                    ),
+                    cupertino: (context, platform) => CupertinoTextButtonData(
+                      color: AppColors.background,
+                      borderRadius: BorderRadius.zero,
+                    ),
+                    child: const Text(
+                      '退出应用',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: PlatformElevatedButton(
+                    onPressed: _agreePrivacy,
+                    color: AppColors.theme,
+                    material: (context, platform) => MaterialElevatedButtonData(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.theme,
+                        foregroundColor: AppColors.white,
+                        elevation: 0,
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size.fromHeight(32),
+                        fixedSize: const Size.fromHeight(32),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: RoundedRectangleBorder(borderRadius: .zero),
+                      ),
+                    ),
+                    cupertino: (context, platform) =>
+                        CupertinoElevatedButtonData(
+                          color: AppColors.theme,
+                          borderRadius: BorderRadius.zero,
+                        ),
+                    child: const Text(
+                      '同意并继续',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -174,6 +208,15 @@ class _StartPageState extends State<StartPage> {
 
   void _denyPrivacy() {
     exit(0);
+  }
+
+  void _openLegalPage(String url, String title) {
+    Navigator.of(context).push(
+      platformPageRoute(
+        context: context,
+        builder: (_) => WebPage(url: url, title: title),
+      ),
+    );
   }
 
   @override

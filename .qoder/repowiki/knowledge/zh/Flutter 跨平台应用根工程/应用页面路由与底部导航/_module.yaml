@@ -1,8 +1,0 @@
-schema_version: 1
-module_path: pages
-title: 应用页面路由与底部导航
-scope:
-    - lib/pages/
-source_files: []
-depends_on: []
-related_to: []

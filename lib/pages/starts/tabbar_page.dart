@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:zslx_flutter/utils/exports.dart';
+import 'package:zslx_flutter/utils/utils.dart';
 import 'package:zslx_flutter/pages/courses/learn_page.dart';
 import 'package:zslx_flutter/pages/home/home_page.dart';
 import 'package:zslx_flutter/pages/settings/mine_page.dart';

@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 2.0.0+1
 
 environment:
   sdk: ^3.12.2
@@ -36,11 +36,13 @@ dependencies:
   #Cupertino apple 风格的图标
   cupertino_icons: ^1.0.8
   #获取当前设备信息 https://github.com/fluttercommunity/plus_plugins/tree/main/packages/device_info_plus
-  device_info_plus: 11.5.0
+  device_info_plus: ^11.5.0
+  package_info_plus: ^8.0.0
   # https://github.com/ReactiveX/rxdart
   rxdart: ^0.28.0
   #网络请求
   dio: ^5.4.0
+  crypto: ^3.0.0
   #状态管理 https://github.com/rrousselGit/provider
   provider: ^6.1.2
   #屏幕适配
@@ -62,6 +64,11 @@ dependencies:
   # 处理键盘事件 https://github.com/diegoveloper/flutter_keyboard_actions
   keyboard_actions: ^4.2.1
   color: ^3.0.0
+  webview_flutter: ^4.14.1
+  share_plus: ^12.0.2
+  path_provider: ^2.1.6
+  # totast提示框
+  flutter_easyloading: ^4.0.2
 
 #dart 依赖都放在此处
 dev_dependencies:
