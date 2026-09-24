@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../network/md_cmd.dart';
 import '../network/md_post.dart';
 import '../utils/totast.dart';
 

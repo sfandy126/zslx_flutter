@@ -24,4 +24,6 @@ class AppColors {
   static final Color white = HexColor.fromHex('#FFFFFF');
   /// 黑色
   static final Color black = HexColor.fromHex('#000000');
+  /// 透明色,对应clear
+  static final Color transparent = Colors.transparent;
 }

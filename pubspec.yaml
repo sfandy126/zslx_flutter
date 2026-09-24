@@ -32,25 +32,25 @@ dependencies:
     sdk: flutter
 
   # 自适应不同平台的系统组件(不支持鸿蒙系统)
-  flutter_platform_widgets: ^6.1.0
+  flutter_platform_widgets: ^10.0.1
   #Cupertino apple 风格的图标
   cupertino_icons: ^1.0.8
   #获取当前设备信息 https://github.com/fluttercommunity/plus_plugins/tree/main/packages/device_info_plus
   device_info_plus: ^11.5.0
-  package_info_plus: ^8.0.0
+  package_info_plus: ^8.3.1
   # https://github.com/ReactiveX/rxdart
   rxdart: ^0.28.0
   #网络请求
-  dio: ^5.4.0
+  dio: ^5.11.0
   crypto: ^3.0.0
   #状态管理 https://github.com/rrousselGit/provider
-  provider: ^6.1.2
+  provider: ^6.1.5
   #屏幕适配
   flutter_screenutil: ^5.9.0
   #svg图片加载
   flutter_svg: ^2.3.0
   #本地存储
-  shared_preferences: ^2.0.0
+  shared_preferences: ^2.5.5
   # toast提示框 https://github.com/OpenFlutter/flutter_oktoast
   oktoast: ^3.4.0
   # Dart 常用工具类库 https://github.com/Sky24n/common_utils
@@ -60,7 +60,7 @@ dependencies:
   # 图片选择插件 https://github.com/flutter/packages/tree/main/packages/image_picker
   image_picker: 1.2.0
   # 侧滑删除 https://github.com/letsar/flutter_slidable
-  flutter_slidable: ^4.0.0
+  flutter_slidable: ^4.0.3
   # 处理键盘事件 https://github.com/diegoveloper/flutter_keyboard_actions
   keyboard_actions: ^4.2.1
   color: ^3.0.0
@@ -69,6 +69,10 @@ dependencies:
   path_provider: ^2.1.6
   # totast提示框
   flutter_easyloading: ^4.0.2
+  # 下拉刷新、上拉加载更多
+  easy_refresh: ^3.5.1
+  # 路由管理
+  go_router: ^14.0.0
 
 #dart 依赖都放在此处
 dev_dependencies:
@@ -113,6 +117,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/images/mine/
+    - assets/images/public/
     - assets/images/tabbar/
     - assets/images/launch/
 

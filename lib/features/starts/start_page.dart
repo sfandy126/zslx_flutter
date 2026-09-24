@@ -4,11 +4,10 @@ import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zslx_flutter/utils/utils.dart';
-import 'package:zslx_flutter/pages/starts/tabbar_page.dart';
-import 'package:zslx_flutter/pages/web/web_page.dart';
+import 'package:zslx_flutter/features/starts/tabbar_page.dart';
+import 'package:zslx_flutter/features/web/web_page.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});

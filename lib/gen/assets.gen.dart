@@ -24,6 +24,12 @@ class $AssetsImagesGen {
   /// Directory path: assets/images/launch
   $AssetsImagesLaunchGen get launch => const $AssetsImagesLaunchGen();
 
+  /// Directory path: assets/images/mine
+  $AssetsImagesMineGen get mine => const $AssetsImagesMineGen();
+
+  /// Directory path: assets/images/public
+  $AssetsImagesPublicGen get public => const $AssetsImagesPublicGen();
+
   /// Directory path: assets/images/tabbar
   $AssetsImagesTabbarGen get tabbar => const $AssetsImagesTabbarGen();
 
@@ -48,6 +54,76 @@ class $AssetsImagesLaunchGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [startBg, startBot, startCent];
+}
+
+class $AssetsImagesMineGen {
+  const $AssetsImagesMineGen();
+
+  /// File path: assets/images/mine/defaultProfile.svg
+  SvgGenImage get defaultProfile =>
+      const SvgGenImage('assets/images/mine/defaultProfile.svg');
+
+  /// File path: assets/images/mine/mineBg@2x.png
+  AssetGenImage get mineBg2x =>
+      const AssetGenImage('assets/images/mine/mineBg@2x.png');
+
+  /// File path: assets/images/mine/mineBg@3x.png
+  AssetGenImage get mineBg3x =>
+      const AssetGenImage('assets/images/mine/mineBg@3x.png');
+
+  /// File path: assets/images/mine/mineDonwloads.svg
+  SvgGenImage get mineDonwloads =>
+      const SvgGenImage('assets/images/mine/mineDonwloads.svg');
+
+  /// File path: assets/images/mine/mineFavorites.svg
+  SvgGenImage get mineFavorites =>
+      const SvgGenImage('assets/images/mine/mineFavorites.svg');
+
+  /// File path: assets/images/mine/mineFeedback.svg
+  SvgGenImage get mineFeedback =>
+      const SvgGenImage('assets/images/mine/mineFeedback.svg');
+
+  /// File path: assets/images/mine/mineOnline.svg
+  SvgGenImage get mineOnline =>
+      const SvgGenImage('assets/images/mine/mineOnline.svg');
+
+  /// File path: assets/images/mine/mineSetting.svg
+  SvgGenImage get mineSetting =>
+      const SvgGenImage('assets/images/mine/mineSetting.svg');
+
+  /// List of all assets
+  List<dynamic> get values => [
+    defaultProfile,
+    mineBg2x,
+    mineBg3x,
+    mineDonwloads,
+    mineFavorites,
+    mineFeedback,
+    mineOnline,
+    mineSetting,
+  ];
+}
+
+class $AssetsImagesPublicGen {
+  const $AssetsImagesPublicGen();
+
+  /// File path: assets/images/public/arrowRight.svg
+  SvgGenImage get arrowRight =>
+      const SvgGenImage('assets/images/public/arrowRight.svg');
+
+  /// File path: assets/images/public/back.svg
+  SvgGenImage get back => const SvgGenImage('assets/images/public/back.svg');
+
+  /// File path: assets/images/public/select.svg
+  SvgGenImage get select =>
+      const SvgGenImage('assets/images/public/select.svg');
+
+  /// File path: assets/images/public/unselect.svg
+  SvgGenImage get unselect =>
+      const SvgGenImage('assets/images/public/unselect.svg');
+
+  /// List of all assets
+  List<SvgGenImage> get values => [arrowRight, back, select, unselect];
 }
 
 class $AssetsImagesTabbarGen {

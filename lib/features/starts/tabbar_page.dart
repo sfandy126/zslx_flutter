@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:zslx_flutter/utils/utils.dart';
-import 'package:zslx_flutter/pages/courses/learn_page.dart';
-import 'package:zslx_flutter/pages/home/home_page.dart';
-import 'package:zslx_flutter/pages/settings/mine_page.dart';
+import 'package:zslx_flutter/features/courses/learn_page.dart';
+import 'package:zslx_flutter/features/home/home_page.dart';
+import 'package:zslx_flutter/features/settings/mine_page.dart';
 
 class TabbarPage extends StatefulWidget {
   const TabbarPage({super.key});
