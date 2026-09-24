@@ -2,6 +2,10 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../network/md_cmd.dart';
+import '../network/md_post.dart';
+import '../utils/totast.dart';
+
 ///
 /// 注意：在 Flutter 中构造函数不能为异步，因此需要在应用启动时调用
 /// `await MDUser.defualt.init()` 来加载本地保存的数据。
@@ -164,11 +168,31 @@ class MDUser extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 更新用户信息（占位：此处应调用网络接口获取最新用户信息）
+  /// 请求并更新最新用户信息
   Future<void> updateData({bool animate = false, VoidCallback? completed}) async {
-    // TODO: 调用你的接口获取用户信息并调用 update(info)
-    // 示例： final res = await Api.getMemberInfo(); if (res.success) update(res.data);
-    completed?.call();
+    if (animate) {
+      Totast.showLoading();
+    }
+    await MDPost.sendApiSession(
+      cmd: .memberInfo,
+      completed: (state, error, data) async {
+        if (animate) {
+          Totast.hideLoading();
+        }
+        if (state == .success) {
+          final userId = data?['user_id'] as int?;
+          if (islogined && userId == 0) {
+            await logout();
+          } else {
+            await update(data);
+          }
+        } else if (animate && state == .failed) {
+          Totast.showError(error?.toString() ?? 'ERROR：数据返回错误');
+        }
+
+        completed?.call();
+      },
+    );
   }
 
   // MARK: - 游客 UUID 保存/读取（使用 SharedPreferences）
@@ -219,9 +243,9 @@ class MDUser extends ChangeNotifier {
 
 enum SaveKey { token, uid, guest, nick, avatar, phone }
 
-extension MdUserExtension on MDUser {
+extension MDUserExtension on MDUser {
   // MARK: - getter
-  static bool get islogined {
+  bool get islogined {
     final uid = MDUser.defualt._priUid;
     return uid != null && uid.isNotEmpty && uid != '0';
   }
