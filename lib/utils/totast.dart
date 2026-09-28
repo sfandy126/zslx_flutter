@@ -11,6 +11,10 @@ class Totast {
     EasyLoading.showError(message);
   }
 
+  static void showSuccess(String message) {
+    EasyLoading.showSuccess(message);
+  }
+
   static void hideLoading() {
     EasyLoading.dismiss();
   }

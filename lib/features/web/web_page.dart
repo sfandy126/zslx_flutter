@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:zslx_flutter/utils/utils.dart';
+import 'package:zslx_flutter/extensions/string_sign.dart';
 
 enum WebType { url, html }
 
@@ -107,7 +108,7 @@ class _WebPageState extends State<WebPage> {
     final query = <String, String>{
       ...?widget.exts,
       'user_id': MDUser.defualt.uid ?? '',
-      'sign': MDPost.mdSign({
+      'sign': StringSign.mdSign({
         'user_id': MDUser.defualt.uid ?? '',
       }, MDUser.defualt.token ?? ''),
       'current_version': AppConfig.appVersion,

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/logins/forgot_page.dart';
 import '../features/logins/login_page.dart';
 import '../features/starts/start_page.dart';
 import '../features/starts/tabbar_page.dart';
@@ -11,6 +12,7 @@ import 'router_names.dart';
 
 class AppRouter {
   static const String login = RouterNames.login;
+  static const String forgotPassword = RouterNames.forgotPassword;
   static const String main = RouterNames.main;
 
   static Future<T?> pushNamed<T>(
@@ -54,6 +56,12 @@ class AppRouter {
         name: RouterNames.login,
         pageBuilder: (context, state) =>
             _platformPage(key: state.pageKey, child: const LoginPage()),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        name: RouterNames.forgotPassword,
+        pageBuilder: (context, state) =>
+            _platformPage(key: state.pageKey, child: const ForgotPage()),
       ),
       GoRoute(
         path: '/web',

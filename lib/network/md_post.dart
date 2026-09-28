@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 
-import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 
 import '../users/md_user.dart';
 import 'md_cmd.dart';
 import 'md_env.dart';
 import 'package:zslx_flutter/config/app_config.dart';
+import '../extensions/string_sign.dart';
 
 typedef ApiCallback =
     void Function(
@@ -18,6 +18,16 @@ typedef ApiCallback =
     );
 
 enum ResultState { unknown, success, outed, failed }
+
+/// 接口返回的提示信息，toString 直接返回文案，便于 UI 层展示
+class MDPostException implements Exception {
+  const MDPostException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
 
 class MDPost {
   MDPost._();
@@ -58,27 +68,29 @@ class MDPost {
     Map<String, dynamic> params = const {},
     ApiCallback? completed,
   }) async {
-    final headers = await mdHeaders();
-    var token = headers['token'] ?? '';
-    if (params['token'] is String) {
-      token = params['token'];
-      headers['token'] = token;
+    final headers = mdHeaders();
+    var token = MDUser.defualt.token ?? '';
+    final outToken = params['token'];
+    if (outToken is String) {
+      token = outToken;
+      headers['token'] = outToken;
     }
 
     var uid = MDUser.defualt.uid ?? '';
-    if (params['user_id'] is String) { // 优先取参数中的 user_id
-      uid = params['user_id'];
+    final outUid = params['user_id'];
+    if (outUid is String) { // 优先取参数中的 user_id
+      uid = outUid;
     }
 
     final finalParams = <String, dynamic>{...params, 'user_id': uid};
-    finalParams['sign'] = mdSign(finalParams, token);
+    finalParams['sign'] = StringSign.mdSign(finalParams, token);
 
-    MDEnv domain = .product;
+    const MDEnv domain = .product;
     final url = isIap
         ? '${domain.iapUrl}/${cmd.value}'
         : '${domain.url}/${cmd.value}';
 
-    debugPrint('Cmd: ${cmd.value}, Params: $finalParams, Headers: $headers');
+    _log('send_cmd = ${cmd.value} finalParams = $finalParams headers = $headers');
 
     try {
       final response = await session.post(
@@ -91,73 +103,81 @@ class MDPost {
               status != null && status >= 200 && status < 300,
         ),
       );
+      _log('send_cmd = ${cmd.value} jsonResult = ${response.data}');
 
-      final _ApiResponse result = _ApiResponse.fromJson(response.data);
-      final code = result.code;
-      final message = result.message;
-      final status = result.status;
+      final result = _ApiResponse.fromJson(response.data, isIap: isIap);
+      final message = result.msg;
 
-      if (status == 0 || code == 0) {
-        await MDUser.defualt.logout();
-        completed?.call(
-          ResultState.outed,
-          Exception(message ?? 'ERROR：登录已过期，请重新登录'),
-          null,
-        );
-        return;
+      switch (result.status) {
+        case 0:
+          await MDUser.defualt.logout();
+          completed?.call(
+            ResultState.outed,
+            MDPostException(message ?? 'ERROR：登录已过期，请重新登录'),
+            null,
+          );
+        case 1:
+          completed?.call(
+            ResultState.success,
+            MDPostException(message ?? 'success'),
+            mdSafeToDict(result.data),
+          );
+        case -1:
+          completed?.call(
+            ResultState.failed,
+            MDPostException(message ?? 'ERROR：数据返回错误'),
+            null,
+          );
+        default:
+          completed?.call(
+            ResultState.failed,
+            MDPostException(message ?? 'ERROR：数据状态错误${result.status}'),
+            null,
+          );
       }
-
-      if (status == 1 || code == 1) {
-        final payload = result.data;
-        completed?.call(
-          ResultState.success,
-          Exception(message ?? 'success'),
-          payload is Map<String, dynamic> ? payload : mdSafeToDict(payload),
-        );
-        return;
-      }
-
-      if (status == -1 || code == -1) {
-        completed?.call(
-          ResultState.failed,
-          Exception(message ?? 'ERROR：数据返回错误'),
-          null,
-        );
-        return;
-      }
-
+    } on DioException catch (error) {
+      _log('❌send_cmd = ${cmd.value} ❌ERROR = ${error.response?.data ?? error}');
       completed?.call(
         ResultState.failed,
-        Exception(message ?? 'ERROR：数据状态错误'),
+        MDPostException(_dioErrorMessage(error)),
         null,
       );
-    } on DioException catch (error) {
-      final message =
-          error.response?.data is String &&
-              (error.response?.data as String).isNotEmpty
-          ? error.response!.data.toString()
-          : 'ERROR：网络异常，请检查网络';
-      completed?.call(ResultState.failed, Exception(message), null);
     } catch (error) {
-      completed?.call(ResultState.failed, Exception('ERROR：解析错误'), null);
+      _log('❌send_cmd = ${cmd.value} ❌解析错误 = $error');
+      completed?.call(
+        ResultState.failed,
+        const MDPostException('ERROR：解析错误'),
+        null,
+      );
     }
   }
 
-  static Future<Map<String, dynamic>> mdHeaders() async {
-    final systemType = AppConfig.systemType;
-    final systemVersion = Platform.operatingSystemVersion;
-    final flavor = AppConfig.currentChannel.name;
-    final currentVersion = AppConfig.appVersion;
-    final versions = _plusOneMajorMinor(currentVersion);
-    final deviceBrand = AppConfig.deviceBrand;
+  static String _dioErrorMessage(DioException error) {
+    final data = error.response?.data;
+    if (data is String && data.isNotEmpty) return data;
+    switch (error.type) {
+      case .connectionTimeout:
+      case .sendTimeout:
+      case .receiveTimeout:
+        return 'ERROR：网络超时，请稍后重试';
+      default:
+        return 'ERROR：网络异常，请检查网络';
+    }
+  }
 
+  /// 仅在 debug 模式输出，避免 release 包日志泄露 token、密码密文
+  static void _log(String message) {
+    if (kDebugMode) debugPrint(message);
+  }
+
+  static Map<String, dynamic> mdHeaders() {
     final headers = <String, dynamic>{
-      'system-type': systemType,
-      'versions': versions,
-      'system_version': systemVersion, // 设备系统版本号
-      'flavor': flavor,
-      'device_brand': deviceBrand,
-      'device_model': deviceBrand,
+      'system-type': AppConfig.systemType,
+      'versions': _plusOneMajorMinor(AppConfig.appVersion),
+      'system_version': Platform.operatingSystemVersion, // 设备系统版本号
+      'flavor': AppConfig.currentChannel.name,
+      'device_brand': AppConfig.deviceBrand,
+      'device_model': AppConfig.deviceBrand,
     };
     final token = MDUser.defualt.token;
     if (token != null && token.isNotEmpty) {
@@ -176,96 +196,62 @@ class MDPost {
     final minor = int.tryParse(parts[1]) ?? 0;
     final patch = int.tryParse(parts[2]) ?? 0;
 
-    final nextMajor = major + 1;
-    final nextMinor = minor;
-    final nextPatch = patch;
-
-    return '$nextMajor.$nextMinor.$nextPatch';
+    return '${major + 1}.$minor.$patch';
   }
 
   static Map<String, dynamic>? mdSafeToDict(dynamic data) {
     if (data == null) return null;
+    if (data is Map<String, dynamic>) return data;
     if (data is Map) {
       return data.map((key, value) => MapEntry(key.toString(), value));
     }
-    if (data is List) {
-      return {'data': data};
-    }
     return {'data': data};
-  }
-
-  static String mdSign(Map<String, dynamic> params, String token) {
-    final filtered = <String, dynamic>{};
-    for (final entry in params.entries) {
-      if (entry.key == 'sign') {
-        continue;
-      }
-      filtered[entry.key] = entry.value;
-    }
-
-    final sorted = Map.fromEntries(
-      filtered.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
-    );
-
-    final items = <String>[];
-    for (final entry in sorted.entries) {
-      items.add('${entry.key}=${entry.value}');
-    }
-    if (token.isNotEmpty) {
-      items.add('token=$token');
-    }
-
-    final raw = items.join('&');
-    return sha1.convert(utf8.encode(raw)).toString();
   }
 }
 
 class _ApiResponse {
-  final int code;
-  final String? msg;
   final int status;
-  final String? message;
+  final String? msg;
   final Object? data;
 
-  const _ApiResponse({
-    required this.code,
-    this.msg,
-    required this.status,
-    this.message,
-    this.data,
-  });
+  const _ApiResponse({required this.status, this.msg, this.data});
 
-  factory _ApiResponse.fromJson(dynamic response) {
-    Map<String, dynamic> json;
+  /// 普通接口返回 status/msg/data，内购接口返回 code/message/res
+  factory _ApiResponse.fromJson(dynamic response, {required bool isIap}) {
+    final json = _toJson(response);
+    if (json == null) return _invalid('ERROR：响应数据格式错误');
 
-    if (response is Map) {
-      json = response.map((key, value) => MapEntry(key.toString(), value));
-    } else if (response is String) {
-      try {
-        final decoded = jsonDecode(response);
-        if (decoded is Map) {
-          json = decoded.map((key, value) => MapEntry(key.toString(), value));
-        } else {
-          return _invalid('ERROR：响应数据格式错误');
-        }
-      } on FormatException {
-        return _invalid('ERROR：响应数据格式错误');
-      }
-    } else {
-      return _invalid('ERROR：响应数据格式错误');
+    if (isIap) {
+      return _ApiResponse(
+        status: _toInt(json['code'], -1),
+        msg: json['message']?.toString(),
+        data: json['res'],
+      );
     }
-
     return _ApiResponse(
-      code: _toInt(json['code'], -1),
-      msg: json['msg']?.toString(),
       status: _toInt(json['status'], -1),
-      message: json['message']?.toString(),
+      msg: json['msg']?.toString(),
       data: json['data'],
     );
   }
 
+  static Map<String, dynamic>? _toJson(dynamic response) {
+    var value = response;
+    if (value is String) {
+      try {
+        value = jsonDecode(value);
+      } on FormatException {
+        return null;
+      }
+    }
+    if (value is Map) {
+      return value.map((key, value) => MapEntry(key.toString(), value));
+    }
+    return null;
+  }
+
   static _ApiResponse _invalid(String message) {
-    return _ApiResponse(code: -1, msg: message, status: -1, message: message);
+    return _ApiResponse(status: -1, msg: message);
   }
 
   static int _toInt(Object? value, int fallback) {

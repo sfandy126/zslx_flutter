@@ -1,32 +1,32 @@
 import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
-import '../../utils/widgets/agreement.dart';
 import '../../utils/widgets/code_field.dart';
 import '../../utils/widgets/phone_field.dart';
 import '../../utils/widgets/text_field.dart';
 import '../../extensions/string_rsa.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class ForgotPage extends StatefulWidget {
+  const ForgotPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<ForgotPage> createState() => _ForgotPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  late final LoginViewModel _viewModel;
+class _ForgotPageState extends State<ForgotPage> {
+  late final ForgotViewModel _viewModel;
   final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _codeController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _viewModel = LoginViewModel()..initialize();
+    _viewModel = ForgotViewModel();
     _viewModel.addListener(_syncControllers);
   }
 
@@ -35,8 +35,8 @@ class _LoginPageState extends State<LoginPage> {
     _viewModel.removeListener(_syncControllers);
     _viewModel.dispose();
     _phoneController.dispose();
-    _passwordController.dispose();
     _codeController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        '登录体验完整功能',
+                        '忘记密码',
                         style: TextStyle(
                           color: AppColors.title,
                           fontSize: 28,
@@ -97,33 +97,27 @@ class _LoginPageState extends State<LoginPage> {
                       onChanged: _viewModel.setPhone,
                     ),
                     const SizedBox(height: 10),
-                    if (_viewModel.isCodeLogin)
-                      MDCodeField(
-                        controller: _codeController,
-                        phone: _viewModel.phone,
-                        onChanged: _viewModel.setCode,
-                      )
-                    else
-                      MDTextField(
-                        controller: _passwordController,
-                        hintText: '请输入密码',
-                        obscureText: true,
-                        onChanged: _viewModel.setPassword,
-                      ),
-                    const SizedBox(height: 16),
-                    MDAgreement(
-                      value: _viewModel.agreed,
-                      onChanged: _viewModel.setAgreed,
+                    MDCodeField(
+                      controller: _codeController,
+                      phone: _viewModel.phone,
+                      onChanged: _viewModel.setCode,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
+                    MDTextField(
+                      controller: _passwordController,
+                      hintText: '请输入新密码',
+                      obscureText: true,
+                      onChanged: _viewModel.setPassword,
+                    ),
+                    const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
                       height: 48,
                       child: PlatformElevatedButton(
-                        onPressed: _viewModel.isLoading ? null : _login,
+                        onPressed: _viewModel.isLoading ? null : _submit,
                         color: AppColors.theme,
                         child: Text(
-                          _viewModel.isLoading ? '登录中...' : '登录',
+                          _viewModel.isLoading ? '提交中...' : '确定',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: .w500,
@@ -148,28 +142,6 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (!_viewModel.isCodeLogin) ...[
-                          PlatformTextButton(
-                            onPressed: _openForgotPassword,
-                            child: Text(
-                              '忘记密码',
-                              style: TextStyle(color: AppColors.title),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                        ],
-                        PlatformTextButton(
-                          onPressed: _viewModel.toggleLoginMode,
-                          child: Text(
-                            _viewModel.isCodeLogin ? '密码登录' : '验证码登录',
-                            style: TextStyle(color: AppColors.title),
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -184,51 +156,38 @@ class _LoginPageState extends State<LoginPage> {
     if (_phoneController.text != _viewModel.phone) {
       _phoneController.text = _viewModel.phone;
     }
+    if (_codeController.text != _viewModel.code) {
+      _codeController.text = _viewModel.code;
+    }
     if (_passwordController.text != _viewModel.password) {
       _passwordController.text = _viewModel.password;
     }
   }
 
-  void _openForgotPassword() {
-    AppRouter.pushNamed(context, AppRouter.forgotPassword);
-  }
-
-  Future<void> _login() async {
-    final error = await _viewModel.login();
+  Future<void> _submit() async {
+    final error = await _viewModel.resetPassword();
     if (!mounted) return;
     if (error != null) {
       Totast.showError(error);
       return;
     }
-    AppRouter.pop(context, true);
+
+    Totast.showSuccess('密码设置成功');
+    await Future<void>.delayed(const Duration(milliseconds: 1500));
+    if (!mounted) return;
+    AppRouter.pop(context);
   }
 }
 
-class LoginViewModel extends ChangeNotifier {
-  bool isCodeLogin = false;
-  bool agreed = false;
+class ForgotViewModel extends ChangeNotifier {
   bool isLoading = false;
 
   String phone = '';
-  String password = '';
   String code = '';
-
-  Future<void> initialize() async {
-    final last = await MDUser.readLast();
-    if (last == null) return;
-    phone = last['phone'] ?? '';
-    password = last['passwd'] ?? '';
-    isCodeLogin = password.isEmpty;
-    notifyListeners();
-  }
+  String password = '';
 
   void setPhone(String value) {
     phone = value.trim();
-    notifyListeners();
-  }
-
-  void setPassword(String value) {
-    password = value;
     notifyListeners();
   }
 
@@ -237,61 +196,58 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleLoginMode() {
-    isCodeLogin = !isCodeLogin;
+  void setPassword(String value) {
+    password = value.trim();
     notifyListeners();
   }
 
-  void setAgreed(bool value) {
-    agreed = value;
-    notifyListeners();
-  }
-
-  Future<String?> login() async {
-    final validation = _validateLogin();
+  Future<String?> resetPassword() async {
+    final validation = _validateReset();
     if (validation != null) return validation;
-    if (!agreed) return '请先同意用户协议和隐私政策';
 
     isLoading = true;
     notifyListeners();
 
-    final params = <String, dynamic>{
-      'login_lx': isCodeLogin ? 'code' : 'pwd',
-      'phone': phone,
-      if (isCodeLogin) 'yzm': code else 'password': password.rsaPassword(),
-    };
-    final result = await _request(.login, params);
-    if (result.state == ResultState.success) {
-      await MDUser.defualt.login(result.data);
-      await MDUser.saveLast(phone, password);
+    final encryptedPassword = password.rsaPassword();
+    if (encryptedPassword.isEmpty) {
       isLoading = false;
       notifyListeners();
-      return null;
+      return '密码加密失败，请稍后重试';
     }
+
+    final result = await _request(.forgotPwd, {
+      'phone': phone,
+      'yzm': code,
+      'pwd': encryptedPassword,
+    });
 
     isLoading = false;
     notifyListeners();
-    return result.error ?? '登录失败，请稍后重试';
+
+    if (result.state == ResultState.success) return null;
+    return result.error ?? '密码设置失败，请稍后重试';
   }
 
-  String? _validateLogin() {
-    if (phone.length != 11) return '请输入11位手机号';
-    if (isCodeLogin && code.isEmpty) return '请输入验证码';
-    if (!isCodeLogin && password.isEmpty) return '请输入密码';
+  String? _validateReset() {
+    if (phone.isEmpty) return '请输入手机号';
+    if (phone.length != 11) return '请输入11位的手机号';
+    if (code.isEmpty) return '请输入验证码';
+    if (password.isEmpty) return '请输入新密码';
+    if (password.length < 6) return '请设置6位以上密码，包含数字、字母组合';
     return null;
   }
 
-  Future<_LoginResult> _request(
+  Future<_ForgotResult> _request(
     MDCmd command,
     Map<String, dynamic> params,
   ) async {
-    final completer = Completer<_LoginResult>();
+    final completer = Completer<_ForgotResult>();
     await MDPost.sendApiSession(
       cmd: command,
       params: params,
       completed: (state, error, data) {
         if (!completer.isCompleted) {
-          completer.complete(_LoginResult(state, error?.toString(), data));
+          completer.complete(_ForgotResult(state, error?.toString()));
         }
       },
     );
@@ -299,10 +255,9 @@ class LoginViewModel extends ChangeNotifier {
   }
 }
 
-class _LoginResult {
-  const _LoginResult(this.state, this.error, this.data);
+class _ForgotResult {
+  const _ForgotResult(this.state, this.error);
 
   final ResultState state;
   final String? error;
-  final Map<String, dynamic>? data;
 }
