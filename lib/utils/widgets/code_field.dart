@@ -66,8 +66,8 @@ class _MDCodeFieldState extends State<MDCodeField> {
         filled: true,
         fillColor: AppColors.background,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
-          borderSide: BorderSide.none,
+          borderRadius: .circular(28),
+          borderSide: .none,
         ),
       ),
     );
@@ -80,30 +80,19 @@ class _MDCodeFieldState extends State<MDCodeField> {
     }
 
     setState(() => _isSending = true);
-    final result = await _request();
+    final result = await MDPost.sendApiSession(
+      cmd: .sendCode,
+      params: {'account': widget.phone, 'type': 'mobile'},
+    );
     if (!mounted) return;
 
     setState(() => _isSending = false);
-    if (result.state != ResultState.success) {
-      Totast.showError(result.error ?? '验证码发送失败');
+    if (!result.isSuccess) {
+      Totast.showError(result.msg ?? '验证码发送失败');
       return;
     }
 
     _startCountdown();
-  }
-
-  Future<_CodeResult> _request() async {
-    final completer = Completer<_CodeResult>();
-    await MDPost.sendApiSession(
-      cmd: .sendCode,
-      params: {'account': widget.phone, 'type': 'mobile'},
-      completed: (state, error, data) {
-        if (!completer.isCompleted) {
-          completer.complete(_CodeResult(state, error?.toString()));
-        }
-      },
-    );
-    return completer.future;
   }
 
   void _startCountdown() {
@@ -125,11 +114,4 @@ class _MDCodeFieldState extends State<MDCodeField> {
       setState(() => _countdown--);
     });
   }
-}
-
-class _CodeResult {
-  const _CodeResult(this.state, this.error);
-
-  final ResultState state;
-  final String? error;
 }

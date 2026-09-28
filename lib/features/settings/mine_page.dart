@@ -331,12 +331,9 @@ class MineViewModel extends ChangeNotifier {
     _isRefreshing = true;
     notifyListeners();
 
-    await user.updateData(
-      completed: () {
-        _isRefreshing = false;
-        notifyListeners();
-      },
-    );
+    await user.updateData();
+    _isRefreshing = false;
+    notifyListeners();
   }
 
   void _handleUserChanged() {

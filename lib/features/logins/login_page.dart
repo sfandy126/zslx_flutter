@@ -6,6 +6,7 @@ import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 import '../../utils/widgets/agreement.dart';
 import '../../utils/widgets/code_field.dart';
+import '../../utils/widgets/dialog.dart';
 import '../../utils/widgets/phone_field.dart';
 import '../../utils/widgets/text_field.dart';
 import '../../extensions/string_rsa.dart';
@@ -148,25 +149,15 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (!_viewModel.isCodeLogin) ...[
-                          PlatformTextButton(
-                            onPressed: _openForgotPassword,
-                            child: Text(
-                              '忘记密码',
-                              style: TextStyle(color: AppColors.title),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                        ],
-                        PlatformTextButton(
-                          onPressed: _viewModel.toggleLoginMode,
-                          child: Text(
-                            _viewModel.isCodeLogin ? '密码登录' : '验证码登录',
-                            style: TextStyle(color: AppColors.title),
-                          ),
+                        _textButton('忘记密码', _openForgotPassword),
+                        const SizedBox(width: 16),
+                        _textButton(
+                          _viewModel.isCodeLogin ? '密码登录' : '验证码登录',
+                          _viewModel.toggleLoginMode,
                         ),
                       ],
                     ),
@@ -176,6 +167,33 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  /// 去掉按钮默认内边距，让按钮间距由外部 SizedBox 精确控制
+  Widget _textButton(String text, VoidCallback onPressed) {
+    return PlatformTextButton(
+      onPressed: onPressed,
+      padding: EdgeInsets.zero,
+      child: Text(
+        text,
+        style: TextStyle(
+          color: AppColors.content,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      material: (_, _) => MaterialTextButtonData(
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.zero,
+          minimumSize: const Size(0, 40),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+      ),
+      cupertino: (_, _) => CupertinoTextButtonData(
+        padding: EdgeInsets.zero,
+        minimumSize: const Size(0, 40),
       ),
     );
   }
@@ -194,6 +212,21 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _login() async {
+    final validation = _viewModel.validateLogin();
+    if (validation != null) {
+      Totast.showError(validation);
+      return;
+    }
+    if (!_viewModel.agreed) {
+      final confirmed = await MDDialog.show(
+        context,
+        title: '温馨提示',
+        content: '同意用户协议、隐私政策',
+      );
+      if (!confirmed || !mounted) return;
+      _viewModel.setAgreed(true);
+    }
+
     final error = await _viewModel.login();
     if (!mounted) return;
     if (error != null) {
@@ -248,7 +281,7 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   Future<String?> login() async {
-    final validation = _validateLogin();
+    final validation = validateLogin();
     if (validation != null) return validation;
     if (!agreed) return '请先同意用户协议和隐私政策';
 
@@ -260,8 +293,8 @@ class LoginViewModel extends ChangeNotifier {
       'phone': phone,
       if (isCodeLogin) 'yzm': code else 'password': password.rsaPassword(),
     };
-    final result = await _request(.login, params);
-    if (result.state == ResultState.success) {
+    final result = await MDPost.sendApiSession(cmd: .login, params: params);
+    if (result.isSuccess) {
       await MDUser.defualt.login(result.data);
       await MDUser.saveLast(phone, password);
       isLoading = false;
@@ -271,38 +304,13 @@ class LoginViewModel extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
-    return result.error ?? '登录失败，请稍后重试';
+    return result.msg ?? '登录失败，请稍后重试';
   }
 
-  String? _validateLogin() {
+  String? validateLogin() {
     if (phone.length != 11) return '请输入11位手机号';
     if (isCodeLogin && code.isEmpty) return '请输入验证码';
     if (!isCodeLogin && password.isEmpty) return '请输入密码';
     return null;
   }
-
-  Future<_LoginResult> _request(
-    MDCmd command,
-    Map<String, dynamic> params,
-  ) async {
-    final completer = Completer<_LoginResult>();
-    await MDPost.sendApiSession(
-      cmd: command,
-      params: params,
-      completed: (state, error, data) {
-        if (!completer.isCompleted) {
-          completer.complete(_LoginResult(state, error?.toString(), data));
-        }
-      },
-    );
-    return completer.future;
-  }
-}
-
-class _LoginResult {
-  const _LoginResult(this.state, this.error, this.data);
-
-  final ResultState state;
-  final String? error;
-  final Map<String, dynamic>? data;
 }

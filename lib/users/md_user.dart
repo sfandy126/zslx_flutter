@@ -168,30 +168,24 @@ class MDUser extends ChangeNotifier {
   }
 
   /// 请求并更新最新用户信息
-  Future<void> updateData({bool animate = false, VoidCallback? completed}) async {
+  Future<void> updateData({bool animate = false}) async {
     if (animate) {
       Totast.showLoading();
     }
-    await MDPost.sendApiSession(
-      cmd: .memberInfo,
-      completed: (state, error, data) async {
-        if (animate) {
-          Totast.hideLoading();
-        }
-        if (state == .success) {
-          final userId = data?['user_id'] as int?;
-          if (islogined && userId == 0) {
-            await logout();
-          } else {
-            await update(data);
-          }
-        } else if (animate && state == .failed) {
-          Totast.showError(error?.toString() ?? 'ERROR：数据返回错误');
-        }
-
-        completed?.call();
-      },
-    );
+    final result = await MDPost.sendApiSession(cmd: .memberInfo);
+    if (animate) {
+      Totast.hideLoading();
+    }
+    if (result.isSuccess) {
+      final userId = result.data?['user_id'] as int?;
+      if (islogined && userId == 0) {
+        await logout();
+      } else {
+        await update(result.data);
+      }
+    } else if (animate && result.state == .failed) {
+      Totast.showError(result.msg ?? 'ERROR：数据返回错误');
+    }
   }
 
   // MARK: - 游客 UUID 保存/读取（使用 SharedPreferences）

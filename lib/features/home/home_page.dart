@@ -20,21 +20,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadHome() async {
-    await MDPost.sendApiSession(
-      cmd: MDCmd.home,
-      params: const {},
-      completed: (state, error, data) {
-        if (!mounted) {
-          return;
-        }
+    final result = await MDPost.sendApiSession(cmd: .home);
+    if (!mounted) return;
 
-        setState(() {
-          _loading = false;
-          _message = error?.toString() ?? '首页数据加载完成';
-          _data = data ?? <String, dynamic>{};
-        });
-      },
-    );
+    setState(() {
+      _loading = false;
+      _message = result.msg ?? '首页数据加载完成';
+      _data = result.data ?? <String, dynamic>{};
+    });
   }
 
   @override

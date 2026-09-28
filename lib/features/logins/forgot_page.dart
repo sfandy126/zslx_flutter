@@ -215,17 +215,16 @@ class ForgotViewModel extends ChangeNotifier {
       return '密码加密失败，请稍后重试';
     }
 
-    final result = await _request(.forgotPwd, {
-      'phone': phone,
-      'yzm': code,
-      'pwd': encryptedPassword,
-    });
+    final result = await MDPost.sendApiSession(
+      cmd: .forgotPwd,
+      params: {'phone': phone, 'yzm': code, 'pwd': encryptedPassword},
+    );
 
     isLoading = false;
     notifyListeners();
 
-    if (result.state == ResultState.success) return null;
-    return result.error ?? '密码设置失败，请稍后重试';
+    if (result.isSuccess) return null;
+    return result.msg ?? '密码设置失败，请稍后重试';
   }
 
   String? _validateReset() {
@@ -236,28 +235,4 @@ class ForgotViewModel extends ChangeNotifier {
     if (password.length < 6) return '请设置6位以上密码，包含数字、字母组合';
     return null;
   }
-
-  Future<_ForgotResult> _request(
-    MDCmd command,
-    Map<String, dynamic> params,
-  ) async {
-    final completer = Completer<_ForgotResult>();
-    await MDPost.sendApiSession(
-      cmd: command,
-      params: params,
-      completed: (state, error, data) {
-        if (!completer.isCompleted) {
-          completer.complete(_ForgotResult(state, error?.toString()));
-        }
-      },
-    );
-    return completer.future;
-  }
-}
-
-class _ForgotResult {
-  const _ForgotResult(this.state, this.error);
-
-  final ResultState state;
-  final String? error;
 }

@@ -10,23 +10,16 @@ import 'md_env.dart';
 import 'package:zslx_flutter/config/app_config.dart';
 import '../extensions/string_sign.dart';
 
-typedef ApiCallback =
-    void Function(
-      ResultState state,
-      Exception? error,
-      Map<String, dynamic>? data,
-    );
-
 enum ResultState { unknown, success, outed, failed }
 
-/// 接口返回的提示信息，toString 直接返回文案，便于 UI 层展示
-class MDPostException implements Exception {
-  const MDPostException(this.message);
+class MDResult {
+  final ResultState state;
+  final String? msg;
+  final Map<String, dynamic>? data;
 
-  final String message;
+  const MDResult(this.state, {this.msg, this.data});
 
-  @override
-  String toString() => message;
+  bool get isSuccess => state == .success;
 }
 
 class MDPost {
@@ -46,27 +39,24 @@ class MDPost {
     return dio;
   }
 
-  static Future<void> sendApiSession({
+  static Future<MDResult> sendApiSession({
     required MDCmd cmd,
     Map<String, dynamic> params = const {},
-    ApiCallback? completed,
-  }) async {
-    await _send(cmd: cmd, params: params, isIap: false, completed: completed);
+  }) {
+    return _send(cmd: cmd, params: params, isIap: false);
   }
 
-  static Future<void> sendIapSession({
+  static Future<MDResult> sendIapSession({
     required MDCmd cmd,
     Map<String, dynamic> params = const {},
-    ApiCallback? completed,
-  }) async {
-    await _send(cmd: cmd, params: params, isIap: true, completed: completed);
+  }) {
+    return _send(cmd: cmd, params: params, isIap: true);
   }
 
-  static Future<void> _send({
+  static Future<MDResult> _send({
     required MDCmd cmd,
     required bool isIap,
     Map<String, dynamic> params = const {},
-    ApiCallback? completed,
   }) async {
     final headers = mdHeaders();
     var token = MDUser.defualt.token ?? '';
@@ -111,44 +101,27 @@ class MDPost {
       switch (result.status) {
         case 0:
           await MDUser.defualt.logout();
-          completed?.call(
-            ResultState.outed,
-            MDPostException(message ?? 'ERROR：登录已过期，请重新登录'),
-            null,
-          );
+          return MDResult(.outed, msg: message ?? 'ERROR：登录已过期，请重新登录');
         case 1:
-          completed?.call(
-            ResultState.success,
-            MDPostException(message ?? 'success'),
-            mdSafeToDict(result.data),
+          return MDResult(
+            .success,
+            msg: message ?? 'success',
+            data: mdSafeToDict(result.data),
           );
         case -1:
-          completed?.call(
-            ResultState.failed,
-            MDPostException(message ?? 'ERROR：数据返回错误'),
-            null,
-          );
+          return MDResult(.failed, msg: message ?? 'ERROR：数据返回错误');
         default:
-          completed?.call(
-            ResultState.failed,
-            MDPostException(message ?? 'ERROR：数据状态错误${result.status}'),
-            null,
+          return MDResult(
+            .failed,
+            msg: message ?? 'ERROR：数据状态错误${result.status}',
           );
       }
     } on DioException catch (error) {
       _log('❌send_cmd = ${cmd.value} ❌ERROR = ${error.response?.data ?? error}');
-      completed?.call(
-        ResultState.failed,
-        MDPostException(_dioErrorMessage(error)),
-        null,
-      );
+      return MDResult(.failed, msg: _dioErrorMessage(error));
     } catch (error) {
       _log('❌send_cmd = ${cmd.value} ❌解析错误 = $error');
-      completed?.call(
-        ResultState.failed,
-        const MDPostException('ERROR：解析错误'),
-        null,
-      );
+      return const MDResult(.failed, msg: 'ERROR：解析错误');
     }
   }
 
