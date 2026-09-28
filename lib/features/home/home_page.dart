@@ -33,10 +33,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('首页'),
-        centerTitle: true,
-      ),
+      appBar: const CustomAppBar(title: '首页', showBackButton: false),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

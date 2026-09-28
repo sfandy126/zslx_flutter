@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/utils/widgets/custom_appbar.dart';
 
 class LearnPage extends StatelessWidget {
   const LearnPage({super.key});
@@ -6,10 +7,7 @@ class LearnPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('学习'),
-        centerTitle: true,
-      ),
+      appBar: const CustomAppBar(title: '学习', showBackButton: false),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

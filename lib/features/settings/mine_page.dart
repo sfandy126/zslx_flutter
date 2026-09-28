@@ -76,7 +76,8 @@ class _MinePageState extends State<MinePage> {
                         icon: 'assets/images/mine/mineSetting.svg',
                         title: '设置',
                         subtitle: '账号、隐私与设置',
-                        onTap: () => _showMessage('设置功能即将开放'),
+                        onTap: () =>
+                            AppRouter.pushNamed(context, AppRouter.setup),
                       ),
                     ],
                   ),

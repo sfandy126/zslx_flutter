@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 
 import '../features/logins/forgot_page.dart';
 import '../features/logins/login_page.dart';
+import '../features/settings/about.dart';
+import '../features/settings/setup.dart';
 import '../features/starts/start_page.dart';
 import '../features/starts/tabbar_page.dart';
 import '../features/web/web_page.dart';
@@ -14,6 +16,9 @@ class AppRouter {
   static const String login = RouterNames.login;
   static const String forgotPassword = RouterNames.forgotPassword;
   static const String main = RouterNames.main;
+  static const String setup = RouterNames.setup;
+  static const String about = RouterNames.about;
+  static const String web = RouterNames.web;
 
   static Future<T?> pushNamed<T>(
     BuildContext context,
@@ -64,6 +69,18 @@ class AppRouter {
             _platformPage(key: state.pageKey, child: const ForgotPage()),
       ),
       GoRoute(
+        path: '/setup',
+        name: RouterNames.setup,
+        pageBuilder: (context, state) =>
+            _platformPage(key: state.pageKey, child: const SetupPage()),
+      ),
+      GoRoute(
+        path: '/about',
+        name: RouterNames.about,
+        pageBuilder: (context, state) =>
+            _platformPage(key: state.pageKey, child: const AboutPage()),
+      ),
+      GoRoute(
         path: '/web',
         name: RouterNames.web,
         pageBuilder: (context, state) => _platformPage(
@@ -71,6 +88,7 @@ class AppRouter {
           child: WebPage(
             url: state.uri.queryParameters['url'],
             title: state.uri.queryParameters['title'] ?? '',
+            disableFd: state.uri.queryParameters['disableFd'] == 'true',
           ),
         ),
       ),

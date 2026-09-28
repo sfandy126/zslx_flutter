@@ -3,6 +3,8 @@ enum MDEnv {
   product;
 
   static const String appId = '6792423302';
+  static const String urlAppstore =
+      'https://apps.apple.com/cn/app/%E5%A4%87%E8%80%83%E8%90%A5%E5%9C%B0/id$appId';
   static const String urlForPrivate =
       'http://ht.zhuoshilx.com/news/article/external_detail?id=45&form=app&type=2';
   static const String urlForUser =

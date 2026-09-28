@@ -207,16 +207,9 @@ class _WebPageState extends State<WebPage> {
       canPop: !widget.disableFd,
       child: Scaffold(
         backgroundColor: AppColors.white,
-        appBar: AppBar(
-          backgroundColor: AppColors.white,
-          foregroundColor: AppColors.black,
-          surfaceTintColor: AppColors.white,
-          elevation: 0,
-          title: Text(widget.title, style: const TextStyle(fontSize: 18)),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: _goBack,
-          ),
+        appBar: CustomAppBar(
+          title: widget.title,
+          onBackPressed: _goBack,
           actions: [
             if (widget.shareType == WebShareType.systemShare)
               IconButton(

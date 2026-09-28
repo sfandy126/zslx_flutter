@@ -9,4 +9,5 @@ export 'package:zslx_flutter/network/md_env.dart';
 export 'package:zslx_flutter/users/md_user.dart';
 export 'package:zslx_flutter/config/app_config.dart';
 export 'package:zslx_flutter/utils/totast.dart';
+export 'package:zslx_flutter/utils/widgets/custom_appbar.dart';
 export 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
