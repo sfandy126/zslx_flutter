@@ -4,9 +4,10 @@ import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zslx_flutter/router/router_names.dart';
 import 'package:zslx_flutter/utils/utils.dart';
-import 'package:zslx_flutter/features/starts/tabbar_page.dart';
 import 'package:zslx_flutter/features/web/web_page.dart';
 
 class StartPage extends StatefulWidget {
@@ -61,9 +62,7 @@ class _StartPageState extends State<StartPage> {
 
   void _goToMain() {
     if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      platformPageRoute(context: context, builder: (_) => const TabbarPage()),
-    );
+    context.goNamed(RouterNames.main);
   }
 
   void _showPrivacyAlert() {
@@ -102,7 +101,10 @@ class _StartPageState extends State<StartPage> {
                     height: 1.4,
                   ),
                   children: [
-                    const TextSpan(text: '    欢迎使用本应用！为了更好地保护您的个人信息和合法权益，请您在使用我们的产品前，认真阅读并了解'),
+                    const TextSpan(
+                      text:
+                          '    欢迎使用本应用！为了更好地保护您的个人信息和合法权益，请您在使用我们的产品前，认真阅读并了解',
+                    ),
                     TextSpan(
                       text: '《用户协议》',
                       style: TextStyle(

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 import '../app_colors.dart';
-import '../../network/md_cmd.dart';
 import '../../network/md_post.dart';
 import '../totast.dart';
 
@@ -28,6 +27,10 @@ class _MDCodeFieldState extends State<MDCodeField> {
   Timer? _timer;
   int _countdown = 0;
   bool _isSending = false;
+  bool _hasSentCode = false;
+
+  bool get _canSendCode =>
+      widget.phone.length == 11 && !_isSending && _countdown == 0;
 
   @override
   void dispose() {
@@ -37,6 +40,12 @@ class _MDCodeFieldState extends State<MDCodeField> {
 
   @override
   Widget build(BuildContext context) {
+    final buttonText = _countdown > 0
+        ? '重新发送${_countdown}s'
+        : _hasSentCode
+        ? '重新获取'
+        : '获取验证码';
+
     return TextField(
       controller: widget.controller,
       onChanged: widget.onChanged,
@@ -44,8 +53,15 @@ class _MDCodeFieldState extends State<MDCodeField> {
       decoration: InputDecoration(
         hintText: '请输入验证码',
         suffixIcon: PlatformTextButton(
-          onPressed: _countdown > 0 || _isSending ? null : _sendCode,
-          child: Text(_countdown > 0 ? '${_countdown}s' : '获取验证码'),
+          onPressed: _canSendCode ? _sendCode : null,
+          child: Text(
+            buttonText,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: .w400,
+              color: _canSendCode ? AppColors.theme : AppColors.grayAAA,
+            ),
+          ),
         ),
         filled: true,
         fillColor: AppColors.background,
@@ -79,8 +95,8 @@ class _MDCodeFieldState extends State<MDCodeField> {
   Future<_CodeResult> _request() async {
     final completer = Completer<_CodeResult>();
     await MDPost.sendApiSession(
-      cmd: MDCmd.sendCode,
-      params: {'phone': widget.phone},
+      cmd: .sendCode,
+      params: {'account': widget.phone, 'type': 'mobile'},
       completed: (state, error, data) {
         if (!completer.isCompleted) {
           completer.complete(_CodeResult(state, error?.toString()));
@@ -92,7 +108,10 @@ class _MDCodeFieldState extends State<MDCodeField> {
 
   void _startCountdown() {
     _timer?.cancel();
-    setState(() => _countdown = 60);
+    setState(() {
+      _hasSentCode = true;
+      _countdown = 60;
+    });
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) {
         timer.cancel();
