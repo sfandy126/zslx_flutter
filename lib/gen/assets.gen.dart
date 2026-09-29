@@ -21,6 +21,9 @@ class $AssetsImagesGen {
   AssetGenImage get appLogo1024 =>
       const AssetGenImage('assets/images/appLogo1024.png');
 
+  /// Directory path: assets/images/home
+  $AssetsImagesHomeGen get home => const $AssetsImagesHomeGen();
+
   /// Directory path: assets/images/launch
   $AssetsImagesLaunchGen get launch => const $AssetsImagesLaunchGen();
 
@@ -35,6 +38,39 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [appLogo1024];
+}
+
+class $AssetsImagesHomeGen {
+  const $AssetsImagesHomeGen();
+
+  /// File path: assets/images/home/courseBs.svg
+  SvgGenImage get courseBs =>
+      const SvgGenImage('assets/images/home/courseBs.svg');
+
+  /// File path: assets/images/home/courseGk.svg
+  SvgGenImage get courseGk =>
+      const SvgGenImage('assets/images/home/courseGk.svg');
+
+  /// File path: assets/images/home/courseMs.svg
+  SvgGenImage get courseMs =>
+      const SvgGenImage('assets/images/home/courseMs.svg');
+
+  /// File path: assets/images/home/courseYdy.svg
+  SvgGenImage get courseYdy =>
+      const SvgGenImage('assets/images/home/courseYdy.svg');
+
+  /// File path: assets/images/home/courseZx.svg
+  SvgGenImage get courseZx =>
+      const SvgGenImage('assets/images/home/courseZx.svg');
+
+  /// List of all assets
+  List<SvgGenImage> get values => [
+    courseBs,
+    courseGk,
+    courseMs,
+    courseYdy,
+    courseZx,
+  ];
 }
 
 class $AssetsImagesLaunchGen {

@@ -3,6 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/courses/course_detail_page.dart';
+import '../features/courses/course_list_page.dart';
+import '../features/courses/course_search_page.dart';
 import '../features/logins/bind_page.dart';
 import '../features/logins/forgot_page.dart';
 import '../features/logins/info_page.dart';
@@ -29,6 +32,9 @@ enum RouterNames {
   bind,
   off,
   passward,
+  courseList,
+  courseSearch,
+  courseDetail,
   feedback,
   web,
   setup,
@@ -123,6 +129,34 @@ class AppRouter {
         name: RouterNames.passward.routeName,
         pageBuilder: (context, state) =>
             _platformPage(key: state.pageKey, child: const PasswardPage()),
+      ),
+      GoRoute(
+        path: '/course-list',
+        name: RouterNames.courseList.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: CourseListPage(
+            initialType: state.uri.queryParameters['type'] ?? 'gk',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/course-search',
+        name: RouterNames.courseSearch.routeName,
+        pageBuilder: (context, state) =>
+            _platformPage(key: state.pageKey, child: const CourseSearchPage()),
+      ),
+      GoRoute(
+        path: '/course-detail',
+        name: RouterNames.courseDetail.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: CourseDetailPage(
+            id: state.uri.queryParameters['id'] ?? '',
+            type: state.uri.queryParameters['type'] ?? '',
+            orderId: state.uri.queryParameters['orderId'] ?? '',
+          ),
+        ),
       ),
       GoRoute(
         path: '/feedback',

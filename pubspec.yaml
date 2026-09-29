@@ -35,7 +35,7 @@ dependencies:
   flutter_platform_widgets: ^10.0.1
   #Cupertino apple 风格的图标
   cupertino_icons: ^1.0.8
-  #获取当前设备信息 https://github.com/fluttercommunity/plus_plugins/tree/main/packages/device_info_plus
+  #获取当前设备信息 
   device_info_plus: ^11.5.0
   package_info_plus: ^8.3.1
   # https://github.com/ReactiveX/rxdart
@@ -43,7 +43,7 @@ dependencies:
   #网络请求
   dio: ^5.11.0
   crypto: ^3.0.0
-  #状态管理 https://github.com/rrousselGit/provider
+  #状态管理
   provider: ^6.1.5
   #屏幕适配
   flutter_screenutil: ^5.9.0
@@ -51,17 +51,18 @@ dependencies:
   flutter_svg: ^2.3.0
   #本地存储
   shared_preferences: ^2.5.5
-  # toast提示框 https://github.com/OpenFlutter/flutter_oktoast
+  # toast提示框
   oktoast: ^3.4.0
-  # Dart 常用工具类库 https://github.com/Sky24n/common_utils
+  # Dart 常用工具类库
   common_utils: 2.1.0
-  # 轮播图 https://github.com/mdddj/flutter_swiper_null_safety
-  flutter_swiper_null_safety_flutter3: ^4.0.3 
-  # 图片选择插件 https://github.com/flutter/packages/tree/main/packages/image_picker
+  # 轮播图 
+  # flutter_swiper_null_safety_flutter3: ^4.0.3 
+  carousel_slider: ^5.1.2 
+  # 图片选择插件 
   image_picker: 1.2.0
-  # 侧滑删除 https://github.com/letsar/flutter_slidable
+  # 侧滑删除 
   flutter_slidable: ^4.0.3
-  # 处理键盘事件 https://github.com/diegoveloper/flutter_keyboard_actions
+  # 处理键盘事件 
   keyboard_actions: ^4.2.1
   color: ^3.0.0
   webview_flutter: ^4.14.1
@@ -73,8 +74,10 @@ dependencies:
   easy_refresh: ^3.5.1
   # 路由管理
   go_router: ^14.0.0
-  # 打开外部链接(App Store 等) https://github.com/flutter/packages/tree/main/packages/url_launcher
+  # 打开外部链接(App Store 等) h
   url_launcher: ^6.3.2
+  # json注解
+  json_annotation: ^4.12.0
 
 #dart 依赖都放在此处
 dev_dependencies:
@@ -96,7 +99,8 @@ dev_dependencies:
   #工程配置、安全、资源、权限、发布检查
   flutter_auditor: ^1.1.0
   flutter_gen_runner: ^5.4.0 # 资源代码生成器
-  build_runner: ^2.12.0  # 运行生成器所需的工具
+  json_serializable: ^6.14.1    # 代码生成器
+  build_runner: ^2.15.1  # 运行生成器所需的工具
 
 flutter_gen:
   integrations:
@@ -123,6 +127,7 @@ flutter:
     - assets/images/public/
     - assets/images/tabbar/
     - assets/images/launch/
+    - assets/images/home/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

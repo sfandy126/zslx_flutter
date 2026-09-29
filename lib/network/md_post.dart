@@ -257,9 +257,14 @@ class MDPost {
 
   static Map<String, dynamic>? mdSafeToDict(dynamic data) {
     if (data == null) return null;
-    if (data is Map<String, dynamic>) return data;
+    if (data is Map<String, dynamic>) {
+        return data.isEmpty ? null : data;
+    } 
     if (data is Map) {
-      return data.map((key, value) => MapEntry(key.toString(), value));
+        if (data.isEmpty) {
+          return null;
+        }
+        return data.map((key, value) => MapEntry(key.toString(), value));
     }
     return {'data': data};
   }
