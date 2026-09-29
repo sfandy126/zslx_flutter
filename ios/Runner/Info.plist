@@ -71,7 +71,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>需要访问本地网络以进行网络分析</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>需要访问相册以选择并上传头像</string>
+	<key>NSCameraUsageDescription</key>
+	<string>需要访问相机以拍摄照片</string>
 </dict>
 </plist>

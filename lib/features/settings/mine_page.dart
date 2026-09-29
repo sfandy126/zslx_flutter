@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:zslx_flutter/router/app_router.dart';
 import '../../utils/utils.dart';
 
@@ -49,7 +50,7 @@ class _MinePageState extends State<MinePage> {
                       _MineHeader(
                         name: _viewModel.displayName,
                         avatar: _viewModel.avatar,
-                        onLogin: _handleLogin,
+                        onLogin: _handleHeaderTap,
                         onOrders: () => _showMessage('课程订单功能即将开放'),
                         onWallet: () => _showMessage('钱包功能即将开放'),
                       ),
@@ -64,20 +65,21 @@ class _MinePageState extends State<MinePage> {
                         icon: 'assets/images/mine/mineFeedback.svg',
                         title: '意见反馈',
                         subtitle: '提交问题或建议',
-                        onTap: () => _showMessage('意见反馈功能即将开放'),
+                        onTap: () =>
+                            AppRouter.pushNamed(context, RouterNames.feedback),
                       ),
                       _MineActionTile(
                         icon: 'assets/images/mine/mineOnline.svg',
                         title: '在线客服',
                         subtitle: '在线解答',
-                        onTap: () => _showMessage('在线客服功能即将开放'),
+                        onTap: _callCustomerService,
                       ),
                       _MineActionTile(
                         icon: 'assets/images/mine/mineSetting.svg',
                         title: '设置',
                         subtitle: '账号、隐私与设置',
                         onTap: () =>
-                            AppRouter.pushNamed(context, AppRouter.setup),
+                            AppRouter.pushNamed(context, RouterNames.setup),
                       ),
                     ],
                   ),
@@ -90,13 +92,26 @@ class _MinePageState extends State<MinePage> {
     );
   }
 
-  void _handleLogin() {
-    AppRouter.pushNamed<bool>(context, AppRouter.login)
-        .then((result) {
-          if (result == true) {
-            _viewModel.refresh();
-          }
-        });
+  void _handleHeaderTap() {
+    if (_viewModel.isLoggedIn) {
+      AppRouter.pushNamed(context, .info).then((_) {
+        _viewModel.refresh();
+      });
+    } else {
+      AppRouter.pushNamed<bool>(context, .login).then((result) {
+        if (result == true) {
+          _viewModel.refresh();
+        }
+      });
+    }
+  }
+
+  Future<void> _callCustomerService() async {
+    final uri = Uri(scheme: 'tel', path: MDEnv.telephone);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      return;
+    }
   }
 
   void _showMessage(String message) {

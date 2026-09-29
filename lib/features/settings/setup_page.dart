@@ -63,15 +63,13 @@ class _SetupPageState extends State<SetupPage> {
   void _handleTap(SetupItem item) {
     switch (item.type) {
       case .info:
-        // TODO: 个人信息页(MDInfoPage)尚未迁移
-        Totast.showError('个人信息功能即将开放');
+        AppRouter.pushNamed(context, RouterNames.info);
       case .version:
         _viewModel.openAppStore();
       case .account:
-        // TODO: 账号安全页(MDSafePage)尚未迁移
-        Totast.showError('账号安全功能即将开放');
+        AppRouter.pushNamed(context, RouterNames.safe);
       case .about:
-        AppRouter.pushNamed(context, AppRouter.about);
+        AppRouter.pushNamed(context, RouterNames.about);
       case .cache:
         _viewModel.clearAllCache();
     }
@@ -84,7 +82,9 @@ class _SetupPageState extends State<SetupPage> {
       content: '退出后将不能查看订单，确定退出吗？',
     );
     if (!confirmed || !mounted) return;
-    await _viewModel.logout();
+    final success = await _viewModel.logout();
+    if (!mounted || !success) return;
+    AppRouter.pop(context, true);
   }
 }
 
@@ -127,23 +127,23 @@ class SetupViewModel extends ChangeNotifier {
     ];
   }
 
-  Future<void> logout() async {
+  Future<bool> logout() async {
     Totast.showLoading();
     final result = await MDPost.sendApiSession(cmd: .logout);
     Totast.hideLoading();
     if (result.isSuccess) {
       Totast.showSuccess(result.msg ?? '退出成功');
       await user.logout();
-    } else {
-      Totast.showError(result.msg ?? '退出失败，请稍后重试');
+      return true;
     }
+
+    Totast.showError(result.msg ?? '退出失败，请稍后重试');
+    return false;
   }
 
   Future<void> openAppStore() async {
     if (!Platform.isIOS) return;
-    final url = Uri.parse(
-      MDEnv.urlAppstore,
-    );
+    final url = Uri.parse(MDEnv.urlAppstore);
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: .externalApplication);
     }

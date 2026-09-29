@@ -38,7 +38,6 @@ Uint8List _bigIntToBytes(BigInt value, int length) {
 }
 
 /// 剥离 SPKI 外层包装，返回内部 BIT STRING 内容（即 PKCS#1 RSAPublicKey）。
-/// 对应 Swift 中的 stripSPKIHeader。
 Uint8List? _stripSPKIHeader(Uint8List data) {
   final bytes = data;
   var idx = 0;
@@ -117,7 +116,7 @@ class _Asn1Parser {
   }
 }
 
-/// PKCS#1 v1.5 Type 2 填充，对应 Swift 中 SecKeyCreateEncryptedData(.rsaEncryptionPKCS1)。
+/// PKCS#1 v1.5 Type 2 
 Uint8List _pkcs1Type2Pad(Uint8List message, int keyBytes) {
   final paddingLength = keyBytes - message.length - 3;
   final random = Random.secure();

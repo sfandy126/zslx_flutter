@@ -5,7 +5,6 @@ import '../app_colors.dart';
 import '../../gen/assets.gen.dart';
 import '../../network/md_env.dart';
 import '../../router/app_router.dart';
-import '../../router/router_names.dart';
 
 class MDAgreement extends StatefulWidget {
   const MDAgreement({required this.value, required this.onChanged, super.key});
@@ -26,9 +25,9 @@ class _MDAgreementState extends State<MDAgreement> {
     super.initState();
     _userAgreementRecognizer = TapGestureRecognizer()
       ..onTap = _openUserAgreement;
-      
+
     _privateAgreementRecognizer = TapGestureRecognizer()
-    ..onTap = _openPrivateAgreement;
+      ..onTap = _openPrivateAgreement;
   }
 
   @override
@@ -70,7 +69,7 @@ class _MDAgreementState extends State<MDAgreement> {
                     recognizer: _userAgreementRecognizer,
                   ),
                   const TextSpan(text: '和'),
-                   TextSpan(
+                  TextSpan(
                     text: '《隐私政策》',
                     style: TextStyle(
                       color: AppColors.theme,
@@ -90,7 +89,7 @@ class _MDAgreementState extends State<MDAgreement> {
   void _openUserAgreement() {
     AppRouter.pushNamed(
       context,
-      RouterNames.web,
+      .web,
       queryParameters: {'url': MDEnv.urlForUser, 'title': '用户协议'},
     );
   }
@@ -98,7 +97,7 @@ class _MDAgreementState extends State<MDAgreement> {
   void _openPrivateAgreement() {
     AppRouter.pushNamed(
       context,
-      RouterNames.web,
+      .web,
       queryParameters: {'url': MDEnv.urlForPrivate, 'title': '隐私政策'},
     );
   }

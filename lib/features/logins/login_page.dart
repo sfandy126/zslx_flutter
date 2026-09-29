@@ -208,7 +208,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _openForgotPassword() {
-    AppRouter.pushNamed(context, AppRouter.forgotPassword);
+    AppRouter.pushNamed(context, RouterNames.forgotPassword);
   }
 
   Future<void> _login() async {

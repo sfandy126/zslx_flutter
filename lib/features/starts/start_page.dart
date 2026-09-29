@@ -4,9 +4,8 @@ import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:zslx_flutter/router/router_names.dart';
+import 'package:zslx_flutter/router/app_router.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 import 'package:zslx_flutter/features/web/web_page.dart';
 
@@ -31,8 +30,7 @@ class _StartPageState extends State<StartPage> {
     _privacyPolicyRecognizer = TapGestureRecognizer()
       ..onTap = () => _openLegalPage(MDEnv.urlForPrivate, '隐私政策');
 
-    // 隐藏状态栏，与 Swift 端 prefersStatusBarHidden 一致
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    _hideSystemBars();
 
     _startLaunch();
   }
@@ -60,9 +58,22 @@ class _StartPageState extends State<StartPage> {
     }
   }
 
-  void _goToMain() {
+  Future<void> _showSystemBars() {
+    return SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
+  }
+
+  Future<void> _hideSystemBars() {
+    return SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+  }
+
+  Future<void> _goToMain() async {
     if (!mounted) return;
-    context.goNamed(RouterNames.main);
+    await _showSystemBars();
+    if (!mounted) return;
+    AppRouter.goNamed(context, RouterNames.main);
   }
 
   void _showPrivacyAlert() {
@@ -211,13 +222,17 @@ class _StartPageState extends State<StartPage> {
     exit(0);
   }
 
-  void _openLegalPage(String url, String title) {
-    Navigator.of(context).push(
+  Future<void> _openLegalPage(String url, String title) async {
+    await _showSystemBars();
+    if (!mounted) return;
+    await Navigator.of(context).push(
       platformPageRoute(
         context: context,
         builder: (_) => WebPage(url: url, title: title),
       ),
     );
+    if (!mounted) return;
+    await _hideSystemBars();
   }
 
   @override

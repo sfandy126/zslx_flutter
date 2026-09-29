@@ -53,6 +53,84 @@ class MDPost {
     return _send(cmd: cmd, params: params, isIap: true);
   }
 
+  static Future<MDResult> sendUploadSession({
+    required MDCmd cmd,
+    required String filePath,
+    required String name,
+    String format = 'png',
+    Map<String, dynamic> params = const {},
+  }) async {
+    final headers = mdHeaders();
+    var token = MDUser.defualt.token ?? '';
+    final outToken = params['token'];
+    if (outToken is String) {
+      token = outToken;
+      headers['token'] = outToken;
+    }
+
+    var uid = MDUser.defualt.uid ?? '';
+    final outUid = params['user_id'];
+    if (outUid is String) {
+      uid = outUid;
+    }
+
+    final finalParams = <String, dynamic>{...params, 'user_id': uid};
+    final finalForm = <String, dynamic>{
+      ...finalParams,
+      'sign': StringSign.mdSign(finalParams, token),
+      name: await MultipartFile.fromFile(filePath, filename: '$name.$format'),
+    };
+
+    const MDEnv domain = .product;
+    final url = '${domain.url}/${cmd.value}';
+    _log(
+      'upload_cmd = ${cmd.value} finalParams = $finalParams headers = $headers',
+    );
+
+    try {
+      final response = await session.post(
+        url,
+        data: FormData.fromMap(finalForm),
+        options: Options(
+          headers: headers,
+          followRedirects: true,
+          validateStatus: (status) =>
+              status != null && status >= 200 && status < 300,
+        ),
+      );
+      _log('upload_cmd = ${cmd.value} jsonResult = ${response.data}');
+
+      final result = _ApiResponse.fromJson(response.data, isIap: false);
+      final message = result.msg;
+      switch (result.status) {
+        case 0:
+          await MDUser.defualt.logout();
+          return MDResult(.outed, msg: message ?? 'ERROR：登录已过期，请重新登录');
+        case 1:
+          return MDResult(
+            .success,
+            msg: message ?? 'success',
+            data: mdSafeToDict(result.data),
+          );
+        case -1:
+          return MDResult(.failed, msg: message ?? 'ERROR：上传失败');
+        default:
+          return MDResult(
+            .failed,
+            msg: message ?? 'ERROR：数据状态错误${result.status}',
+          );
+      }
+    } on DioException catch (error) {
+      _log(
+        '❌upload_cmd = ${cmd.value} ❌ERROR = ${error.response?.data ?? error}',
+      );
+      return MDResult(.failed, msg: _dioErrorMessage(error));
+    } catch (error) {
+      _log('❌upload_cmd = ${cmd.value} ❌解析错误 = $error');
+      return const MDResult(.failed, msg: 'ERROR：解析错误');
+    }
+  }
+
   static Future<MDResult> _send({
     required MDCmd cmd,
     required bool isIap,
@@ -68,7 +146,8 @@ class MDPost {
 
     var uid = MDUser.defualt.uid ?? '';
     final outUid = params['user_id'];
-    if (outUid is String) { // 优先取参数中的 user_id
+    if (outUid is String) {
+      // 优先取参数中的 user_id
       uid = outUid;
     }
 
@@ -80,7 +159,9 @@ class MDPost {
         ? '${domain.iapUrl}/${cmd.value}'
         : '${domain.url}/${cmd.value}';
 
-    _log('send_cmd = ${cmd.value} finalParams = $finalParams headers = $headers');
+    _log(
+      'send_cmd = ${cmd.value} finalParams = $finalParams headers = $headers',
+    );
 
     try {
       final response = await session.post(
@@ -117,7 +198,9 @@ class MDPost {
           );
       }
     } on DioException catch (error) {
-      _log('❌send_cmd = ${cmd.value} ❌ERROR = ${error.response?.data ?? error}');
+      _log(
+        '❌send_cmd = ${cmd.value} ❌ERROR = ${error.response?.data ?? error}',
+      );
       return MDResult(.failed, msg: _dioErrorMessage(error));
     } catch (error) {
       _log('❌send_cmd = ${cmd.value} ❌解析错误 = $error');
