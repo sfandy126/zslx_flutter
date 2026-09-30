@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'course_list_page.dart';
-
 class LearnPage extends StatelessWidget {
   const LearnPage({super.key});
 

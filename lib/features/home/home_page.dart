@@ -320,7 +320,7 @@ class _CategorySection extends StatelessWidget {
   const _CategorySection({required this.onTap});
 
   final ValueChanged<String> onTap;
-
+  // TODO：图片显示不对
   static final _items = [
     _CategoryItem('gk', '公开课', Assets.images.home.courseGk),
     _CategoryItem('bs', '笔试课', Assets.images.home.courseBs),
