@@ -64,7 +64,7 @@ class _CourseListPageState extends State<CourseListPage> {
   void _openCourse(CourseItem course) {
     AppRouter.pushNamed<void>(
       context,
-      RouterNames.courseDetail,
+      .courseDetail,
       queryParameters: {'id': course.id, 'type': course.type},
     );
   }

@@ -40,21 +40,17 @@ class RefreshResult<T> {
 
   /// 快捷构造：成功
   factory RefreshResult.success(List<T> data) => RefreshResult(
-        status: data.isEmpty ? RefreshListStatus.empty : RefreshListStatus.success,
-        data: data,
-      );
+    status: data.isEmpty ? RefreshListStatus.empty : RefreshListStatus.success,
+    data: data,
+  );
 
   /// 快捷构造：失败
-  factory RefreshResult.failed(String? message) => RefreshResult(
-        status: RefreshListStatus.failed,
-        message: message,
-      );
+  factory RefreshResult.failed(String? message) =>
+      RefreshResult(status: RefreshListStatus.failed, message: message);
 
   /// 快捷构造：未登录
-  factory RefreshResult.notLoggedIn([String? message]) => RefreshResult(
-        status: RefreshListStatus.notLoggedIn,
-        message: message,
-      );
+  factory RefreshResult.notLoggedIn([String? message]) =>
+      RefreshResult(status: RefreshListStatus.notLoggedIn, message: message);
 }
 
 /// 基于 easy_refresh 封装的列表组件
@@ -135,6 +131,9 @@ class _RefreshListViewState<T> extends State<RefreshListView<T>> {
   final List<T> _items = [];
   int _page = 1;
   bool _noMore = false;
+  bool _isRefreshing = false;
+  bool _isLoadingMore = false;
+  int _requestGeneration = 0;
   RefreshListStatus _status = RefreshListStatus.loading;
   String? _errorMessage;
 
@@ -146,20 +145,20 @@ class _RefreshListViewState<T> extends State<RefreshListView<T>> {
 
   @override
   void dispose() {
+    _requestGeneration += 1;
     _refreshController.dispose();
     super.dispose();
   }
 
   /// 外部调用：重置并重新加载
   void refresh() {
-    _page = 1;
-    _noMore = false;
-    _items.clear();
-    _initialLoad();
+    if (!mounted) return;
+    _loadFirstPage(showLoading: true, finishRefresh: false);
   }
 
   /// 外部调用：设置状态（用于外部控制登录态等场景）
   void setStatus(RefreshListStatus status, {String? message}) {
+    if (!mounted) return;
     setState(() {
       _status = status;
       _errorMessage = message;
@@ -172,71 +171,124 @@ class _RefreshListViewState<T> extends State<RefreshListView<T>> {
   /// 当前数据列表
   List<T> get items => List.unmodifiable(_items);
 
-  Future<void> _initialLoad() async {
-    setState(() {
-      _status = RefreshListStatus.loading;
-      _errorMessage = null;
-    });
-
-    final result = await widget.onData(_page);
-    if (!mounted) return;
-
-    setState(() {
-      _status = result.status;
-      _errorMessage = result.message;
-      if (result.status == RefreshListStatus.success) {
-        _items.addAll(result.data);
-        _noMore = result.data.isEmpty;
-        if (result.data.isNotEmpty) _page += 1;
-      }
-    });
-
-    _refreshController.finishRefresh(IndicatorResult.success);
+  Future<void> _initialLoad() {
+    return _loadFirstPage(showLoading: true, finishRefresh: false);
   }
 
-  Future<void> _onRefresh() async {
-    _page = 1;
-    _noMore = false;
-    _items.clear();
+  Future<void> _onRefresh() {
+    return _loadFirstPage(showLoading: false, finishRefresh: true);
+  }
 
-    final result = await widget.onData(_page);
-    if (!mounted) return;
+  Future<void> _loadFirstPage({
+    required bool showLoading,
+    required bool finishRefresh,
+  }) async {
+    if (_isRefreshing) return;
 
-    setState(() {
-      _status = result.status;
-      _errorMessage = result.message;
-      if (result.status == RefreshListStatus.success) {
-        _items.addAll(result.data);
-        _noMore = result.data.isEmpty;
-        if (result.data.isNotEmpty) _page += 1;
+    _isRefreshing = true;
+    final generation = ++_requestGeneration;
+    if (finishRefresh) _refreshController.resetFooter();
+
+    if (showLoading) {
+      setState(() {
+        _status = RefreshListStatus.loading;
+        _errorMessage = null;
+      });
+    }
+
+    try {
+      final result = await widget.onData(1);
+      if (!mounted || generation != _requestGeneration) return;
+
+      setState(() {
+        _status = result.status;
+        _errorMessage = result.message;
+        switch (result.status) {
+          case RefreshListStatus.success:
+            _items
+              ..clear()
+              ..addAll(result.data);
+            _page = result.data.isEmpty ? 1 : 2;
+            _noMore = result.data.isEmpty;
+          case RefreshListStatus.empty:
+          case RefreshListStatus.notLoggedIn:
+            _items.clear();
+            _page = 1;
+            _noMore = true;
+          case RefreshListStatus.loading:
+          case RefreshListStatus.failed:
+            break;
+        }
+      });
+
+      if (finishRefresh) {
+        final succeeded =
+            result.status == RefreshListStatus.success ||
+            result.status == RefreshListStatus.empty;
+        _refreshController.finishRefresh(
+          succeeded ? IndicatorResult.success : IndicatorResult.fail,
+        );
       }
-    });
-
-    _refreshController.finishRefresh(IndicatorResult.success);
+    } catch (error) {
+      if (!mounted || generation != _requestGeneration) return;
+      setState(() {
+        _status = RefreshListStatus.failed;
+        _errorMessage = error.toString();
+      });
+      if (finishRefresh) {
+        _refreshController.finishRefresh(IndicatorResult.fail);
+      }
+    } finally {
+      if (generation == _requestGeneration) _isRefreshing = false;
+    }
   }
 
   Future<void> _onLoad() async {
     if (_noMore) {
-      _refreshController.finishLoad(IndicatorResult.success);
+      _refreshController.finishLoad(IndicatorResult.noMore);
+      return;
+    }
+    if (_isRefreshing || _isLoadingMore) {
+      _refreshController.finishLoad(IndicatorResult.none);
       return;
     }
 
-    final result = await widget.onData(_page);
-    if (!mounted) return;
+    _isLoadingMore = true;
+    final generation = _requestGeneration;
+    final requestedPage = _page;
 
-    setState(() {
-      if (result.status == RefreshListStatus.success) {
-        _items.addAll(result.data);
-        _noMore = result.data.isEmpty;
-        if (result.data.isNotEmpty) _page += 1;
-      } else {
+    try {
+      final result = await widget.onData(requestedPage);
+      if (!mounted || generation != _requestGeneration) return;
+
+      final isSuccess = result.status == RefreshListStatus.success;
+      final hasNoMore =
+          result.status == RefreshListStatus.empty ||
+          (isSuccess && result.data.isEmpty);
+
+      setState(() {
+        if (isSuccess) {
+          _items.addAll(result.data);
+          if (result.data.isNotEmpty) _page = requestedPage + 1;
+        }
+        _noMore = hasNoMore;
         _errorMessage = result.message;
-      }
-    });
+      });
 
-    _refreshController.finishLoad(
-      _noMore ? IndicatorResult.noMore : IndicatorResult.success,
-    );
+      _refreshController.finishLoad(
+        hasNoMore
+            ? IndicatorResult.noMore
+            : isSuccess
+            ? IndicatorResult.success
+            : IndicatorResult.fail,
+      );
+    } catch (error) {
+      if (!mounted || generation != _requestGeneration) return;
+      setState(() => _errorMessage = error.toString());
+      _refreshController.finishLoad(IndicatorResult.fail);
+    } finally {
+      _isLoadingMore = false;
+    }
   }
 
   void _handleRetry() {
@@ -288,7 +340,23 @@ class _RefreshListViewState<T> extends State<RefreshListView<T>> {
       onRefresh: _onRefresh,
       onLoad: _onLoad,
       header: const CupertinoHeader(),
-      footer: const CupertinoFooter(),
+      // easy_refresh 3.5.1 的 CupertinoFooter 在 noMore → reset → noMore
+      // 快速切换时会因 AnimatedSwitcher 复用固定 ValueKey 而触发重复 Key。
+      footer: MaterialFooter(
+        triggerOffset: 60,
+        clamping: false,
+        processedDuration: Duration.zero,
+        infiniteOffset: 60,
+        color: AppColors.theme,
+        noMoreIcon: Text(
+          '没有更多了',
+          style: TextStyle(
+            color: AppColors.content,
+            fontSize: 13,
+            decoration: TextDecoration.none,
+          ),
+        ),
+      ),
       child: ListView.separated(
         padding: widget.padding ?? const EdgeInsets.only(top: 12, bottom: 16),
         physics: const AlwaysScrollableScrollPhysics(),
@@ -336,8 +404,10 @@ class _RefreshListViewState<T> extends State<RefreshListView<T>> {
               behavior: HitTestBehavior.opaque,
               onTap: onButtonTap,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.theme,
                   borderRadius: BorderRadius.circular(20),
