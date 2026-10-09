@@ -1,15 +1,21 @@
 PODS:
   - Flutter (1.0.0)
+  - install_plugin (2.0.0):
+    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - install_plugin (from `.symlinks/plugins/install_plugin/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  install_plugin:
+    :path: ".symlinks/plugins/install_plugin/ios"
 
 SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  install_plugin: e17e38d6f504857748a3ec1299d8a2bbeeeea854
 
 PODFILE CHECKSUM: b2003c80d67915154b8b43a4e7d7d58708841916
 

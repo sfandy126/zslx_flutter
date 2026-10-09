@@ -27,7 +27,7 @@ enum MDCmd {
   sendCode('zs_send_code'),
   forgotPwd('forgot_pwd'),
   loginGuest('zs_login_guest'),
-  version('zs_version'),
+  version('check_ver'),
   modifyNick('my_nickname'),
   modifyAvatar('my_avatar'),
   logout('logout'),
