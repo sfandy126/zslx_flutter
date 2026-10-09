@@ -240,7 +240,6 @@ class CourseItem {
     this.oldMoney = '',
     this.look = '',
     this.isHot = false,
-    this.isFine = false,
   });
 
   final String id;
@@ -252,20 +251,18 @@ class CourseItem {
   final String oldMoney;
   final String look;
   final bool isHot;
-  final bool isFine;
 
   factory CourseItem.fromJson(Map<String, dynamic> json) {
     return CourseItem(
       id: _stringValue(json['id']),
       type: _stringValue(json['type']),
       title: _stringValue(json['title']),
-      subtitle: _stringValue(json['sub_title'] ?? json['subtitle']),
-      picture: _stringValue(json['photo'] ?? json['picture']),
+      subtitle: _stringValue(json['sub_title']),
+      picture: _stringValue(json['photo']),
       money: _stringValue(json['money']),
-      oldMoney: _stringValue(json['y_money'] ?? json['old_money']),
-      look: _stringValue(json['view'] ?? json['look']),
+      oldMoney: _stringValue(json['y_money']),
+      look: _stringValue(json['view']),
       isHot: _intValue(json['is_hot']) == 1,
-      isFine: _intValue(json['is_fine']) == 1,
     );
   }
 
