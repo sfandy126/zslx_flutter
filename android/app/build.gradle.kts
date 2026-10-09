@@ -25,7 +25,7 @@ android {
 
     defaultConfig {
         applicationId = "com.zs.zslx"
-        minSdk = flutter.minSdkVersion
+        minSdk = 26 //flutter.minSdkVersion // 对应android API 26 对应 android 系统版本号8.0
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
