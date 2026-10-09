@@ -222,10 +222,8 @@ class _CoursePagedList extends StatelessWidget {
         }
         return RefreshResult.failed(result.msg ?? '课程列表加载失败');
       },
-      itemBuilder: (context, item, index) => CourseCard(
-        course: item,
-        onTap: () => onTap(item),
-      ),
+      itemBuilder: (context, item, index) =>
+          CourseCard(course: item, isBig: true, onTap: () => onTap(item)),
       emptyText: '暂无课程',
     );
   }
@@ -286,10 +284,16 @@ class CourseItem {
 }
 
 class CourseCard extends StatelessWidget {
-  const CourseCard({required this.course, required this.onTap, super.key});
+  const CourseCard({
+    required this.course,
+    required this.onTap,
+    this.isBig = false,
+    super.key,
+  });
 
   final CourseItem course;
   final VoidCallback onTap;
+  final bool isBig;
 
   @override
   Widget build(BuildContext context) {
@@ -298,89 +302,170 @@ class CourseCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-        padding: const EdgeInsets.all(12),
+        padding: isBig ? EdgeInsets.zero : const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: AppColors.white,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: SizedBox(
-                    width: 140,
-                    height: 91,
-                    child: _RemoteImage(url: course.picture),
-                  ),
-                ),
-                if (course.isHot)
-                  Positioned(
-                    left: 4,
-                    top: 4,
-                    child: _Tag(text: '热门', color: AppColors.red),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: SizedBox(
-                height: 91,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      course.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: AppColors.title,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                    if (course.subtitle.isNotEmpty) ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        course.subtitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: AppColors.content,
-                          fontSize: 12,
-                          decoration: TextDecoration.none,
+        child: isBig
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(12),
+                        ),
+                        child: AspectRatio(
+                          aspectRatio: 1 / 0.53,
+                          child: _RemoteImage(url: course.picture),
                         ),
                       ),
+                      if (course.isHot)
+                        Positioned(
+                          left: 4,
+                          top: 4,
+                          child: _Tag(text: '热门', color: AppColors.red),
+                        ),
                     ],
-                    const Spacer(),
-                    Row(
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _PriceView(course: course),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            '${course.look.isEmpty ? '100' : course.look} 人学习',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              color: AppColors.content,
-                              fontSize: 12,
-                              decoration: TextDecoration.none,
-                            ),
+                        Text(
+                          course.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: AppColors.title,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.none,
                           ),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/images/public/scan.svg',
+                              width: 12,
+                              height: 12,
+                            ),
+                            const SizedBox(width: 2),
+                            Expanded(
+                              child: Text(
+                                '${course.look.isEmpty ? '100' : course.look} 人学习',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: AppColors.content,
+                                  fontSize: 12,
+                                  decoration: TextDecoration.none,
+                                ),
+                              ),
+                            ),
+                            _PriceView(course: course),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              )
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: SizedBox(
+                          width: 140,
+                          height: 91,
+                          child: _RemoteImage(url: course.picture),
+                        ),
+                      ),
+                      if (course.isHot)
+                        Positioned(
+                          left: 4,
+                          top: 4,
+                          child: _Tag(text: '热门', color: AppColors.red),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: SizedBox(
+                      height: 91,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            course.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: AppColors.title,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                          if (course.subtitle.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              course.subtitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: AppColors.content,
+                                fontSize: 12,
+                                decoration: TextDecoration.none,
+                              ),
+                            ),
+                          ],
+                          const Spacer(),
+                          Row(
+                            children: [
+                              _PriceView(course: course),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    SvgPicture.asset(
+                                      'assets/images/public/scan.svg',
+                                      width: 12,
+                                      height: 12,
+                                    ),
+                                    const SizedBox(width: 2),
+                                    Flexible(
+                                      child: Text(
+                                        '${course.look.isEmpty ? '100' : course.look} 人学习',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(
+                                          color: AppColors.content,
+                                          fontSize: 12,
+                                          decoration: TextDecoration.none,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
