@@ -41,6 +41,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.1"
+  bjy_liveui_flutter:
+    dependency: "direct main"
+    description:
+      name: bjy_liveui_flutter
+      sha256: ae249cf6b6282c8b719ba59249422dd3398cd2665d1069971e94dcd4d522e297
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.17.12"
+  bjy_playbackui_flutter:
+    dependency: "direct main"
+    description:
+      name: bjy_playbackui_flutter
+      sha256: "7d8b823f980f4b300a1ee34a20abdfabedc4daaaab21e09e611a4e2c545e6c79"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.17.12"
   boolean_selector:
     dependency: transitive
     description:

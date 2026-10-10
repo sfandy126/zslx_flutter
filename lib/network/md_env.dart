@@ -12,6 +12,9 @@ enum MDEnv {
   static const String telephone = '18527671224';
   static const String icpLicense = '鄂ICP备2026035920号-2A';
 
+  /// 百家云sdk appId
+  static const String bjyAppId = '54200585'; //66514664
+
   /// api地址
   String get url {
     switch (this) {

@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zslx_flutter/router/app_router.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 import 'package:zslx_flutter/features/web/web_page.dart';
+import 'package:zslx_flutter/services/bjy_server.dart';
 import 'package:zslx_flutter/update/update_server.dart';
 
 class StartPage extends StatefulWidget {
@@ -72,6 +73,7 @@ class _StartPageState extends State<StartPage> {
 
   Future<void> _goToMain() async {
     if (!mounted) return;
+    BjyServer.initialize();
     await _showSystemBars();
     if (!mounted) return;
     await UpdateServer.checkAndShow(context);

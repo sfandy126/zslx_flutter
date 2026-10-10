@@ -83,6 +83,10 @@ dependencies:
   # 日历控件
   table_calendar: ^3.3.0
 
+  # baijia云依赖
+  bjy_liveui_flutter: ^4.17.12
+  bjy_playbackui_flutter: ^4.17.12
+
 #dart 依赖都放在此处
 dev_dependencies:
   flutter_test:
