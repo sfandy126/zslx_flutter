@@ -252,21 +252,21 @@ class CourseItem {
   final String look;
   final bool isHot;
 
-  factory CourseItem.fromJson(Map<String, dynamic> json) {
+  factory CourseItem.fromJson(Map<String, Object?> json) {
     return CourseItem(
-      id: _stringValue(json['id']),
-      type: _stringValue(json['type']),
-      title: _stringValue(json['title']),
-      subtitle: _stringValue(json['sub_title']),
-      picture: _stringValue(json['photo']),
-      money: _stringValue(json['money']),
-      oldMoney: _stringValue(json['y_money']),
-      look: _stringValue(json['view']),
-      isHot: _intValue(json['is_hot']) == 1,
+      id: json['id'].mdToString(),
+      type: json['type'].mdToString(),
+      title: json['title'].mdToString(),
+      subtitle: json['sub_title'].mdToString(),
+      picture: json['photo'].mdToString(),
+      money: json['money'].mdToString(),
+      oldMoney: json['y_money'].mdToString(),
+      look: json['view'].mdToString(),
+      isHot: json['is_hot'].mdToInt() == 1,
     );
   }
 
-  static List<CourseItem> listFromData(Map<String, dynamic>? data) {
+  static List<CourseItem> listFromData(Map<String, Object?>? data) {
     final source = data?['list'];
     if (source is! List) return const [];
     return source
@@ -483,9 +483,9 @@ class _PriceView extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (course.oldMoney.toOldPrice().isNotEmpty) ...[
+            if (course.oldMoney.mdToOldPrice().isNotEmpty) ...[
               Text(
-                course.oldMoney.toOldPrice(),
+                course.oldMoney.mdToOldPrice(),
                 style: TextStyle(
                   color: AppColors.content,
                   fontSize: 12,
@@ -496,7 +496,7 @@ class _PriceView extends StatelessWidget {
               const SizedBox(width: 6),
             ],
             Text(
-              course.money.toPrice(),
+              course.money.mdToPrice(),
               style: TextStyle(
                 color: AppColors.price,
                 fontSize: 16,
@@ -565,11 +565,4 @@ class _Tag extends StatelessWidget {
       ),
     );
   }
-}
-
-String _stringValue(Object? value) => value?.toString() ?? '';
-
-int _intValue(Object? value) {
-  if (value is int) return value;
-  return int.tryParse(value?.toString() ?? '') ?? 0;
 }

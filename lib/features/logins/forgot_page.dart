@@ -208,7 +208,7 @@ class ForgotViewModel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    final encryptedPassword = password.rsaPassword();
+    final encryptedPassword = password.mdRsaPassword();
     if (encryptedPassword.isEmpty) {
       isLoading = false;
       notifyListeners();

@@ -513,7 +513,7 @@ class _CourseCard extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  course.money.toPrice(),
+                                  course.money.mdToPrice(),
                                   style: TextStyle(
                                     color: AppColors.price,
                                     fontSize: 16,
@@ -521,11 +521,11 @@ class _CourseCard extends StatelessWidget {
                                   ),
                                 ),
                                 if (course.oldMoney
-                                    .toOldPrice()
+                                    .mdToOldPrice()
                                     .isNotEmpty) ...[
                                   const SizedBox(width: 6),
                                   Text(
-                                    course.oldMoney.toOldPrice(),
+                                    course.oldMoney.mdToOldPrice(),
                                     style: TextStyle(
                                       color: AppColors.content,
                                       fontSize: 12,

@@ -21,6 +21,9 @@ class $AssetsImagesGen {
   AssetGenImage get appLogo1024 =>
       const AssetGenImage('assets/images/appLogo1024.png');
 
+  /// Directory path: assets/images/course
+  $AssetsImagesCourseGen get course => const $AssetsImagesCourseGen();
+
   /// Directory path: assets/images/home
   $AssetsImagesHomeGen get home => const $AssetsImagesHomeGen();
 
@@ -38,6 +41,83 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [appLogo1024];
+}
+
+class $AssetsImagesCourseGen {
+  const $AssetsImagesCourseGen();
+
+  /// File path: assets/images/course/dateEmpty.svg
+  SvgGenImage get dateEmpty =>
+      const SvgGenImage('assets/images/course/dateEmpty.svg');
+
+  /// File path: assets/images/course/fileDocx.svg
+  SvgGenImage get fileDocx =>
+      const SvgGenImage('assets/images/course/fileDocx.svg');
+
+  /// File path: assets/images/course/fileFolder.svg
+  SvgGenImage get fileFolder =>
+      const SvgGenImage('assets/images/course/fileFolder.svg');
+
+  /// File path: assets/images/course/filePdf.svg
+  SvgGenImage get filePdf =>
+      const SvgGenImage('assets/images/course/filePdf.svg');
+
+  /// File path: assets/images/course/fileVideo.svg
+  SvgGenImage get fileVideo =>
+      const SvgGenImage('assets/images/course/fileVideo.svg');
+
+  /// File path: assets/images/course/history.svg
+  SvgGenImage get history =>
+      const SvgGenImage('assets/images/course/history.svg');
+
+  /// File path: assets/images/course/learnCatli.svg
+  SvgGenImage get learnCatli =>
+      const SvgGenImage('assets/images/course/learnCatli.svg');
+
+  /// File path: assets/images/course/learnEmpty.svg
+  SvgGenImage get learnEmpty =>
+      const SvgGenImage('assets/images/course/learnEmpty.svg');
+
+  /// File path: assets/images/course/learnSift.svg
+  SvgGenImage get learnSift =>
+      const SvgGenImage('assets/images/course/learnSift.svg');
+
+  /// File path: assets/images/course/lock.svg
+  SvgGenImage get lock => const SvgGenImage('assets/images/course/lock.svg');
+
+  /// File path: assets/images/course/pauseBlack.svg
+  SvgGenImage get pauseBlack =>
+      const SvgGenImage('assets/images/course/pauseBlack.svg');
+
+  /// File path: assets/images/course/playBlack.svg
+  SvgGenImage get playBlack =>
+      const SvgGenImage('assets/images/course/playBlack.svg');
+
+  /// File path: assets/images/course/playMain.svg
+  SvgGenImage get playMain =>
+      const SvgGenImage('assets/images/course/playMain.svg');
+
+  /// File path: assets/images/course/priLock.svg
+  SvgGenImage get priLock =>
+      const SvgGenImage('assets/images/course/priLock.svg');
+
+  /// List of all assets
+  List<SvgGenImage> get values => [
+    dateEmpty,
+    fileDocx,
+    fileFolder,
+    filePdf,
+    fileVideo,
+    history,
+    learnCatli,
+    learnEmpty,
+    learnSift,
+    lock,
+    pauseBlack,
+    playBlack,
+    playMain,
+    priLock,
+  ];
 }
 
 class $AssetsImagesHomeGen {
@@ -95,6 +175,9 @@ class $AssetsImagesLaunchGen {
 class $AssetsImagesMineGen {
   const $AssetsImagesMineGen();
 
+  /// File path: assets/images/mine/carama.svg
+  SvgGenImage get carama => const SvgGenImage('assets/images/mine/carama.svg');
+
   /// File path: assets/images/mine/defaultProfile.svg
   SvgGenImage get defaultProfile =>
       const SvgGenImage('assets/images/mine/defaultProfile.svg');
@@ -129,6 +212,7 @@ class $AssetsImagesMineGen {
 
   /// List of all assets
   List<dynamic> get values => [
+    carama,
     defaultProfile,
     mineBg2x,
     mineBg3x,
@@ -150,6 +234,16 @@ class $AssetsImagesPublicGen {
   /// File path: assets/images/public/back.svg
   SvgGenImage get back => const SvgGenImage('assets/images/public/back.svg');
 
+  /// File path: assets/images/public/blackClose.svg
+  SvgGenImage get blackClose =>
+      const SvgGenImage('assets/images/public/blackClose.svg');
+
+  /// File path: assets/images/public/close.svg
+  SvgGenImage get close => const SvgGenImage('assets/images/public/close.svg');
+
+  /// File path: assets/images/public/scan.svg
+  SvgGenImage get scan => const SvgGenImage('assets/images/public/scan.svg');
+
   /// File path: assets/images/public/select.svg
   SvgGenImage get select =>
       const SvgGenImage('assets/images/public/select.svg');
@@ -158,8 +252,25 @@ class $AssetsImagesPublicGen {
   SvgGenImage get unselect =>
       const SvgGenImage('assets/images/public/unselect.svg');
 
+  /// File path: assets/images/public/wx.svg
+  SvgGenImage get wx => const SvgGenImage('assets/images/public/wx.svg');
+
+  /// File path: assets/images/public/wxzone.svg
+  SvgGenImage get wxzone =>
+      const SvgGenImage('assets/images/public/wxzone.svg');
+
   /// List of all assets
-  List<SvgGenImage> get values => [arrowRight, back, select, unselect];
+  List<SvgGenImage> get values => [
+    arrowRight,
+    back,
+    blackClose,
+    close,
+    scan,
+    select,
+    unselect,
+    wx,
+    wxzone,
+  ];
 }
 
 class $AssetsImagesTabbarGen {

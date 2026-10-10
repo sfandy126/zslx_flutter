@@ -70,6 +70,8 @@ class RefreshListView<T> extends StatefulWidget {
     this.failedText = '加载失败',
     this.retryText = '重新加载',
     this.padding,
+    this.header,
+    this.emptyBuilder,
     this.showDividers = false,
     this.dividerColor,
     this.dividerIndent = 16.0,
@@ -109,6 +111,12 @@ class RefreshListView<T> extends StatefulWidget {
   /// 列表内边距
   final EdgeInsetsGeometry? padding;
 
+  /// 列表顶部的固定内容，始终位于数据和状态视图之前。
+  final Widget? header;
+
+  /// 空数据或未登录时的自定义内容。
+  final Widget Function(BuildContext context)? emptyBuilder;
+
   /// 是否显示列表项分割线，默认 false
   final bool showDividers;
 
@@ -119,10 +127,10 @@ class RefreshListView<T> extends StatefulWidget {
   final double dividerIndent;
 
   @override
-  State<RefreshListView<T>> createState() => _RefreshListViewState<T>();
+  State<RefreshListView<T>> createState() => RefreshListViewState<T>();
 }
 
-class _RefreshListViewState<T> extends State<RefreshListView<T>> {
+class RefreshListViewState<T> extends State<RefreshListView<T>> {
   final EasyRefreshController _refreshController = EasyRefreshController(
     controlFinishRefresh: true,
     controlFinishLoad: true,
@@ -140,7 +148,9 @@ class _RefreshListViewState<T> extends State<RefreshListView<T>> {
   @override
   void initState() {
     super.initState();
-    _initialLoad();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _initialLoad();
+    });
   }
 
   @override
@@ -153,6 +163,10 @@ class _RefreshListViewState<T> extends State<RefreshListView<T>> {
   /// 外部调用：重置并重新加载
   void refresh() {
     if (!mounted) return;
+    _requestGeneration++;
+    _isRefreshing = false;
+    _isLoadingMore = false;
+    _refreshController.resetFooter();
     _loadFirstPage(showLoading: true, finishRefresh: false);
   }
 
@@ -287,7 +301,7 @@ class _RefreshListViewState<T> extends State<RefreshListView<T>> {
       setState(() => _errorMessage = error.toString());
       _refreshController.finishLoad(IndicatorResult.fail);
     } finally {
-      _isLoadingMore = false;
+      if (generation == _requestGeneration) _isLoadingMore = false;
     }
   }
 
@@ -301,40 +315,11 @@ class _RefreshListViewState<T> extends State<RefreshListView<T>> {
 
   @override
   Widget build(BuildContext context) {
-    // 首次加载中
-    if (_status == RefreshListStatus.loading && _items.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    final stateView = _buildCurrentStateView(context);
+    final hasHeader = widget.header != null;
+    final hasStateView = stateView != null;
+    final itemCount = (hasHeader ? 1 : 0) + (hasStateView ? 1 : _items.length);
 
-    // 请求失败（且无数据）
-    if (_status == RefreshListStatus.failed && _items.isEmpty) {
-      return _buildStateView(
-        icon: Icons.error_outline,
-        message: _errorMessage ?? widget.failedText,
-        buttonText: widget.retryText,
-        onButtonTap: _handleRetry,
-      );
-    }
-
-    // 未登录（且无数据）
-    if (_status == RefreshListStatus.notLoggedIn && _items.isEmpty) {
-      return _buildStateView(
-        icon: Icons.person_outline,
-        message: _errorMessage ?? '请先登录',
-        buttonText: widget.loginText,
-        onButtonTap: widget.onLogin,
-      );
-    }
-
-    // 空数据
-    if (_status == RefreshListStatus.empty && _items.isEmpty) {
-      return _buildStateView(
-        icon: Icons.inbox_outlined,
-        message: widget.emptyText,
-      );
-    }
-
-    // 有数据，展示列表
     return EasyRefresh(
       controller: _refreshController,
       onRefresh: _onRefresh,
@@ -360,9 +345,13 @@ class _RefreshListViewState<T> extends State<RefreshListView<T>> {
       child: ListView.separated(
         padding: widget.padding ?? const EdgeInsets.only(top: 12, bottom: 16),
         physics: const AlwaysScrollableScrollPhysics(),
-        itemCount: _items.length,
+        itemCount: itemCount,
         separatorBuilder: (context, index) {
-          if (!widget.showDividers) return const SizedBox.shrink();
+          if (!widget.showDividers ||
+              (hasHeader && index == 0) ||
+              hasStateView) {
+            return const SizedBox.shrink();
+          }
           return Divider(
             height: 0.5,
             thickness: 0.5,
@@ -371,10 +360,50 @@ class _RefreshListViewState<T> extends State<RefreshListView<T>> {
           );
         },
         itemBuilder: (context, index) {
-          return widget.itemBuilder(context, _items[index], index);
+          if (hasHeader && index == 0) return widget.header!;
+          if (hasStateView) return stateView;
+          final itemIndex = index - (hasHeader ? 1 : 0);
+          return widget.itemBuilder(context, _items[itemIndex], itemIndex);
         },
       ),
     );
+  }
+
+  Widget? _buildCurrentStateView(BuildContext context) {
+    if (_items.isNotEmpty) return null;
+    switch (_status) {
+      case RefreshListStatus.loading:
+        return const SizedBox(
+          height: 210,
+          child: Center(child: CircularProgressIndicator()),
+        );
+      case RefreshListStatus.failed:
+        return _buildStateView(
+          icon: Icons.error_outline,
+          message: _errorMessage ?? widget.failedText,
+          buttonText: widget.retryText,
+          onButtonTap: _handleRetry,
+        );
+      case RefreshListStatus.notLoggedIn:
+      case RefreshListStatus.empty:
+        if (widget.emptyBuilder != null) {
+          return widget.emptyBuilder!(context);
+        }
+        if (_status == RefreshListStatus.notLoggedIn) {
+          return _buildStateView(
+            icon: Icons.person_outline,
+            message: _errorMessage ?? '请先登录',
+            buttonText: widget.loginText,
+            onButtonTap: widget.onLogin,
+          );
+        }
+        return _buildStateView(
+          icon: Icons.inbox_outlined,
+          message: widget.emptyText,
+        );
+      case RefreshListStatus.success:
+        return null;
+    }
   }
 
   Widget _buildStateView({

@@ -61,4 +61,29 @@ void main() {
     expect(requestedPages, [1, 2, 1, 2]);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('首次加载回调可安全更新父组件状态', (tester) async {
+    final requestedPages = <int>[];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: StatefulBuilder(
+            builder: (context, setState) => RefreshListView<int>(
+              onData: (page) async {
+                requestedPages.add(page);
+                setState(() {});
+                return RefreshResult.success(const []);
+              },
+              itemBuilder: (context, item, index) => Text('$item'),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(requestedPages, [1]);
+    expect(tester.takeException(), isNull);
+  });
 }

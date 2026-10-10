@@ -291,7 +291,7 @@ class LoginViewModel extends ChangeNotifier {
     final params = <String, dynamic>{
       'login_lx': isCodeLogin ? 'code' : 'pwd',
       'phone': phone,
-      if (isCodeLogin) 'yzm': code else 'password': password.rsaPassword(),
+      if (isCodeLogin) 'yzm': code else 'password': password.mdRsaPassword(),
     };
     final result = await MDPost.sendApiSession(cmd: .login, params: params);
     if (result.isSuccess) {

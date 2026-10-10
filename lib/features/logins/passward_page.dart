@@ -164,8 +164,8 @@ class PasswardViewModel extends ChangeNotifier {
     notifyListeners();
     Totast.showLoading();
 
-    final encryptedPassword = password.rsaPassword();
-    final encryptedConfirmPassword = confirmPassword.rsaPassword();
+    final encryptedPassword = password.mdRsaPassword();
+    final encryptedConfirmPassword = confirmPassword.mdRsaPassword();
     if (encryptedPassword.isEmpty || encryptedConfirmPassword.isEmpty) {
       Totast.hideLoading();
       isLoading = false;

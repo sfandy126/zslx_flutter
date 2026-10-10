@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zslx_flutter/utils/utils.dart';
-import 'package:zslx_flutter/features/courses/learn_page.dart';
+import 'package:zslx_flutter/features/courses/course_learn_page.dart';
 import 'package:zslx_flutter/features/home/home_page.dart';
 import 'package:zslx_flutter/features/settings/mine_page.dart';
 
@@ -16,7 +16,7 @@ class _TabbarPageState extends State<TabbarPage> {
 
   final List<Widget> _pages = [
     const HomePage(),
-    const LearnPage(),
+    const CourseLearnPage(),
     const MinePage(),
   ];
 

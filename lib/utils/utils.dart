@@ -3,6 +3,8 @@ export 'package:flutter_svg/flutter_svg.dart';
 export 'package:zslx_flutter/gen/assets.gen.dart';
 export 'package:zslx_flutter/utils/app_colors.dart';
 export 'package:zslx_flutter/extensions/color_extensions.dart';
+export 'package:zslx_flutter/extensions/object_null.dart';
+export 'package:zslx_flutter/extensions/string_price.dart';
 export 'package:zslx_flutter/network/md_post.dart';
 export 'package:zslx_flutter/network/md_cmd.dart';
 export 'package:zslx_flutter/network/md_env.dart';

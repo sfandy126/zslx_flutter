@@ -137,7 +137,7 @@ Uint8List _pkcs1Type2Pad(Uint8List message, int keyBytes) {
 
 extension StringRsa on String {
   /// 使用 RSA PKCS#1 v1.5 对字符串进行公钥加密，返回 Base64 密文。
-  String rsaPassword() {
+  String mdRsaPassword() {
     final pwd = this;
     if (pwd.isEmpty) return '';
     const pubKey =
