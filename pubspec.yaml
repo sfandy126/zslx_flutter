@@ -115,6 +115,11 @@ flutter_gen:
   integrations:
     flutter_svg: true 
 
+# Keep the Foundation path provider on its platform-channel implementation
+# until the FFI-based class lookup works reliably in Apple-platform debugging.
+dependency_overrides:
+  path_provider_foundation: 2.5.1
+
 #此处与dev_dependencies平级，不能缩进
 flutter_launcher_icons:
     android: true

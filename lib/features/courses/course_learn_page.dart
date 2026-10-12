@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:zslx_flutter/services/bjy_server.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -165,7 +166,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
   }
 
   Future<void> _openHistory() async {
-    MDTotast.showError('学习记录功能即将开放');
+    // TODO: 学习记录功能即将开放
   }
 
   Future<void> _openLogin() async {
@@ -201,12 +202,21 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
       await _openLogin();
       return;
     }
-    MDTotast.showError(switch (course.liveState) {
-      _LiveState.live => '直播功能即将开放',
-      _LiveState.aboutToStart => '课程即将开始',
-      _LiveState.playback => '回放功能即将开放',
-      _ => '课程暂不可进入',
-    });
+    if (course.expired == 1) {
+      // 课程过期了，不可点击
+      return;
+    }
+    final params = {
+      'type': course.type,
+      'section_id': course.id,
+    };
+    if (course.liveState == .playback) {
+      final success = await BjyServer.loadAndToPlayback(params: params);
+      if (!success) return;
+    } else if (course.liveState == .live || course.liveState == .aboutToStart) {
+      final success = await BjyServer.loadAndToLive(params: params);
+      if (!success) return;
+    }
   }
 
   Future<bool> _cancelAppointment(_DateCourse course) async {
@@ -525,6 +535,7 @@ class _AppointmentTile extends StatelessWidget {
             imageUrl: course.picture,
             width: 100,
             height: 48,
+            borderRadius: BorderRadius.circular(6),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -633,6 +644,7 @@ class _LearnCourseTile extends StatelessWidget {
                     imageUrl: course.picture,
                     width: 144,
                     height: 92,
+                    borderRadius: BorderRadius.circular(6),
                   ),
                   if (hidden || expired)
                     Positioned(
