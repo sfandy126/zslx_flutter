@@ -20,7 +20,7 @@ class AboutPage extends StatelessWidget {
               bottom: false,
               child: SizedBox(
                 height: kToolbarHeight,
-                child: CustomAppBar(title: '关于我们'),
+                child: MDAppBar(title: '关于我们'),
               ),
             ),
           ),

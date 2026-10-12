@@ -30,7 +30,7 @@ class _NickPageState extends State<NickPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: const CustomAppBar(title: '修改昵称'),
+      appBar: const MDAppBar(title: '修改昵称'),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(30, 60, 30, 24),
@@ -73,32 +73,32 @@ class _NickPageState extends State<NickPage> {
   Future<void> _submit() async {
     final nick = _controller.text.replaceAll(RegExp(r'\s+'), '');
     if (nick.isEmpty) {
-      Totast.showError('请输入昵称');
+      MDTotast.showError('请输入昵称');
       return;
     }
     if (nick == MDUser.defualt.nick) {
-      Totast.showSuccess('昵称修改成功');
+      MDTotast.showSuccess('昵称修改成功');
       AppRouter.pop(context, true);
       return;
     }
 
     setState(() => _isLoading = true);
-    Totast.showLoading();
+    MDTotast.showLoading();
     final result = await MDPost.sendApiSession(
       cmd: .modifyNick,
       params: {'nickname': nick},
     );
-    Totast.hideLoading();
+    MDTotast.hideLoading();
     if (!mounted) return;
     setState(() => _isLoading = false);
 
     if (!result.isSuccess) {
-      Totast.showError(result.msg ?? '昵称修改失败');
+      MDTotast.showError(result.msg ?? '昵称修改失败');
       return;
     }
     await MDUser.defualt.updateNick(nick);
     if (!mounted) return;
-    Totast.showSuccess('昵称修改成功');
+    MDTotast.showSuccess('昵称修改成功');
     await Future<void>.delayed(const Duration(milliseconds: 1500));
     if (mounted) AppRouter.pop(context, true);
   }

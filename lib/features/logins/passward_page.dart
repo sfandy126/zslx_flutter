@@ -46,7 +46,7 @@ class _PasswardPageState extends State<PasswardPage> {
                 bottom: false,
                 child: SizedBox(
                   height: kToolbarHeight,
-                  child: CustomAppBar(title: '修改密码'),
+                  child: MDAppBar(title: '修改密码'),
                 ),
               ),
             ),
@@ -130,11 +130,11 @@ class _PasswardPageState extends State<PasswardPage> {
     final error = await _viewModel.modifyPassword();
     if (!mounted) return;
     if (error != null) {
-      Totast.showError(error);
+      MDTotast.showError(error);
       return;
     }
 
-    Totast.showSuccess('密码修改成功');
+    MDTotast.showSuccess('密码修改成功');
     await Future<void>.delayed(const Duration(milliseconds: 1500));
     if (!mounted) return;
     AppRouter.pop(context, true);
@@ -162,12 +162,12 @@ class PasswardViewModel extends ChangeNotifier {
 
     isLoading = true;
     notifyListeners();
-    Totast.showLoading();
+    MDTotast.showLoading();
 
     final encryptedPassword = password.mdRsaPassword();
     final encryptedConfirmPassword = confirmPassword.mdRsaPassword();
     if (encryptedPassword.isEmpty || encryptedConfirmPassword.isEmpty) {
-      Totast.hideLoading();
+      MDTotast.hideLoading();
       isLoading = false;
       notifyListeners();
       return '密码加密失败，请稍后重试';
@@ -178,7 +178,7 @@ class PasswardViewModel extends ChangeNotifier {
       params: {'pwd': encryptedPassword, 're_pwd': encryptedConfirmPassword},
     );
 
-    Totast.hideLoading();
+    MDTotast.hideLoading();
     isLoading = false;
     notifyListeners();
 

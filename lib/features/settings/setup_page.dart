@@ -39,7 +39,7 @@ class _SetupPageState extends State<SetupPage> {
         final items = _viewModel.items;
         return Scaffold(
           backgroundColor: AppColors.background,
-          appBar: const CustomAppBar(title: '设置'),
+          appBar: const MDAppBar(title: '设置'),
           body: SafeArea(
             child: ListView(
               padding: const EdgeInsets.only(top: 16),
@@ -128,16 +128,16 @@ class SetupViewModel extends ChangeNotifier {
   }
 
   Future<bool> logout() async {
-    Totast.showLoading();
+    MDTotast.showLoading();
     final result = await MDPost.sendApiSession(cmd: .logout);
-    Totast.hideLoading();
+    MDTotast.hideLoading();
     if (result.isSuccess) {
-      Totast.showSuccess(result.msg ?? '退出成功');
+      MDTotast.showSuccess(result.msg ?? '退出成功');
       await user.logout();
       return true;
     }
 
-    Totast.showError(result.msg ?? '退出失败，请稍后重试');
+    MDTotast.showError(result.msg ?? '退出失败，请稍后重试');
     return false;
   }
 
@@ -151,7 +151,7 @@ class SetupViewModel extends ChangeNotifier {
 
   /// 清除图片缓存、WebView 缓存与 Cookie、临时目录文件
   Future<void> clearAllCache() async {
-    Totast.showLoading('清除中...');
+    MDTotast.showLoading('清除中...');
     PaintingBinding.instance.imageCache
       ..clear()
       ..clearLiveImages();
@@ -177,8 +177,8 @@ class SetupViewModel extends ChangeNotifier {
     } catch (error) {
       debugPrint('SetupViewModel clear temp directory error: $error');
     }
-    Totast.hideLoading();
-    Totast.showSuccess('清除完成');
+    MDTotast.hideLoading();
+    MDTotast.showSuccess('清除完成');
   }
 
   void _handleUserChanged() {

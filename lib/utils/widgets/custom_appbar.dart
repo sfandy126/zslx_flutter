@@ -6,8 +6,8 @@ import '../../router/app_router.dart';
 import '../app_colors.dart';
 
 /// 项目通用导航栏，统一标题样式、背景色和返回按钮，支持添加自定义按钮。
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({
+class MDAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const MDAppBar({
     required this.title,
     this.titleFontSize = 16,
     this.titleColor,

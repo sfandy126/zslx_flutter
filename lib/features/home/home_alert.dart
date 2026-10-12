@@ -235,7 +235,7 @@ class HomeAlertManager with WidgetsBindingObserver {
                       child: SizedBox(
                         width: 280,
                         height: 336,
-                        child: _AlertRemoteImage(url: data.imageUrl),
+                        child: MDNetImage(imageUrl: data.imageUrl),
                       ),
                     ),
                   ),
@@ -277,33 +277,6 @@ class HomeAlertManager with WidgetsBindingObserver {
           ),
         );
       },
-    );
-  }
-}
-
-class _AlertRemoteImage extends StatelessWidget {
-  const _AlertRemoteImage({required this.url});
-
-  final String url;
-
-  @override
-  Widget build(BuildContext context) {
-    if (url.isEmpty) return _placeholder();
-    return Image.network(
-      url,
-      fit: BoxFit.cover,
-      loadingBuilder: (context, child, progress) =>
-          progress == null ? child : _placeholder(),
-      errorBuilder: (context, error, stackTrace) => _placeholder(),
-    );
-  }
-
-  Widget _placeholder() {
-    return ColoredBox(
-      color: AppColors.line,
-      child: Center(
-        child: Icon(Icons.image_outlined, color: AppColors.grayAAA, size: 28),
-      ),
     );
   }
 }

@@ -27,7 +27,7 @@ class _OffPageState extends State<OffPage> {
               bottom: false,
               child: SizedBox(
                 height: kToolbarHeight,
-                child: CustomAppBar(title: '注销账号'),
+                child: MDAppBar(title: '注销账号'),
               ),
             ),
           ),
@@ -119,17 +119,17 @@ class _OffPageState extends State<OffPage> {
 
   Future<void> _logoff() async {
     setState(() => _isLoading = true);
-    Totast.showLoading();
+    MDTotast.showLoading();
     final result = await MDPost.sendApiSession(cmd: .logoff);
-    Totast.hideLoading();
+    MDTotast.hideLoading();
     if (!mounted) return;
     setState(() => _isLoading = false);
     if (!result.isSuccess) {
-      Totast.showError(result.msg ?? '注销失败');
+      MDTotast.showError(result.msg ?? '注销失败');
       return;
     }
 
-    Totast.showSuccess(result.msg ?? '注销申请已提交');
+    MDTotast.showSuccess(result.msg ?? '注销申请已提交');
     await MDUser.defualt.logout();
     await Future<void>.delayed(const Duration(milliseconds: 1500));
     if (!mounted) return;

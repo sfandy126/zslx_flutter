@@ -31,14 +31,14 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
 
   void _beginLoading() {
     if (_activeLoadingRequests++ == 0) {
-      Totast.showLoading();
+      MDTotast.showLoading();
     }
   }
 
   void _endLoading() {
     if (_activeLoadingRequests == 0) return;
     if (--_activeLoadingRequests == 0) {
-      Totast.hideLoading();
+      MDTotast.hideLoading();
     }
   }
 
@@ -165,7 +165,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
   }
 
   Future<void> _openHistory() async {
-    Totast.showError('学习记录功能即将开放');
+    MDTotast.showError('学习记录功能即将开放');
   }
 
   Future<void> _openLogin() async {
@@ -181,7 +181,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
       return;
     }
     if (course.isHidden) {
-      Totast.showError('该课程已下架');
+      MDTotast.showError('该课程已下架');
       return;
     }
     if (course.id.isEmpty) return;
@@ -201,7 +201,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
       await _openLogin();
       return;
     }
-    Totast.showError(switch (course.liveState) {
+    MDTotast.showError(switch (course.liveState) {
       _LiveState.live => '直播功能即将开放',
       _LiveState.aboutToStart => '课程即将开始',
       _LiveState.playback => '回放功能即将开放',
@@ -239,7 +239,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
     );
     if (!mounted) return false;
     if (!result.isSuccess) {
-      Totast.showError(result.msg ?? '取消约课失败');
+      MDTotast.showError(result.msg ?? '取消约课失败');
       return false;
     }
     setState(() {
@@ -521,7 +521,11 @@ class _AppointmentTile extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _CourseImage(url: course.picture, width: 100, height: 48),
+          MDNetImage(
+            imageUrl: course.picture,
+            width: 100,
+            height: 48,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -625,7 +629,11 @@ class _LearnCourseTile extends StatelessWidget {
               Stack(
                 clipBehavior: Clip.hardEdge,
                 children: [
-                  _CourseImage(url: course.picture, width: 144, height: 92),
+                  MDNetImage(
+                    imageUrl: course.picture,
+                    width: 144,
+                    height: 92,
+                  ),
                   if (hidden || expired)
                     Positioned(
                       top: 6,
@@ -701,41 +709,6 @@ class _LearnCourseTile extends StatelessWidget {
       ),
     );
   }
-}
-
-class _CourseImage extends StatelessWidget {
-  const _CourseImage({
-    required this.url,
-    required this.width,
-    required this.height,
-  });
-
-  final String url;
-  final double width;
-  final double height;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: SizedBox(
-        width: width,
-        height: height,
-        child: url.isEmpty
-            ? _imagePlaceholder()
-            : Image.network(
-                url,
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => _imagePlaceholder(),
-              ),
-      ),
-    );
-  }
-
-  Widget _imagePlaceholder() => ColoredBox(
-    color: AppColors.background,
-    child: Icon(Icons.image_outlined, color: AppColors.grayAAA, size: 28),
-  );
 }
 
 class _EmptyCourses extends StatelessWidget {

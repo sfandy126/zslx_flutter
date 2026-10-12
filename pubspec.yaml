@@ -47,6 +47,8 @@ dependencies:
   provider: ^6.1.5
   #屏幕适配
   flutter_screenutil: ^5.9.0
+  #图片缓存加载
+  cached_network_image_ce: ^4.13.1
   #svg图片加载
   flutter_svg: ^2.3.0
   #本地存储
@@ -56,7 +58,6 @@ dependencies:
   # Dart 常用工具类库
   common_utils: 2.1.0
   # 轮播图 
-  # flutter_swiper_null_safety_flutter3: ^4.0.3 
   carousel_slider: ^5.1.2 
   # 图片选择插件 
   image_picker: 1.2.0
@@ -74,12 +75,12 @@ dependencies:
   easy_refresh: ^3.5.1
   # 路由管理
   go_router: ^14.0.0
-  # 打开外部链接(App Store 等) h
-  url_launcher: ^6.3.2
   # json注解
   json_annotation: ^4.12.0
   # android app内安装，iOS url应用市场
   install_plugin_v3: ^3.1.3
+  # 打开外部链接(App Store 等) h
+  url_launcher: ^6.3.2
   # 日历控件
   table_calendar: ^3.3.0
 

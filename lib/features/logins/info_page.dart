@@ -40,7 +40,7 @@ class _InfoPageState extends State<InfoPage> {
                 bottom: false,
                 child: SizedBox(
                   height: kToolbarHeight,
-                  child: CustomAppBar(title: '个人信息'),
+                  child: MDAppBar(title: '个人信息'),
                 ),
               ),
             ),
@@ -103,7 +103,7 @@ class _InfoPageState extends State<InfoPage> {
     final error = await _viewModel.uploadAvatar(image.path);
     if (!mounted) return;
     if (error != null) {
-      Totast.showError(error);
+      MDTotast.showError(error);
     }
   }
 
@@ -127,7 +127,7 @@ class _InfoPageState extends State<InfoPage> {
         if (changed == true) await _viewModel.refresh();
       case InfoDataType.wx:
         if (_viewModel.hasBindWx) return;
-        //TODO 微信绑定功能
+      //TODO 微信绑定功能
     }
   }
 }
@@ -199,7 +199,7 @@ class InfoViewModel extends ChangeNotifier {
     if (isUploadingAvatar) return null;
     isUploadingAvatar = true;
     notifyListeners();
-    Totast.showLoading();
+    MDTotast.showLoading();
 
     final result = await MDPost.sendUploadSession(
       cmd: .modifyAvatar,
@@ -207,7 +207,7 @@ class InfoViewModel extends ChangeNotifier {
       name: 'avatar',
     );
 
-    Totast.hideLoading();
+    MDTotast.hideLoading();
     isUploadingAvatar = false;
     notifyListeners();
 
@@ -261,14 +261,7 @@ class _HeaderCell extends StatelessWidget {
                   border: Border.all(color: AppColors.grayAAA),
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: value == null || value.isEmpty
-                    ? Assets.images.mine.defaultProfile.svg()
-                    : Image.network(
-                        value,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) =>
-                            Assets.images.mine.defaultProfile.svg(),
-                      ),
+                child: MDNetImage(imageUrl: value ?? '', isAvatar: true),
               ),
               Positioned(
                 right: 0,

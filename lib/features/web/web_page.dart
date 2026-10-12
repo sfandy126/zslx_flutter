@@ -124,7 +124,7 @@ class _WebPageState extends State<WebPage> {
   }
 
   void _showError(String message) {
-    Totast.showError(message);
+    MDTotast.showError(message);
   }
 
   Future<void> _updateCanGoBack() async {
@@ -207,7 +207,7 @@ class _WebPageState extends State<WebPage> {
       canPop: !widget.disableFd,
       child: Scaffold(
         backgroundColor: AppColors.white,
-        appBar: CustomAppBar(
+        appBar: MDAppBar(
           title: widget.title,
           onBackPressed: _goBack,
           actions: [

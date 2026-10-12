@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:zslx_flutter/extensions/string_price.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -109,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                 bottom: false,
                 child: SizedBox(
                   height: kToolbarHeight,
-                  child: CustomAppBar(
+                  child: MDAppBar(
                     title: '学无止境',
                     titleFontSize: 22,
                     titleFontWeight: FontWeight.w600,
@@ -273,7 +272,7 @@ class _HomeBannerCarouselState extends State<_HomeBannerCarousel> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: SizedBox.expand(
-                      child: _RemoteImage(url: banner.imageUrl),
+                      child: MDNetImage(imageUrl: banner.imageUrl),
                     ),
                   ),
                 ),
@@ -469,7 +468,7 @@ class _CourseCard extends StatelessWidget {
               child: SizedBox(
                 width: 120,
                 height: 78,
-                child: _RemoteImage(url: course.picture),
+                child: MDNetImage(imageUrl: course.picture),
               ),
             ),
             const SizedBox(width: 12),
@@ -562,33 +561,6 @@ class _CourseCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _RemoteImage extends StatelessWidget {
-  const _RemoteImage({required this.url});
-
-  final String url;
-
-  @override
-  Widget build(BuildContext context) {
-    if (url.isEmpty) return _placeholder();
-    return Image.network(
-      url,
-      fit: BoxFit.cover,
-      loadingBuilder: (context, child, progress) =>
-          progress == null ? child : _placeholder(),
-      errorBuilder: (context, error, stackTrace) => _placeholder(),
-    );
-  }
-
-  Widget _placeholder() {
-    return ColoredBox(
-      color: AppColors.line,
-      child: Center(
-        child: Icon(Icons.image_outlined, color: AppColors.grayAAA, size: 28),
       ),
     );
   }

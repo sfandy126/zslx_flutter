@@ -45,7 +45,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 bottom: false,
                 child: SizedBox(
                   height: kToolbarHeight,
-                  child: CustomAppBar(title: '意见反馈'),
+                  child: MDAppBar(title: '意见反馈'),
                 ),
               ),
             ),
@@ -133,11 +133,11 @@ class _FeedbackPageState extends State<FeedbackPage> {
     final error = await _viewModel.submitFeedback();
     if (!mounted) return;
     if (error != null) {
-      Totast.showError(error);
+      MDTotast.showError(error);
       return;
     }
 
-    Totast.showSuccess('反馈提交成功');
+    MDTotast.showSuccess('反馈提交成功');
     await Future<void>.delayed(const Duration(milliseconds: 1500));
     if (!mounted) return;
     AppRouter.pop(context, true);
@@ -165,14 +165,14 @@ class _FeedbackViewModel extends ChangeNotifier {
 
     isLoading = true;
     notifyListeners();
-    Totast.showLoading();
+    MDTotast.showLoading();
 
     final result = await MDPost.sendApiSession(
       cmd: .feedback,
       params: {'contact': contact, 'content': content},
     );
 
-    Totast.hideLoading();
+    MDTotast.hideLoading();
     isLoading = false;
     notifyListeners();
 

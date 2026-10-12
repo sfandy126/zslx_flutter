@@ -115,7 +115,7 @@ class _MinePageState extends State<MinePage> {
   }
 
   void _showMessage(String message) {
-    Totast.showError(message);
+    MDTotast.showError(message);
   }
 }
 
@@ -188,9 +188,7 @@ class _Avatar extends StatelessWidget {
         color: AppColors.lightTheme,
       ),
       clipBehavior: Clip.antiAlias,
-      child: value == null || value.isEmpty
-          ? SvgPicture.asset('assets/images/mine/defaultProfile.svg')
-          : Image.network(value, fit: BoxFit.cover),
+      child: MDNetImage(imageUrl: value ?? '', isAvatar: true),
     );
   }
 }

@@ -29,7 +29,7 @@ class CourseDetailPage extends StatelessWidget {
               bottom: false,
               child: SizedBox(
                 height: kToolbarHeight,
-                child: CustomAppBar(title: '课程详情'),
+                child: MDAppBar(title: '课程详情'),
               ),
             ),
           ),

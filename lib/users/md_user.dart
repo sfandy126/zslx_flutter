@@ -170,11 +170,11 @@ class MDUser extends ChangeNotifier {
   /// 请求并更新最新用户信息
   Future<void> updateData({bool animate = false}) async {
     if (animate) {
-      Totast.showLoading();
+      MDTotast.showLoading();
     }
     final result = await MDPost.sendApiSession(cmd: .memberInfo);
     if (animate) {
-      Totast.hideLoading();
+      MDTotast.hideLoading();
     }
     if (result.isSuccess) {
       final userId = result.data?['user_id'] as int?;
@@ -184,7 +184,7 @@ class MDUser extends ChangeNotifier {
         await update(result.data);
       }
     } else if (animate && result.state == .failed) {
-      Totast.showError(result.msg ?? 'ERROR：数据返回错误');
+      MDTotast.showError(result.msg ?? 'ERROR：数据返回错误');
     }
   }
 

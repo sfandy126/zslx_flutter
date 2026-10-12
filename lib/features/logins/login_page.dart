@@ -214,7 +214,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     final validation = _viewModel.validateLogin();
     if (validation != null) {
-      Totast.showError(validation);
+      MDTotast.showError(validation);
       return;
     }
     if (!_viewModel.agreed) {
@@ -230,7 +230,7 @@ class _LoginPageState extends State<LoginPage> {
     final error = await _viewModel.login();
     if (!mounted) return;
     if (error != null) {
-      Totast.showError(error);
+      MDTotast.showError(error);
       return;
     }
     AppRouter.pop(context, true);

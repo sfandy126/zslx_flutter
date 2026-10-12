@@ -22,7 +22,7 @@ class SafePage extends StatelessWidget {
               bottom: false,
               child: SizedBox(
                 height: kToolbarHeight,
-                child: CustomAppBar(title: '账号安全'),
+                child: MDAppBar(title: '账号安全'),
               ),
             ),
           ),
