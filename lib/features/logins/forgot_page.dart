@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
-import '../../utils/widgets/code_field.dart';
-import '../../utils/widgets/phone_field.dart';
-import '../../utils/widgets/text_field.dart';
+import '../../widgets/code_field.dart';
+import '../../widgets/phone_field.dart';
+import '../../widgets/text_field.dart';
 import '../../extensions/string_rsa.dart';
 
 class ForgotPage extends StatefulWidget {

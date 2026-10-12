@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:zslx_flutter/main.dart';
-import 'package:zslx_flutter/utils/widgets/refresh_list_view.dart';
+import 'package:zslx_flutter/widgets/refresh_list_view.dart';
 
 void main() {
   testWidgets(

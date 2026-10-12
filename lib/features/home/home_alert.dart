@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
-import '../../utils/widgets/dialog.dart';
+import '../../widgets/dialog.dart';
 
 part 'home_alert.g.dart';
 

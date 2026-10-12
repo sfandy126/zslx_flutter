@@ -24,6 +24,8 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -31,6 +33,20 @@
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
 	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>用于辅助书写教学内容</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>用于辅助书写教学内容</string>
+	<key>NSCameraUsageDescription</key>
+	<string>需要访问相机以拍摄照片和使用直播功能</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>用于发现局域网内投屏设备</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>需要访问麦克风以使用直播互动功能</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>用于保存图片到相册</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>需要访问相册以选择并上传头像</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -71,21 +87,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>需要访问相册以选择并上传头像</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>用于保存图片到相册</string>
-	<key>NSCameraUsageDescription</key>
-	<string>需要访问相机以拍摄照片和使用直播功能</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>需要访问麦克风以使用直播互动功能</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>用于辅助书写教学内容</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>用于辅助书写教学内容</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>用于发现局域网内投屏设备</string>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 </dict>
 </plist>

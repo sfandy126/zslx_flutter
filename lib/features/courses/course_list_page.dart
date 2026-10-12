@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/utils/widgets/refresh_list_view.dart';
+import 'package:zslx_flutter/widgets/refresh_list_view.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';

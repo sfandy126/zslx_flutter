@@ -1,7 +1,7 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 
-import '../app_colors.dart';
+import '../utils/app_colors.dart';
 
 /// 列表加载状态
 enum RefreshListStatus {

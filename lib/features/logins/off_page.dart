@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
-import '../../utils/widgets/dialog.dart';
+import '../../widgets/dialog.dart';
 
 class OffPage extends StatefulWidget {
   const OffPage({super.key});

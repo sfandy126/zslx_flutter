@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
-import '../app_colors.dart';
-import '../../network/md_post.dart';
-import '../totast.dart';
+import '../utils/app_colors.dart';
+import '../network/md_post.dart';
+import '../utils/totast.dart';
 
 class MDCodeField extends StatefulWidget {
   const MDCodeField({

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
-import '../../utils/widgets/code_field.dart';
-import '../../utils/widgets/phone_field.dart';
+import '../../widgets/code_field.dart';
+import '../../widgets/phone_field.dart';
 
 class BindPage extends StatefulWidget {
   const BindPage({super.key});

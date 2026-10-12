@@ -7,7 +7,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
-import '../../utils/widgets/dialog.dart';
+import '../../widgets/dialog.dart';
 
 class SetupPage extends StatefulWidget {
   const SetupPage({super.key});

@@ -1,22 +1,237 @@
 PODS:
+  - Alamofire (5.9.1)
+  - BaijiaYun/_BJLiveCore (4.37.7):
+    - BaijiaYun/_ZXYB
+    - BaijiaYun/BaijiaYunPrivacy
+    - BJLiveBase (~> 4.37.0)
+  - BaijiaYun/_BJLiveUIBase (4.37.7):
+    - BaijiaYun/_BJLiveCore
+    - BJSwiftBase (~> 4.37.0)
+    - QBImagePickerController (~> 3.0)
+  - BaijiaYun/_BJLiveUIBigClass (4.37.7):
+    - BaijiaYun/_BJLiveUIBase
+  - BaijiaYun/_BJLiveUIEE (4.37.7):
+    - BaijiaYun/_BJLiveUIBase
+    - BJSwiftBase (~> 4.37.0)
+  - BaijiaYun/_BJLiveUISmallClass (4.37.7):
+    - BaijiaYun/_BJLiveUIBase
+  - BaijiaYun/_BJLSellUI (4.37.7):
+    - BaijiaYun/_BJLiveUIBase
+  - BaijiaYun/_BJPlaybackUI (4.37.7):
+    - BaijiaYun/BJPlayerUIBase
+  - BaijiaYun/_BJVideoPlayerCore (4.37.7):
+    - BaijiaYun/BaijiaYunPrivacy
+    - BJLiveBase (~> 4.37.0)
+  - BaijiaYun/_BJVideoPlayerUI (4.37.7):
+    - BaijiaYun/BJPlayerUIBase
+  - BaijiaYun/_ZXYB (4.37.7)
+  - BaijiaYun/BaijiaYunPrivacy (4.37.7)
+  - BaijiaYun/BJLiveCore (4.37.7):
+    - BaijiaYun/_BJLiveCore
+    - BaijiaYun/BJYRTCEngine
+    - BaijiaYun/TXLiteAVSDK
+  - BaijiaYun/BJLiveUI (4.37.7):
+    - BaijiaYun/_BJLiveUIBigClass
+    - BaijiaYun/_BJLiveUIEE
+    - BaijiaYun/_BJLiveUISmallClass
+    - BaijiaYun/BJLiveCore
+  - BaijiaYun/BJLSellUI (4.37.7):
+    - BaijiaYun/_BJLSellUI
+    - BaijiaYun/BJLiveCore
+    - BJSwiftBase (~> 4.37.0)
+    - SVGAPlayer (= 2.5.7-bjy)
+  - BaijiaYun/BJPlaybackUI (4.37.7):
+    - BaijiaYun/_BJPlaybackUI
+    - BaijiaYun/BJVideoPlayerCore
+  - BaijiaYun/BJPlayerUIBase (4.37.7):
+    - BJLiveBase (~> 4.37.0)
+    - BJSwiftBase (~> 4.37.0)
+  - BaijiaYun/BJVideoPlayerCore (4.37.7):
+    - BaijiaYun/_BJVideoPlayerCore
+    - BJYIJK (~> 4.5.3)
+  - BaijiaYun/BJVideoPlayerUI (4.37.7):
+    - BaijiaYun/_BJVideoPlayerUI
+    - BaijiaYun/BJVideoPlayerCore
+    - BJSwiftBase (~> 4.37.0)
+    - MJRefresh (~> 3.6)
+  - BaijiaYun/BJYRTCEngine (4.37.7):
+    - BJYIJK (~> 4.5.3)
+    - BRTC (~> 3.14.2)
+  - BaijiaYun/TXLiteAVSDK (4.37.7):
+    - TXLiteAVSDK_TRTC (~> 11.3.14333)
+  - BJLiveBase (4.37.0):
+    - BJLiveBase/All (= 4.37.0)
+  - BJLiveBase/All (4.37.0):
+    - BJLiveBase/base
+    - SDWebImage (~> 5.0)
+    - SDWebImageWebPCoder
+  - BJLiveBase/base (4.37.0):
+    - BJLLog (~> 3.7.4.4)
+  - BJLLog (3.7.4.6):
+    - BJLLog/Core (= 3.7.4.6)
+  - BJLLog/Core (3.7.4.6)
+  - BJSwiftBase (4.37.0):
+    - BJSwiftBase/All (= 4.37.0)
+  - BJSwiftBase/All (4.37.0):
+    - BJLiveBase (~> 4.37.0)
+    - BJSwiftBase/base
+    - SDWebImage (~> 5.20.0)
+  - BJSwiftBase/base (4.37.0):
+    - Alamofire (~> 5.9.0)
+    - ExCodable (~> 0.5)
+    - ExtSwift (~> 1.0)
+    - SnapKit (~> 5.7)
+  - bjy_liveui_flutter (4.37.7):
+    - BaijiaYun/BJLiveUI (= 4.37.7)
+    - BaijiaYun/BJLSellUI (= 4.37.7)
+    - Flutter
+  - bjy_playbackui_flutter (4.37.7):
+    - BaijiaYun/BJPlaybackUI (= 4.37.7)
+    - BaijiaYun/BJVideoPlayerUI (= 4.37.7)
+    - Flutter
+  - BJYIJK (4.5.3)
+  - BRTC (3.14.6):
+    - BRTC/static (= 3.14.6)
+  - BRTC/static (3.14.6):
+    - BJYIJK (~> 4.4)
+    - BRTCCore (= 3.14.1003)
+  - BRTCCore (3.14.1003)
+  - ExCodable (0.6.0)
+  - ExtSwift (1.0.0):
+    - ExtSwift/ExtSwift (= 1.0.0)
+  - ExtSwift/boolValue (1.0.0)
+  - ExtSwift/ExtSwift (1.0.0):
+    - ExtSwift/boolValue
+    - ExtSwift/KVO
+    - ExtSwift/Mutable
+    - ExtSwift/NameSpace
+    - ExtSwift/Operators
+    - ExtSwift/SemanticVersion
+    - "ExtSwift/String+IntIndex"
+    - ExtSwift/tryIndex
+    - ExtSwift/Types
+    - ExtSwift/UIKit
+    - ExtSwift/WeakArray
+  - ExtSwift/KVO (1.0.0):
+    - ExtSwift/WeakArray
+  - ExtSwift/Mutable (1.0.0)
+  - ExtSwift/NameSpace (1.0.0)
+  - ExtSwift/Operators (1.0.0):
+    - ExtSwift/boolValue
+  - ExtSwift/SemanticVersion (1.0.0)
+  - "ExtSwift/String+IntIndex (1.0.0)"
+  - ExtSwift/tryIndex (1.0.0)
+  - ExtSwift/Types (1.0.0)
+  - ExtSwift/UIKit (1.0.0):
+    - ExtSwift/Mutable
+    - ExtSwift/NameSpace
+    - ExtSwift/tryIndex
+  - ExtSwift/WeakArray (1.0.0)
   - Flutter (1.0.0)
   - install_plugin_v3 (2.0.0):
     - Flutter
+  - libwebp (1.6.0):
+    - libwebp/demux (= 1.6.0)
+    - libwebp/mux (= 1.6.0)
+    - libwebp/sharpyuv (= 1.6.0)
+    - libwebp/webp (= 1.6.0)
+  - libwebp/demux (1.6.0):
+    - libwebp/webp
+  - libwebp/mux (1.6.0):
+    - libwebp/demux
+  - libwebp/sharpyuv (1.6.0)
+  - libwebp/webp (1.6.0):
+    - libwebp/sharpyuv
+  - MJRefresh (3.7.9)
+  - Protobuf (3.29.6)
+  - QBImagePickerController (3.4.0)
+  - SDWebImage (5.20.1):
+    - SDWebImage/Core (= 5.20.1)
+  - SDWebImage/Core (5.20.1)
+  - SDWebImageWebPCoder (0.15.0):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.17)
+  - SnapKit (5.7.1)
+  - SSZipArchive (2.4.3)
+  - SVGAPlayer (2.5.7-bjy):
+    - SVGAPlayer/Core (= 2.5.7-bjy)
+    - SVGAPlayer/ProtoFiles (= 2.5.7-bjy)
+  - SVGAPlayer/Core (2.5.7-bjy):
+    - SSZipArchive (>= 1.8.1)
+    - SVGAPlayer/ProtoFiles
+  - SVGAPlayer/ProtoFiles (2.5.7-bjy):
+    - Protobuf (~> 3.4)
+  - TXLiteAVSDK_TRTC (11.3.14333):
+    - TXLiteAVSDK_TRTC/TRTC (= 11.3.14333)
+  - TXLiteAVSDK_TRTC/TRTC (11.3.14333)
 
 DEPENDENCIES:
+  - bjy_liveui_flutter (from `.symlinks/plugins/bjy_liveui_flutter/ios`)
+  - bjy_playbackui_flutter (from `.symlinks/plugins/bjy_playbackui_flutter/ios`)
   - Flutter (from `Flutter`)
   - install_plugin_v3 (from `.symlinks/plugins/install_plugin_v3/ios`)
+  - SDWebImage
+
+SPEC REPOS:
+  https://git.baijiashilian.com/open-ios/specs.git:
+    - BaijiaYun
+    - BJLiveBase
+    - BJLLog
+    - BJSwiftBase
+    - BJYIJK
+    - BRTC
+    - BRTCCore
+    - SVGAPlayer
+  trunk:
+    - Alamofire
+    - ExCodable
+    - ExtSwift
+    - libwebp
+    - MJRefresh
+    - Protobuf
+    - QBImagePickerController
+    - SDWebImage
+    - SDWebImageWebPCoder
+    - SnapKit
+    - SSZipArchive
+    - TXLiteAVSDK_TRTC
 
 EXTERNAL SOURCES:
+  bjy_liveui_flutter:
+    :path: ".symlinks/plugins/bjy_liveui_flutter/ios"
+  bjy_playbackui_flutter:
+    :path: ".symlinks/plugins/bjy_playbackui_flutter/ios"
   Flutter:
     :path: Flutter
   install_plugin_v3:
     :path: ".symlinks/plugins/install_plugin_v3/ios"
 
 SPEC CHECKSUMS:
+  Alamofire: f36a35757af4587d8e4f4bfa223ad10be2422b8c
+  BaijiaYun: 7343df39a423f1526ab65b9fc983c37066ee5c62
+  BJLiveBase: 8be7e3ed7aa1a07450a24a7415c709087dc5710d
+  BJLLog: 8f6f9d90bdbc2082efb4250f6e359cce6ef3ebad
+  BJSwiftBase: 4531b5414edc7627928ba6462ac1f927a7a4ab88
+  bjy_liveui_flutter: 75776db3307cb536cf2bdc488aaeb3523f1c4e06
+  bjy_playbackui_flutter: f0195278d890cf8479cb54d8ac7e62cfeebd93cd
+  BJYIJK: 336fd515abb47efb660399e83aff3f9f8afa69e9
+  BRTC: 649502c70954672a9b2ac2d7605297e27aea8978
+  BRTCCore: e694b17031d8560e06d71b5d905da5ff98487b44
+  ExCodable: bffaf3d9623fc0ee464a07441a1711ea9860c0f7
+  ExtSwift: 6200ec40d8bbd8b9f80b4562541d236ea4f678d6
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   install_plugin_v3: f21521bded1fb1d31033c3ace92e2739ba915eb6
+  libwebp: af5937a13536ef73f3784d69cc342b98961acf33
+  MJRefresh: ff9e531227924c84ce459338414550a05d2aea78
+  Protobuf: 8d5596f7468be5400861a6bbfb2dfe9d0d1cde34
+  QBImagePickerController: d54cf93db6decf26baf6ed3472f336ef35cae022
+  SDWebImage: 33d0f23bddeb5d209ae959153883247be6703713
+  SDWebImageWebPCoder: 0e06e365080397465cc73a7a9b472d8a3bd0f377
+  SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
+  SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
+  SVGAPlayer: 6ac99bddb71934b1ce1d85fd9e5b8824f90ced17
+  TXLiteAVSDK_TRTC: 782401cf733d676c849a7d0a2f50150e1173351b
 
-PODFILE CHECKSUM: b2003c80d67915154b8b43a4e7d7d58708841916
+PODFILE CHECKSUM: b6704f96832325868c6e32c7fe4879e30f344f81
 
 COCOAPODS: 1.16.2

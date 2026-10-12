@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zslx_flutter/router/app_router.dart';
 import 'package:zslx_flutter/utils/utils.dart';
-import 'package:zslx_flutter/features/web/web_page.dart';
 import 'package:zslx_flutter/services/bjy_server.dart';
 import 'package:zslx_flutter/update/update_server.dart';
 
@@ -61,6 +60,7 @@ class _StartPageState extends State<StartPage> {
   }
 
   Future<void> _showSystemBars() {
+    if (!Platform.isAndroid) return Future<void>.value();
     return SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: SystemUiOverlay.values,
@@ -68,6 +68,7 @@ class _StartPageState extends State<StartPage> {
   }
 
   Future<void> _hideSystemBars() {
+    if (!Platform.isAndroid) return Future<void>.value();
     return SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   }
 
@@ -92,58 +93,52 @@ class _StartPageState extends State<StartPage> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            contentPadding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+            titlePadding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+            contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
             actionsPadding: EdgeInsets.zero,
             buttonPadding: EdgeInsets.zero,
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                '服务协议',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF18181B),
-                ),
-                textAlign: TextAlign.center,
+          title: const Text(
+            '服务协议',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF18181B),
+            ),
+          ),
+          content: Text.rich(
+            TextSpan(
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.title,
+                height: 1.4,
               ),
-              const SizedBox(height: 16),
-              Text.rich(
+              children: [
+                const TextSpan(
+                  text: '    欢迎使用本应用！为了更好地保护您的个人信息和合法权益，请您在使用我们的产品前，认真阅读并了解',
+                ),
                 TextSpan(
+                  text: '《用户协议》',
                   style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.title,
-                    height: 1.4,
+                    color: AppColors.theme,
+                    decoration: TextDecoration.none,
                   ),
-                  children: [
-                    const TextSpan(
-                      text:
-                          '    欢迎使用本应用！为了更好地保护您的个人信息和合法权益，请您在使用我们的产品前，认真阅读并了解',
-                    ),
-                    TextSpan(
-                      text: '《用户协议》',
-                      style: TextStyle(
-                        color: AppColors.theme,
-                        decoration: TextDecoration.none,
-                      ),
-                      recognizer: _userAgreementRecognizer,
-                    ),
-                    const TextSpan(text: '和'),
-                    TextSpan(
-                      text: '《隐私政策》',
-                      style: TextStyle(
-                        color: AppColors.theme,
-                        decoration: TextDecoration.none,
-                      ),
-                      recognizer: _privacyPolicyRecognizer,
-                    ),
-                    const TextSpan(text: '的全部内容。\n    本应用将在您同意后，收集必要信息以提供服务。'),
-                  ],
+                  recognizer: _userAgreementRecognizer,
                 ),
-                textAlign: TextAlign.left,
-              ),
-            ],
+                const TextSpan(text: '和'),
+                TextSpan(
+                  text: '《隐私政策》',
+                  style: TextStyle(
+                    color: AppColors.theme,
+                    decoration: TextDecoration.none,
+                  ),
+                  recognizer: _privacyPolicyRecognizer,
+                ),
+                const TextSpan(text: '的全部内容。\n    本应用将在您同意后，收集必要信息以提供服务。'),
+              ],
+            ),
+            textAlign: TextAlign.left,
           ),
           actions: [
             Row(
@@ -166,6 +161,7 @@ class _StartPageState extends State<StartPage> {
                     ),
                     cupertino: (context, platform) => CupertinoTextButtonData(
                       color: AppColors.background,
+                      foregroundColor: AppColors.black,
                       borderRadius: BorderRadius.zero,
                     ),
                     child: const Text(
@@ -198,9 +194,10 @@ class _StartPageState extends State<StartPage> {
                           color: AppColors.theme,
                           borderRadius: BorderRadius.zero,
                         ),
-                    child: const Text(
+                    child: Text(
                       '同意并继续',
                       style: TextStyle(
+                        color: AppColors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -230,11 +227,10 @@ class _StartPageState extends State<StartPage> {
   Future<void> _openLegalPage(String url, String title) async {
     await _showSystemBars();
     if (!mounted) return;
-    await Navigator.of(context).push(
-      platformPageRoute(
-        context: context,
-        builder: (_) => WebPage(url: url, title: title),
-      ),
+    await AppRouter.pushNamed<void>(
+      context,
+      RouterNames.web,
+      queryParameters: {'url': url, 'title': title},
     );
     if (!mounted) return;
     await _hideSystemBars();

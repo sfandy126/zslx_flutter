@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../app_colors.dart';
+import '../utils/app_colors.dart';
 
 /// 弹窗显示方式
 enum MDDialogMode {

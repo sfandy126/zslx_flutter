@@ -1,9 +1,10 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart' show CupertinoButtonSize;
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/utils/utils.dart';
 
-import '../network/md_env.dart';
-import '../utils/app_colors.dart';
+import '../router/app_router.dart';
 import 'update_launcher.dart';
 import 'update_server.dart';
 
@@ -14,16 +15,14 @@ class UpdateAlert {
     BuildContext context, {
     required AppUpdateInfo update,
   }) {
-    return showGeneralDialog<void>(
+    return showPlatformDialog<void>(
       context: context,
       barrierDismissible: !update.isCoerce,
       barrierLabel: '应用更新',
-      barrierColor: AppColors.black.withValues(alpha: 0.55),
-      transitionDuration: const Duration(milliseconds: 220),
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          _UpdateDialog(update: update),
-      transitionBuilder: (context, animation, secondaryAnimation, child) =>
-          FadeTransition(opacity: animation, child: child),
+      material: MaterialDialogData(
+        barrierColor: AppColors.black.withValues(alpha: 0.55),
+      ),
+      builder: (context) => _UpdateDialog(update: update),
     );
   }
 }
@@ -104,106 +103,152 @@ class _UpdateDialogState extends State<_UpdateDialog> {
     );
     return PopScope(
       canPop: !update.isCoerce && !_isWorking,
-      child: SafeArea(
-        child: Center(
-          child: Material(
-            color: AppColors.white,
+      child: PlatformAlertDialog(
+        material: (context, platform) => MaterialAlertDialogData(
+          backgroundColor: AppColors.white,
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            clipBehavior: Clip.antiAlias,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 320),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      update.title,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: AppColors.title,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
+          ),
+          titlePadding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
+          contentPadding: EdgeInsets.zero,
+          buttonPadding: EdgeInsets.zero,
+          actionsAlignment: MainAxisAlignment.center,
+          constraints: const BoxConstraints(maxWidth: 360),
+          clipBehavior: Clip.antiAlias,
+        ),
+        title: Text(
+          update.title,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: AppColors.title,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: .zero,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    update.content,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppColors.content,
+                      fontSize: 14,
+                      height: 1.5,
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      update.content,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: AppColors.content,
-                        fontSize: 14,
-                        height: 1.5,
-                      ),
-                    ),
-                    if (_phase == _UpdatePhase.downloading) ...[
-                      const SizedBox(height: 22),
-                      LinearProgressIndicator(
+                  ),
+                  if (_phase == _UpdatePhase.downloading) ...[
+                    const SizedBox(height: 22),
+                    PlatformWidget(
+                      material: (context, platform) => LinearProgressIndicator(
                         value: _progress == 0 ? null : _progress,
                         color: AppColors.theme,
                         backgroundColor: AppColors.theme.withValues(
                           alpha: 0.15,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _progress == 0
-                            ? '正在准备下载…'
-                            : '正在下载 ${(100 * _progress).toStringAsFixed(0)}%',
-                        style: TextStyle(
-                          color: AppColors.content,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                    if (_phase == _UpdatePhase.installing) ...[
-                      const SizedBox(height: 22),
-                      const CircularProgressIndicator(),
-                      const SizedBox(height: 8),
-                      Text(
-                        '正在安装，请在系统界面完成操作',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: AppColors.content,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                    if (_error != null) ...[
-                      const SizedBox(height: 12),
-                      Text(
-                        _error!,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.red, fontSize: 12),
-                      ),
-                    ],
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (!update.isCoerce && !_isWorking) ...[
-                          Expanded(
-                            child: _actionButton(
-                              label: '取消',
-                              onPressed: () => Navigator.of(context).pop(),
-                              primary: false,
+                      cupertino: (context, platform) => _progress == 0
+                          ? const PlatformCircularProgressIndicator()
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(2),
+                              child: SizedBox(
+                                height: 4,
+                                child: ColoredBox(
+                                  color: AppColors.theme.withValues(
+                                    alpha: 0.15,
+                                  ),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: FractionallySizedBox(
+                                      widthFactor: _progress.clamp(0.0, 1.0),
+                                      child: ColoredBox(color: AppColors.theme),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                        ],
-                        if (update.isCoerce)
-                          SizedBox(width: 120, child: updateButton)
-                        else
-                          Expanded(child: updateButton),
-                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _progress == 0
+                          ? '正在准备下载…'
+                          : '正在下载 ${(100 * _progress).toStringAsFixed(0)}%',
+                      style: TextStyle(color: AppColors.content, fontSize: 12),
                     ),
                   ],
-                ),
+                  if (_phase == _UpdatePhase.installing) ...[
+                    const SizedBox(height: 22),
+                    PlatformCircularProgressIndicator(
+                      material: (context, platform) =>
+                          MaterialProgressIndicatorData(color: AppColors.theme),
+                      cupertino: (context, platform) =>
+                          CupertinoProgressIndicatorData(
+                            color: AppColors.theme,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '正在安装，请在系统界面完成操作',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.content, fontSize: 12),
+                    ),
+                  ],
+                  if (_error != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      _error!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: AppColors.red, fontSize: 12),
+                    ),
+                  ],
+                ],
               ),
             ),
-          ),
+            PlatformWidget(
+              material: (context, platform) => Padding(
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 10),
+                child: _buildActionsRow(update, updateButton, context),
+              ),
+              cupertino: (context, platform) => Padding(
+                padding: const EdgeInsets.fromLTRB(2, 24, 2, 10),
+                child: _buildActionsRow(update, updateButton, context),
+              ),
+            ),
+          ],
         ),
+        actions: const [],
       ),
+    );
+  }
+
+  Widget _buildActionsRow(
+    AppUpdateInfo update,
+    Widget updateButton,
+    BuildContext context,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (!update.isCoerce && !_isWorking) ...[
+          Expanded(
+            child: _actionButton(
+              label: '取消',
+              onPressed: () => AppRouter.pop(context),
+              primary: false,
+            ),
+          ),
+          const SizedBox(width: 16),
+        ],
+        if (update.isCoerce)
+          SizedBox(width: 120, child: updateButton)
+        else
+          Expanded(child: updateButton),
+      ],
     );
   }
 
@@ -212,19 +257,37 @@ class _UpdateDialogState extends State<_UpdateDialog> {
     required VoidCallback? onPressed,
     required bool primary,
   }) {
-    final background = primary ? AppColors.theme : const Color(0xFFF1F2F4);
+    final background = primary ? AppColors.theme : AppColors.background;
     return SizedBox(
-      height: 40,
-      child: ElevatedButton(
+      height: 36,
+      child: PlatformElevatedButton(
         onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: background,
-          foregroundColor: primary ? AppColors.white : AppColors.title,
-          disabledBackgroundColor: background.withValues(alpha: 0.65),
-          elevation: 0,
-          shape: const StadiumBorder(),
+        color: background,
+        material: (context, platform) => MaterialElevatedButtonData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: background,
+            foregroundColor: primary ? AppColors.white : AppColors.black,
+            disabledBackgroundColor: background.withValues(alpha: 0.65),
+            disabledForegroundColor: primary
+                ? AppColors.white
+                : AppColors.black,
+            elevation: 0,
+            shape: const StadiumBorder(),
+          ),
         ),
-        child: Text(label, style: const TextStyle(fontSize: 14)),
+        cupertino: (context, platform) => CupertinoElevatedButtonData(
+          color: background,
+          borderRadius: BorderRadius.circular(20),
+          minimumSize: const Size(double.infinity, 40),
+          sizeStyle: CupertinoButtonSize.small,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: primary ? AppColors.white : AppColors.black,
+            fontSize: 14,
+          ),
+        ),
       ),
     );
   }

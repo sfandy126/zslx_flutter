@@ -5,7 +5,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
-import '../../utils/widgets/refresh_list_view.dart';
+import '../../widgets/refresh_list_view.dart';
 
 class CourseLearnPage extends StatefulWidget {
   const CourseLearnPage({super.key});

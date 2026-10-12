@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../app_colors.dart';
-import '../../gen/assets.gen.dart';
-import '../../network/md_env.dart';
-import '../../router/app_router.dart';
+import '../utils/app_colors.dart';
+import '../gen/assets.gen.dart';
+import '../network/md_env.dart';
+import '../router/app_router.dart';
 
 class MDAgreement extends StatefulWidget {
   const MDAgreement({required this.value, required this.onChanged, super.key});
