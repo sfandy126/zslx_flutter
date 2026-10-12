@@ -182,10 +182,6 @@ class $AssetsImagesMineGen {
   SvgGenImage get defaultProfile =>
       const SvgGenImage('assets/images/mine/defaultProfile.svg');
 
-  /// File path: assets/images/mine/mineBg@2x.png
-  AssetGenImage get mineBg2x =>
-      const AssetGenImage('assets/images/mine/mineBg@2x.png');
-
   /// File path: assets/images/mine/mineBg@3x.png
   AssetGenImage get mineBg3x =>
       const AssetGenImage('assets/images/mine/mineBg@3x.png');
@@ -214,7 +210,6 @@ class $AssetsImagesMineGen {
   List<dynamic> get values => [
     carama,
     defaultProfile,
-    mineBg2x,
     mineBg3x,
     mineDonwloads,
     mineFavorites,
@@ -248,6 +243,14 @@ class $AssetsImagesPublicGen {
   SvgGenImage get select =>
       const SvgGenImage('assets/images/public/select.svg');
 
+  /// File path: assets/images/public/stateEmpty@3x.png
+  AssetGenImage get stateEmpty3x =>
+      const AssetGenImage('assets/images/public/stateEmpty@3x.png');
+
+  /// File path: assets/images/public/stateFail@3x.png
+  AssetGenImage get stateFail3x =>
+      const AssetGenImage('assets/images/public/stateFail@3x.png');
+
   /// File path: assets/images/public/unselect.svg
   SvgGenImage get unselect =>
       const SvgGenImage('assets/images/public/unselect.svg');
@@ -260,13 +263,15 @@ class $AssetsImagesPublicGen {
       const SvgGenImage('assets/images/public/wxzone.svg');
 
   /// List of all assets
-  List<SvgGenImage> get values => [
+  List<dynamic> get values => [
     arrowRight,
     back,
     blackClose,
     close,
     scan,
     select,
+    stateEmpty3x,
+    stateFail3x,
     unselect,
     wx,
     wxzone,

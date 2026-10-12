@@ -23,7 +23,6 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
 
   late DateTime _selectedDate;
   _LearnFilter _filter = const _LearnFilter();
-  String? _dateError;
   bool _loadingDate = true;
   int _dateRequest = 0;
   int _activeLoadingRequests = 0;
@@ -49,6 +48,9 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
     _selectedDate = DateTime.now();
     _wasLoggedIn = MDUser.defualt.islogined;
     MDUser.defualt.addListener(_onUserChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _loadDateCourses();
+    });
   }
 
   @override
@@ -70,15 +72,15 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
     final request = ++_dateRequest;
     setState(() {
       _loadingDate = true;
-      _dateError = null;
     });
-    _beginLoading();
+
     try {
       final result = await MDPost.sendApiSession(
         cmd: .dateCourses,
         params: {'date': _dateText(_selectedDate)},
       );
       if (!mounted || request != _dateRequest) return;
+
       setState(() {
         if (result.isSuccess) {
           _appointments
@@ -86,28 +88,29 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
             ..addAll(
               _listFrom(result.data?['appointments']).map(_DateCourse.fromJson),
             );
-          _dateError = null;
-        } else {
-          _dateError = result.msg ?? '课程加载失败，请下拉刷新重试';
         }
       });
-    } catch (error) {
+      if (!result.isSuccess) {
+        debugPrint(
+          'CourseLearnPage .dateCourses failed: ${result.msg ?? 'unknown error'}',
+        );
+      }
+    } catch (error, stackTrace) {
       if (!mounted || request != _dateRequest) return;
-      setState(() => _dateError = '课程加载失败：$error');
+      debugPrint('CourseLearnPage .dateCourses failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
     } finally {
       if (mounted && request == _dateRequest) {
         setState(() => _loadingDate = false);
       }
-      _endLoading();
     }
   }
 
   Future<RefreshResult<_LearnCourse>> _loadCoursePage(int page) async {
-    _beginLoading();
+    final showLoading = page == 1;
+    if (showLoading) _beginLoading();
+
     try {
-      if (page == 1) {
-        await _loadDateCourses();
-      }
       if (!MDUser.defualt.islogined) {
         return RefreshResult.notLoggedIn();
       }
@@ -124,7 +127,10 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
         final courses = _listFrom(
           result.data?['data'],
         ).map(_LearnCourse.fromJson).toList();
-        return RefreshResult.success(courses);
+        return RefreshResult.success(
+          courses,
+          noMore: page > 1 && courses.isEmpty,
+        );
       }
       if (result.state == .outed || !MDUser.defualt.islogined) {
         return RefreshResult.notLoggedIn(result.msg);
@@ -133,7 +139,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
     } catch (error) {
       return RefreshResult.failed('课程加载失败：$error');
     } finally {
-      _endLoading();
+      if (showLoading) _endLoading();
     }
   }
 
@@ -206,10 +212,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
       // 课程过期了，不可点击
       return;
     }
-    final params = {
-      'type': course.type,
-      'section_id': course.id,
-    };
+    final params = {'type': course.type, 'section_id': course.id};
     if (course.liveState == .playback) {
       final success = await BjyServer.loadAndToPlayback(params: params);
       if (!success) return;
@@ -406,8 +409,6 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
           ),
           if (_loadingDate && _appointments.isEmpty)
             const SizedBox(height: 86)
-          else if (_dateError != null && _appointments.isEmpty)
-            _InlineError(message: _dateError!, onRetry: _loadDateCourses)
           else if (_appointments.isEmpty)
             SizedBox(
               height: 86,
@@ -767,33 +768,6 @@ class _EmptyCourses extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _InlineError extends StatelessWidget {
-  const _InlineError({required this.message, required this.onRetry});
-
-  final String message;
-  final Future<void> Function() onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 154,
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.content, fontSize: 13),
-            ),
-            TextButton(onPressed: onRetry, child: const Text('重试')),
-          ],
-        ),
-      ),
     );
   }
 }

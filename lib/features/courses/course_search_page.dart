@@ -129,7 +129,11 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
           params: {'page': page, 'course_type': '', 'keywords': _keywords},
         );
         if (result.isSuccess) {
-          return RefreshResult.success(CourseItem.listFromData(result.data));
+          final courses = CourseItem.listFromData(result.data);
+          return RefreshResult.success(
+            courses,
+            noMore: page > 1 && courses.isEmpty,
+          );
         }
         return RefreshResult.failed(result.msg ?? '搜索失败');
       },

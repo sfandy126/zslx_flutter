@@ -15,7 +15,7 @@ void main() {
     },
   );
 
-  testWidgets('刷新后可再次安全触发无更多数据状态', (tester) async {
+  testWidgets('业务标记无更多后停止后续分页请求', (tester) async {
     final requestedPages = <int>[];
 
     await tester.pumpWidget(
@@ -29,7 +29,7 @@ void main() {
                   List.generate(30, (index) => index),
                 );
               }
-              return RefreshResult.success(const []);
+              return RefreshResult.success(const [], noMore: page > 1);
             },
             itemBuilder: (context, item, index) =>
                 SizedBox(height: 60, child: Text('课程$item')),
@@ -40,7 +40,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       find.byWidgetPredicate(
-        (widget) => widget is EasyRefresh && widget.footer is MaterialFooter,
+        (widget) => widget is EasyRefresh && widget.footer is BuilderFooter,
       ),
       findsOneWidget,
     );
@@ -48,6 +48,7 @@ void main() {
     await tester.drag(find.byType(ListView), const Offset(0, -3000));
     await tester.pumpAndSettle();
     expect(requestedPages, [1, 2]);
+    expect(find.text('没有更多'), findsOneWidget);
 
     final scrollable = tester.state<ScrollableState>(find.byType(Scrollable));
     scrollable.position.jumpTo(0);
@@ -59,6 +60,36 @@ void main() {
     await tester.drag(find.byType(ListView), const Offset(0, -3000));
     await tester.pumpAndSettle();
     expect(requestedPages, [1, 2, 1, 2]);
+    await tester.drag(find.byType(ListView), const Offset(0, -3000));
+    await tester.pumpAndSettle();
+    expect(requestedPages, [1, 2, 1, 2]);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('第一页为空时不显示没有更多，也不继续加载分页', (tester) async {
+    final requestedPages = <int>[];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: RefreshListView<int>(
+            onData: (page) async {
+              requestedPages.add(page);
+              return RefreshResult.success(const []);
+            },
+            itemBuilder: (context, item, index) => Text('$item'),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(requestedPages, [1]);
+
+    await tester.drag(find.byType(ListView), const Offset(0, -3000));
+    await tester.pumpAndSettle();
+
+    expect(requestedPages, [1]);
     expect(tester.takeException(), isNull);
   });
 

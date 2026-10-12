@@ -1,6 +1,7 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 
+import '../gen/assets.gen.dart';
 import '../utils/app_colors.dart';
 
 /// 列表加载状态
@@ -32,17 +33,25 @@ class RefreshResult<T> {
   /// 错误信息
   final String? message;
 
+  /// 是否已无更多数据，由业务层根据接口分页信息决定。
+  final bool noMore;
+
   const RefreshResult({
     required this.status,
     this.data = const [],
     this.message,
+    this.noMore = false,
   });
 
   /// 快捷构造：成功
-  factory RefreshResult.success(List<T> data) => RefreshResult(
-    status: data.isEmpty ? RefreshListStatus.empty : RefreshListStatus.success,
-    data: data,
-  );
+  factory RefreshResult.success(List<T> data, {bool noMore = false}) =>
+      RefreshResult(
+        status: data.isEmpty
+            ? RefreshListStatus.empty
+            : RefreshListStatus.success,
+        data: data,
+        noMore: noMore,
+      );
 
   /// 快捷构造：失败
   factory RefreshResult.failed(String? message) =>
@@ -80,7 +89,7 @@ class RefreshListView<T> extends StatefulWidget {
 
   /// 数据加载回调
   ///
-  /// 返回 [RefreshResult]，包含状态和数据列表。
+  /// 返回 [RefreshResult]，包含状态、数据列表和业务判断的 [RefreshResult.noMore]。
   /// - 刷新时 page 从 1 开始
   /// - 加载更多时 page 自动递增
   final Future<RefreshResult<T>> Function(int page) onData;
@@ -217,18 +226,17 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
       setState(() {
         _status = result.status;
         _errorMessage = result.message;
+        _noMore = result.noMore;
         switch (result.status) {
           case RefreshListStatus.success:
             _items
               ..clear()
               ..addAll(result.data);
             _page = result.data.isEmpty ? 1 : 2;
-            _noMore = result.data.isEmpty;
           case RefreshListStatus.empty:
           case RefreshListStatus.notLoggedIn:
             _items.clear();
             _page = 1;
-            _noMore = true;
           case RefreshListStatus.loading:
           case RefreshListStatus.failed:
             break;
@@ -262,6 +270,10 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
       _refreshController.finishLoad(IndicatorResult.noMore);
       return;
     }
+    if (_items.isEmpty || _page <= 1) {
+      _refreshController.finishLoad(IndicatorResult.none);
+      return;
+    }
     if (_isRefreshing || _isLoadingMore) {
       _refreshController.finishLoad(IndicatorResult.none);
       return;
@@ -276,9 +288,7 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
       if (!mounted || generation != _requestGeneration) return;
 
       final isSuccess = result.status == RefreshListStatus.success;
-      final hasNoMore =
-          result.status == RefreshListStatus.empty ||
-          (isSuccess && result.data.isEmpty);
+      final hasNoMore = result.noMore;
 
       setState(() {
         if (isSuccess) {
@@ -318,29 +328,22 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
     final stateView = _buildCurrentStateView(context);
     final hasHeader = widget.header != null;
     final hasStateView = stateView != null;
-    final itemCount = (hasHeader ? 1 : 0) + (hasStateView ? 1 : _items.length);
+    final hasNoMoreView = _noMore && _items.isNotEmpty && !hasStateView;
+    final itemCount =
+        (hasHeader ? 1 : 0) +
+        (hasStateView ? 1 : _items.length + (hasNoMoreView ? 1 : 0));
 
     return EasyRefresh(
       controller: _refreshController,
       onRefresh: _onRefresh,
       onLoad: _onLoad,
       header: const CupertinoHeader(),
-      // easy_refresh 3.5.1 的 CupertinoFooter 在 noMore → reset → noMore
-      // 快速切换时会因 AnimatedSwitcher 复用固定 ValueKey 而触发重复 Key。
-      footer: MaterialFooter(
+      footer: BuilderFooter(
+        builder: (context, state) => const SizedBox.shrink(),
         triggerOffset: 60,
         clamping: false,
         processedDuration: Duration.zero,
         infiniteOffset: 60,
-        color: AppColors.theme,
-        noMoreIcon: Text(
-          '没有更多了',
-          style: TextStyle(
-            color: AppColors.content,
-            fontSize: 13,
-            decoration: TextDecoration.none,
-          ),
-        ),
       ),
       child: ListView.separated(
         padding: widget.padding ?? const EdgeInsets.only(top: 12, bottom: 16),
@@ -349,7 +352,8 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
         separatorBuilder: (context, index) {
           if (!widget.showDividers ||
               (hasHeader && index == 0) ||
-              hasStateView) {
+              hasStateView ||
+              (hasNoMoreView && index == itemCount - 2)) {
             return const SizedBox.shrink();
           }
           return Divider(
@@ -363,6 +367,21 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
           if (hasHeader && index == 0) return widget.header!;
           if (hasStateView) return stateView;
           final itemIndex = index - (hasHeader ? 1 : 0);
+          if (hasNoMoreView && itemIndex == _items.length) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Center(
+                child: Text(
+                  '没有更多',
+                  style: TextStyle(
+                    color: AppColors.content,
+                    fontSize: 13,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              ),
+            );
+          }
           return widget.itemBuilder(context, _items[itemIndex], itemIndex);
         },
       ),
@@ -379,7 +398,11 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
         );
       case RefreshListStatus.failed:
         return _buildStateView(
-          icon: Icons.error_outline,
+          illustration: Assets.images.public.stateFail3x.image(
+            width: 228,
+            height: 188,
+            fit: BoxFit.contain,
+          ),
           message: _errorMessage ?? widget.failedText,
           buttonText: widget.retryText,
           onButtonTap: _handleRetry,
@@ -391,14 +414,22 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
         }
         if (_status == RefreshListStatus.notLoggedIn) {
           return _buildStateView(
-            icon: Icons.person_outline,
+            illustration: Assets.images.public.stateEmpty3x.image(
+              width: 228,
+              height: 188,
+              fit: BoxFit.contain,
+            ),
             message: _errorMessage ?? '请先登录',
             buttonText: widget.loginText,
             onButtonTap: widget.onLogin,
           );
         }
         return _buildStateView(
-          icon: Icons.inbox_outlined,
+          illustration: Assets.images.public.stateEmpty3x.image(
+            width: 228,
+            height: 188,
+            fit: BoxFit.contain,
+          ),
           message: widget.emptyText,
         );
       case RefreshListStatus.success:
@@ -407,7 +438,7 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
   }
 
   Widget _buildStateView({
-    required IconData icon,
+    required Widget illustration,
     required String message,
     String? buttonText,
     VoidCallback? onButtonTap,
@@ -416,7 +447,7 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 56, color: AppColors.grayAAA),
+          illustration,
           const SizedBox(height: 12),
           Text(
             message,

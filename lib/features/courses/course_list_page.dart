@@ -217,7 +217,11 @@ class _CoursePagedList extends StatelessWidget {
           params: {'page': page, 'course_type': type.value},
         );
         if (result.isSuccess) {
-          return RefreshResult.success(CourseItem.listFromData(result.data));
+          final courses = CourseItem.listFromData(result.data);
+          return RefreshResult.success(
+            courses,
+            noMore: page > 1 && courses.isEmpty,
+          );
         }
         return RefreshResult.failed(result.msg ?? '课程列表加载失败');
       },
