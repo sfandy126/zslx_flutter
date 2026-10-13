@@ -252,7 +252,7 @@ class MDPost {
     final minor = int.tryParse(parts[1]) ?? 0;
     final patch = int.tryParse(parts[2]) ?? 0;
 
-    return '${major + 1}.$minor.$patch';
+    return '${major + 4}.$minor.$patch';
   }
 
   static Map<String, dynamic>? mdSafeToDict(dynamic data) {
