@@ -30,18 +30,29 @@ class MDNetImage extends StatelessWidget {
         : const ColoredBox(color: _placeholderColor);
 
     final image = url.isEmpty
-        ? SizedBox(
-            width: width,
-            height: height,
-            child: placeholder,
-          )
-        : CachedNetworkImage(
-            imageUrl: url,
-            width: width,
-            height: height,
-            fit: fit,
-            placeholder: (context, url) => placeholder,
-            errorBuilder: (context, error, stackTrace) => placeholder,
+        ? SizedBox(width: width, height: height, child: placeholder)
+        : LayoutBuilder(
+            builder: (context, constraints) {
+              final devicePixelRatio = MediaQuery.devicePixelRatioOf(context);
+              int? cacheDimension(double dimension) =>
+                  dimension.isFinite && dimension > 0
+                  ? (dimension * devicePixelRatio).round()
+                  : null;
+
+              return CachedNetworkImage(
+                imageUrl: url,
+                width: width,
+                height: height,
+                fit: fit,
+                memCacheWidth: cacheDimension(width ?? constraints.maxWidth),
+                memCacheHeight: cacheDimension(height ?? constraints.maxHeight),
+                fadeInDuration: Duration.zero,
+                fadeOutDuration: Duration.zero,
+                disablePlaceholderOnCacheHit: false,
+                placeholder: (context, url) => placeholder,
+                errorBuilder: (context, error, stackTrace) => placeholder,
+              );
+            },
           );
 
     return ClipRRect(borderRadius: borderRadius, child: image);

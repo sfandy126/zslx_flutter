@@ -161,7 +161,7 @@ class SetupViewModel extends ChangeNotifier {
       await controller.clearLocalStorage();
       await WebViewCookieManager().clearCookies();
     } catch (error) {
-      debugPrint('SetupViewModel clear web cache error: $error');
+      Utils.log('SetupViewModel clear web cache error: $error');
     }
     try {
       final directory = await getTemporaryDirectory();
@@ -175,7 +175,7 @@ class SetupViewModel extends ChangeNotifier {
         }
       }
     } catch (error) {
-      debugPrint('SetupViewModel clear temp directory error: $error');
+      Utils.log('SetupViewModel clear temp directory error: $error');
     }
     MDTotast.hideLoading();
     MDTotast.showSuccess('清除完成');

@@ -6,6 +6,7 @@ import 'package:zslx_flutter/network/md_env.dart';
 import '../network/md_cmd.dart';
 import '../network/md_post.dart';
 import '../utils/totast.dart';
+import '../utils/utils.dart';
 
 class BjyServer {
   BjyServer._();
@@ -123,7 +124,7 @@ class BjyServer {
 class _BjyRoomListener implements RoomListener {
   @override
   void onEnterRoomFail(int code, String errorDescription) {
-    debugPrint('BJY live room entry failed ($code): $errorDescription');
+    Utils.log('BJY live room entry failed ($code): $errorDescription');
   }
 
   @override

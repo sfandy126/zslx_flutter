@@ -65,7 +65,7 @@ class _WebPageState extends State<WebPage> {
             if (error.isForMainFrame ?? true) {
               if (mounted) setState(() => _isPageReady = true);
               _showError('网页加载失败，请检查网络连接');
-              debugPrint(
+              Utils.log(
                 'WebPage load error: ${error.errorCode} ${error.description}',
               );
             }
@@ -94,7 +94,7 @@ class _WebPageState extends State<WebPage> {
         await _controller.loadHtmlString(value);
       } catch (error) {
         _showError('网页内容加载失败，请稍后重试');
-        debugPrint('WebPage HTML load error: $error');
+        Utils.log('WebPage HTML load error: $error');
       }
       return;
     }
@@ -119,7 +119,7 @@ class _WebPageState extends State<WebPage> {
       );
     } catch (error) {
       _showError('网页加载失败，请稍后重试');
-      debugPrint('WebPage URL load error: $error');
+      Utils.log('WebPage URL load error: $error');
     }
   }
 
@@ -192,10 +192,10 @@ class _WebPageState extends State<WebPage> {
       await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
     } on DioException catch (error) {
       _showError('文件下载失败，请检查网络连接');
-      debugPrint('WebPage share download error: ${error.message}');
+      Utils.log('WebPage share download error: ${error.message}');
     } catch (error) {
       _showError('分享失败，请稍后重试');
-      debugPrint('WebPage share error: $error');
+      Utils.log('WebPage share error: $error');
     } finally {
       if (mounted) setState(() => _isSharing = false);
     }

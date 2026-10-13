@@ -1,5 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:zslx_flutter/utils/utils.dart';
 
 import 'channel_config.dart';
 import 'device_info.dart';
@@ -31,7 +31,7 @@ class AppConfig {
         ? 'unknown'
         : channelInfo.id.trim();
 
-    debugPrint('''
+    Utils.log('''
       ╔══════════════════════════════════════════╗
       ║  App 配置信息
       ╠══════════════════════════════════════════╣

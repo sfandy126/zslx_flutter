@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 
 import 'package:dio/dio.dart';
 
 import '../users/md_user.dart';
+import '../utils/utils.dart';
 import 'md_cmd.dart';
 import 'md_env.dart';
 import 'package:zslx_flutter/config/app_config.dart';
@@ -83,7 +83,7 @@ class MDPost {
 
     const MDEnv domain = .product;
     final url = '${domain.url}/${cmd.value}';
-    _log(
+    Utils.log(
       'upload_cmd = ${cmd.value} finalParams = $finalParams headers = $headers',
     );
 
@@ -98,7 +98,7 @@ class MDPost {
               status != null && status >= 200 && status < 300,
         ),
       );
-      _log('upload_cmd = ${cmd.value} jsonResult = ${response.data}');
+      Utils.log('upload_cmd = ${cmd.value} jsonResult = ${response.data}');
 
       final result = _ApiResponse.fromJson(response.data, isIap: false);
       final message = result.msg;
@@ -121,12 +121,12 @@ class MDPost {
           );
       }
     } on DioException catch (error) {
-      _log(
+      Utils.log(
         '❌upload_cmd = ${cmd.value} ❌ERROR = ${error.response?.data ?? error}',
       );
       return MDResult(.failed, msg: _dioErrorMessage(error));
     } catch (error) {
-      _log('❌upload_cmd = ${cmd.value} ❌解析错误 = $error');
+      Utils.log('❌upload_cmd = ${cmd.value} ❌解析错误 = $error');
       return const MDResult(.failed, msg: 'ERROR：解析错误');
     }
   }
@@ -159,7 +159,7 @@ class MDPost {
         ? '${domain.iapUrl}/${cmd.value}'
         : '${domain.url}/${cmd.value}';
 
-    _log(
+    Utils.log(
       'send_cmd = ${cmd.value} finalParams = $finalParams headers = $headers',
     );
 
@@ -174,7 +174,7 @@ class MDPost {
               status != null && status >= 200 && status < 300,
         ),
       );
-      _log('send_cmd = ${cmd.value} jsonResult = ${response.data}');
+      Utils.log('send_cmd = ${cmd.value} jsonResult = ${response.data}');
 
       final result = _ApiResponse.fromJson(response.data, isIap: isIap);
       final message = result.msg;
@@ -198,17 +198,21 @@ class MDPost {
           );
       }
     } on DioException catch (error) {
-      _log(
+      Utils.log(
         '❌send_cmd = ${cmd.value} ❌ERROR = ${error.response?.data ?? error}',
       );
       return MDResult(.failed, msg: _dioErrorMessage(error));
     } catch (error) {
-      _log('❌send_cmd = ${cmd.value} ❌解析错误 = $error');
+      Utils.log('❌send_cmd = ${cmd.value} ❌解析错误 = $error');
       return const MDResult(.failed, msg: 'ERROR：解析错误');
     }
   }
 
   static String _dioErrorMessage(DioException error) {
+    if (error.response?.statusCode == HttpStatus.notFound) {
+      return 'ERROR：请求的接口不存在（404）';
+    }
+
     final data = error.response?.data;
     if (data is String && data.isNotEmpty) return data;
     switch (error.type) {
@@ -219,11 +223,6 @@ class MDPost {
       default:
         return 'ERROR：网络异常，请检查网络';
     }
-  }
-
-  /// 仅在 debug 模式输出，避免 release 包日志泄露 token、密码密文
-  static void _log(String message) {
-    if (kDebugMode) debugPrint(message);
   }
 
   static Map<String, dynamic> mdHeaders() {
@@ -258,13 +257,13 @@ class MDPost {
   static Map<String, dynamic>? mdSafeToDict(dynamic data) {
     if (data == null) return null;
     if (data is Map<String, dynamic>) {
-        return data.isEmpty ? null : data;
-    } 
+      return data.isEmpty ? null : data;
+    }
     if (data is Map) {
-        if (data.isEmpty) {
-          return null;
-        }
-        return data.map((key, value) => MapEntry(key.toString(), value));
+      if (data.isEmpty) {
+        return null;
+      }
+      return data.map((key, value) => MapEntry(key.toString(), value));
     }
     return {'data': data};
   }

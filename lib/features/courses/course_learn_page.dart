@@ -25,22 +25,8 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
   _LearnFilter _filter = const _LearnFilter();
   bool _loadingDate = true;
   int _dateRequest = 0;
-  int _activeLoadingRequests = 0;
   late bool _wasLoggedIn;
   Offset _calendarOffset = const Offset(16, 80);
-
-  void _beginLoading() {
-    if (_activeLoadingRequests++ == 0) {
-      MDTotast.showLoading();
-    }
-  }
-
-  void _endLoading() {
-    if (_activeLoadingRequests == 0) return;
-    if (--_activeLoadingRequests == 0) {
-      MDTotast.hideLoading();
-    }
-  }
 
   @override
   void initState() {
@@ -91,14 +77,13 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
         }
       });
       if (!result.isSuccess) {
-        debugPrint(
+        Utils.log(
           'CourseLearnPage .dateCourses failed: ${result.msg ?? 'unknown error'}',
         );
       }
-    } catch (error, stackTrace) {
+    } catch (error, _) {
       if (!mounted || request != _dateRequest) return;
-      debugPrint('CourseLearnPage .dateCourses failed: $error');
-      debugPrintStack(stackTrace: stackTrace);
+      Utils.log('CourseLearnPage .dateCourses failed: $error');
     } finally {
       if (mounted && request == _dateRequest) {
         setState(() => _loadingDate = false);
@@ -107,9 +92,6 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
   }
 
   Future<RefreshResult<_LearnCourse>> _loadCoursePage(int page) async {
-    final showLoading = page == 1;
-    if (showLoading) _beginLoading();
-
     try {
       if (!MDUser.defualt.islogined) {
         return RefreshResult.notLoggedIn();
@@ -138,8 +120,6 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
       return RefreshResult.failed(result.msg ?? '课程加载失败，请下拉刷新重试');
     } catch (error) {
       return RefreshResult.failed('课程加载失败：$error');
-    } finally {
-      if (showLoading) _endLoading();
     }
   }
 

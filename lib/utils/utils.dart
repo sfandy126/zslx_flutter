@@ -1,4 +1,6 @@
 // 统一导出工具类
+import 'package:flutter/foundation.dart';
+
 export 'package:flutter_svg/flutter_svg.dart';
 export 'package:zslx_flutter/gen/assets.gen.dart';
 export 'package:zslx_flutter/utils/app_colors.dart';
@@ -14,3 +16,10 @@ export 'package:zslx_flutter/utils/totast.dart';
 export 'package:zslx_flutter/widgets/custom_appbar.dart';
 export 'package:zslx_flutter/widgets/network_image.dart';
 export 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+
+
+class Utils {
+  static void log(String message) {
+    if (kDebugMode) debugPrint(message);
+  }
+}

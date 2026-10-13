@@ -1,6 +1,7 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:zslx_flutter/main.dart';
 import 'package:zslx_flutter/widgets/refresh_list_view.dart';
@@ -20,6 +21,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        builder: EasyLoading.init(),
         home: Scaffold(
           body: RefreshListView<int>(
             onData: (page) async {
@@ -71,6 +73,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        builder: EasyLoading.init(),
         home: Scaffold(
           body: RefreshListView<int>(
             onData: (page) async {
@@ -98,6 +101,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        builder: EasyLoading.init(),
         home: Scaffold(
           body: StatefulBuilder(
             builder: (context, setState) => RefreshListView<int>(

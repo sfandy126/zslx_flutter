@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../gen/assets.gen.dart';
 import '../utils/app_colors.dart';
+import '../utils/totast.dart';
 
 /// 列表加载状态
 enum RefreshListStatus {
@@ -150,6 +151,7 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
   bool _noMore = false;
   bool _isRefreshing = false;
   bool _isLoadingMore = false;
+  bool _isLoadingToastVisible = false;
   int _requestGeneration = 0;
   RefreshListStatus _status = RefreshListStatus.loading;
   String? _errorMessage;
@@ -165,6 +167,7 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
   @override
   void dispose() {
     _requestGeneration += 1;
+    _hideLoadingToast();
     _refreshController.dispose();
     super.dispose();
   }
@@ -210,6 +213,7 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
 
     _isRefreshing = true;
     final generation = ++_requestGeneration;
+    _showLoadingToast();
     if (finishRefresh) _refreshController.resetFooter();
 
     if (showLoading) {
@@ -261,7 +265,10 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
         _refreshController.finishRefresh(IndicatorResult.fail);
       }
     } finally {
-      if (generation == _requestGeneration) _isRefreshing = false;
+      if (generation == _requestGeneration) {
+        _isRefreshing = false;
+        _hideLoadingToast();
+      }
     }
   }
 
@@ -392,10 +399,7 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
     if (_items.isNotEmpty) return null;
     switch (_status) {
       case RefreshListStatus.loading:
-        return const SizedBox(
-          height: 210,
-          child: Center(child: CircularProgressIndicator()),
-        );
+        return const SizedBox.shrink();
       case RefreshListStatus.failed:
         return _buildStateView(
           illustration: Assets.images.public.stateFail3x.image(
@@ -435,6 +439,18 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
       case RefreshListStatus.success:
         return null;
     }
+  }
+
+  void _showLoadingToast() {
+    if (_isLoadingToastVisible) return;
+    _isLoadingToastVisible = true;
+    MDTotast.showLoading();
+  }
+
+  void _hideLoadingToast() {
+    if (!_isLoadingToastVisible) return;
+    _isLoadingToastVisible = false;
+    MDTotast.hideLoading();
   }
 
   Widget _buildStateView({

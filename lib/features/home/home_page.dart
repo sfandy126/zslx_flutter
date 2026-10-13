@@ -6,6 +6,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
+import '../../widgets/refresh_list_view.dart';
 import 'home_alert.dart';
 
 part 'home_page.g.dart';
@@ -18,9 +19,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _loading = true;
-  String? _errorMessage;
-  _HomeData? _data;
+  bool _hasLoadedHome = false;
   late final HomeAlertManager _alertManager;
 
   @override
@@ -29,7 +28,6 @@ class _HomePageState extends State<HomePage> {
     _alertManager = HomeAlertManager(
       contextProvider: () => mounted ? context : null,
     )..start();
-    unawaited(_loadHome());
     unawaited(MDUser.defualt.updateData());
   }
 
@@ -39,23 +37,26 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  Future<void> _loadHome() async {
-    final result = await MDPost.sendApiSession(cmd: .home);
-    if (!mounted) return;
+  Future<RefreshResult<_HomeData>> _loadHome(int page) async {
+    if (page > 1) return RefreshResult.success(const [], noMore: true);
 
-    setState(() {
-      _loading = false;
-      if (result.isSuccess) {
-        _data = _HomeData.fromJson(result.data);
-        _errorMessage = null;
-      } else {
-        _errorMessage = result.msg ?? '首页数据加载失败';
-      }
-    });
-  }
+    final shouldRefreshAlerts = _hasLoadedHome;
+    _hasLoadedHome = true;
+    final resultFuture = MDPost.sendApiSession(cmd: .home);
+    if (shouldRefreshAlerts) {
+      await Future.wait<void>([
+        resultFuture.then<void>((_) {}),
+        _alertManager.loadData(),
+      ]);
+    }
 
-  Future<void> _refresh() async {
-    await Future.wait<void>([_loadHome(), _alertManager.loadData()]);
+    final result = await resultFuture;
+    if (result.isSuccess) {
+      return RefreshResult.success([
+        _HomeData.fromJson(result.data),
+      ], noMore: true);
+    }
+    return RefreshResult.failed(result.msg ?? '首页数据加载失败');
   }
 
   void _openCourseDetail(String id, String type) {
@@ -131,10 +132,11 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               Expanded(
-                child: RefreshIndicator(
-                  color: AppColors.theme,
-                  onRefresh: _refresh,
-                  child: _buildContent(),
+                child: RefreshListView<_HomeData>(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  onData: _loadHome,
+                  itemBuilder: (context, data, index) =>
+                      _buildHomeContent(data),
                 ),
               ),
             ],
@@ -144,39 +146,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildContent() {
-    if (_loading && _data == null) {
-      return ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        children: const [
-          SizedBox(height: 220),
-          Center(child: CircularProgressIndicator()),
-        ],
-      );
-    }
-
-    if (_data == null) {
-      return ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 150, 16, 24),
-        children: [
-          Icon(Icons.cloud_off_outlined, size: 48, color: AppColors.content),
-          const SizedBox(height: 12),
-          Text(
-            _errorMessage ?? '首页数据加载失败，下拉重试',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: AppColors.content),
-          ),
-        ],
-      );
-    }
-
-    return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 16),
+  Widget _buildHomeContent(_HomeData data) {
+    return Column(
       children: [
         _HomeBannerCarousel(
-          banners: _data!.banners,
+          banners: data.banners,
           onTap: (banner) {
             const courseTypes = {'gk', 'bs', 'ms', 'ydy', 'zx'};
             if (courseTypes.contains(banner.jumpType)) {
@@ -193,7 +167,7 @@ class _HomePageState extends State<HomePage> {
           actionText: '查看全部',
           onAction: _openCourseList,
         ),
-        if (_data!.hotCourses.isEmpty)
+        if (data.hotCourses.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 36),
             child: Text(
@@ -203,7 +177,7 @@ class _HomePageState extends State<HomePage> {
             ),
           )
         else
-          ..._data!.hotCourses.map(
+          ...data.hotCourses.map(
             (course) => _CourseCard(
               course: course,
               onTap: () => _openCourseDetail(course.id, course.type),
