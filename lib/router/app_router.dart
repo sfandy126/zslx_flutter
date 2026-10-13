@@ -58,6 +58,13 @@ class AppRouter {
     GoRouter.of(context).pop(result);
   }
 
+  static bool maybePop<T>(BuildContext context, [T? result]) {
+    final router = GoRouter.of(context);
+    if (!router.canPop()) return false;
+    router.pop(result);
+    return true;
+  }
+
   static void goNamed(
     BuildContext context,
     RouterNames name, {

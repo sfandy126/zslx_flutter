@@ -3,11 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 
-import '../users/md_user.dart';
 import '../utils/utils.dart';
-import 'md_cmd.dart';
-import 'md_env.dart';
-import 'package:zslx_flutter/config/app_config.dart';
 import '../extensions/string_sign.dart';
 
 enum ResultState { unknown, success, outed, failed }
