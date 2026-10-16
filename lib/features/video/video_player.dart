@@ -4,6 +4,8 @@ import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../config/app_orientation.dart';
+
 enum _MDVideoSourceType { network, file }
 
 class MDVideoPlayer extends StatefulWidget {
@@ -163,6 +165,12 @@ class _MDVideoPlayerState extends State<MDVideoPlayer> {
         fit: BoxFit.contain,
         placeholder: widget.placeholder,
         autoDispose: false,
+        // 全屏时横屏，退出全屏（含全屏中直接返回）后恢复为 App 全局方向
+        deviceOrientationsOnFullScreen: const [
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
+        ],
+        deviceOrientationsAfterFullScreen: AppOrientation.orientations,
         translations: _chineseTranslations(),
         controlsConfiguration: BetterPlayerControlsConfiguration(
           enablePlaybackSpeed: true, // 是否显示播放速度
