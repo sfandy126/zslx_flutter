@@ -308,6 +308,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
       return;
     }
     MDTotast.showLoading();
+    String? playbackUrl;
     try {
       final result = await MDPost.sendApiSession(
         cmd: .ossUrl,
@@ -323,7 +324,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
         MDTotast.showError(result.msg ?? '视频加载失败');
         return;
       }
-      final playbackUrl = _stringFrom(result.data ?? const {}, const [
+      playbackUrl = _stringFrom(result.data ?? const {}, const [
         'm3u8_url',
         'url',
       ]);
@@ -338,8 +339,20 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
     } finally {
       MDTotast.hideLoading();
     }
-    // TODO: 使用解析后的视频地址接入录播播放器。
-    _showTodo('录播播放器');
+    if (!mounted) return;
+    await AppRouter.pushNamed<void>(
+      context,
+      RouterNames.video,
+      queryParameters: {
+        'url': playbackUrl,
+        'title': node.title,
+        'courseTitle': info.title,
+        'cover': info.picture,
+        'courseId': info.id,
+        'courseType': info.type,
+        'sectionId': node.id,
+      },
+    );
   }
 
   Future<RefreshResult<_CourseWork>> _loadWorkPage(int page) async {
@@ -1032,46 +1045,48 @@ class _NodeGroup extends StatelessWidget {
     }
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(color: AppColors.white, borderRadius: .zero),
-      child: Theme(
-        data: Theme.of(context).copyWith(dividerColor: AppColors.transparent),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.fromLTRB(14, 0, 12, 0),
-          childrenPadding: const EdgeInsets.only(bottom: 4),
-          initiallyExpanded: initiallyExpanded,
-          trailing: const Icon(Icons.expand_more, size: 16),
-          title: Row(
-            children: [
-              Container(
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: AppColors.theme,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  node.title,
-                  style: TextStyle(
-                    color: AppColors.title,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+      child: Material(
+        color: AppColors.white,
+        child: Theme(
+          data: Theme.of(context).copyWith(dividerColor: AppColors.transparent),
+          child: ExpansionTile(
+            tilePadding: const EdgeInsets.fromLTRB(14, 0, 12, 0),
+            childrenPadding: const EdgeInsets.only(bottom: 4),
+            initiallyExpanded: initiallyExpanded,
+            trailing: const Icon(Icons.expand_more, size: 16),
+            title: Row(
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: AppColors.theme,
+                    shape: BoxShape.circle,
                   ),
                 ),
-              ),
-            ],
-          ),
-          children: children
-              .map(
-                (child) => _NodeCard(
-                  node: child,
-                  live: live,
-                  onTap: () => onTap(child),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    node.title,
+                    style: TextStyle(
+                      color: AppColors.title,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
-              )
-              .toList(),
+              ],
+            ),
+            children: children
+                .map(
+                  (child) => _NodeCard(
+                    node: child,
+                    live: live,
+                    onTap: () => onTap(child),
+                  ),
+                )
+                .toList(),
+          ),
         ),
       ),
     );
@@ -1230,7 +1245,7 @@ class _TopLiveNodeCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 6),
               shape: const StadiumBorder(),
             ),
-            child: const Text('正在直播', style: TextStyle(fontSize: 12)),
+            child: const Text('正在直播', style: TextStyle(fontSize: 10)),
           ),
         ],
       ),
@@ -1563,9 +1578,7 @@ class _CourseNode {
         'get_hf_data_check',
         'hf_data_check',
       ]),
-      isLive:
-          _intFrom(json['is_zhibo']) == 1 ||
-          _stringFrom(json, const ['title']) == '第一节小节',
+      isLive: _intFrom(json['is_zhibo']) == 1,
       isFinished: _intFrom(json['is_finish']) == 1,
       allowTry: _intFrom(json['allow_try']),
       isOwn: isOwn,

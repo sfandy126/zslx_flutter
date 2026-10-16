@@ -81,7 +81,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
           'CourseLearnPage .dateCourses failed: ${result.msg ?? 'unknown error'}',
         );
       }
-    } catch (error, _) {
+    } catch (error) {
       if (!mounted || request != _dateRequest) return;
       Utils.log('CourseLearnPage .dateCourses failed: $error');
     } finally {

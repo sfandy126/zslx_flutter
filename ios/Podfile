@@ -48,6 +48,7 @@ post_install do |installer|
       if ['ExtSwift', 'SnapKit'].include?(target.name)
         # BaijiaYun's prebuilt frameworks require resilient Swift entry points.
         config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
       end
     end
   end

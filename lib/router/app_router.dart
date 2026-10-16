@@ -19,6 +19,7 @@ import '../features/settings/about_page.dart';
 import '../features/settings/setup_page.dart';
 import '../features/starts/start_page.dart';
 import '../features/starts/tabbar_page.dart';
+import '../features/video/video_page.dart';
 import '../features/web/web_page.dart';
 
 enum RouterNames {
@@ -35,6 +36,7 @@ enum RouterNames {
   courseList,
   courseSearch,
   courseDetail,
+  video,
   feedback,
   web,
   setup,
@@ -162,6 +164,22 @@ class AppRouter {
             id: state.uri.queryParameters['id'] ?? '',
             type: state.uri.queryParameters['type'] ?? '',
             orderId: state.uri.queryParameters['orderId'] ?? '',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/video',
+        name: RouterNames.video.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: VideoPage(
+            url: state.uri.queryParameters['url'] ?? '',
+            title: state.uri.queryParameters['title'] ?? '',
+            courseTitle: state.uri.queryParameters['courseTitle'] ?? '',
+            cover: state.uri.queryParameters['cover'] ?? '',
+            courseId: state.uri.queryParameters['courseId'] ?? '',
+            courseType: state.uri.queryParameters['courseType'] ?? '',
+            sectionId: state.uri.queryParameters['sectionId'] ?? '',
           ),
         ),
       ),
