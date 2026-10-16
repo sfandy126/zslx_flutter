@@ -7,6 +7,11 @@ import 'package:flutter/services.dart';
 class AppOrientation {
   AppOrientation._();
 
+  /// 应用全局方向，需在 WidgetsFlutterBinding.ensureInitialized() 之后调用
+  static Future<void> configure() {
+    return SystemChrome.setPreferredOrientations(orientations);
+  }
+
   /// 最短边 >= 600 逻辑像素视为平板
   static bool get isTablet {
     final views = PlatformDispatcher.instance.views;
@@ -21,8 +26,4 @@ class AppOrientation {
       ? DeviceOrientation.values
       : const [DeviceOrientation.portraitUp];
 
-  /// 应用全局方向，需在 WidgetsFlutterBinding.ensureInitialized() 之后调用
-  static Future<void> apply() {
-    return SystemChrome.setPreferredOrientations(orientations);
-  }
 }
