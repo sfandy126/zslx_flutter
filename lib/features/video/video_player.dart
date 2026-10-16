@@ -78,9 +78,6 @@ class _MDVideoPlayerState extends State<MDVideoPlayer> {
     final controller = _createController();
     _controller = controller;
     controller.addEventsListener(_handlePlayerEvent);
-    // 插件的初始化Completer可能在setDataSource方法回复之前收到错误事件。
-    // 该时序下Future尚未被监听，局部Zone负责接住VideoError并通知失败态；
-    // 不能只记日志或空catch，否则页面仍会停留在加载中。
     runZonedGuarded(
       () {
         _playerZone = Zone.current;
@@ -109,7 +106,6 @@ class _MDVideoPlayerState extends State<MDVideoPlayer> {
     try {
       await controller.setupDataSource(dataSource);
     } catch (error) {
-      // 方法本身也可能直接失败而不派发exception事件，必须显式通知页面。
       _reportFailure(controller, error);
     }
   }
@@ -139,7 +135,6 @@ class _MDVideoPlayerState extends State<MDVideoPlayer> {
 
   void _disposeController() {
     _controller.removeEventsListener(_handlePlayerEvent);
-    // 由封装层独占释放；让插件释放阶段的异步任务沿用初始化的错误边界。
     _playerZone.run(() => _controller.dispose(forceDispose: true));
   }
 
@@ -175,15 +170,12 @@ class _MDVideoPlayerState extends State<MDVideoPlayer> {
           enableQualities: false, // 是否显示画质
           enableAudioTracks: false, // 是否显示音频轨道
           overflowMenuCustomItems: [],
+          controlBarColor: const Color(0xFF000000).withValues(alpha: 0.5),
         ),
       ),
     );
   }
 
-  /// 播放器控件文案（溢出菜单"播放速度"等）统一中文。
-  /// 插件按系统 locale 的 languageCode 精确匹配 translations.languageCode，
-  /// 'zh-CN' 这类带地区后缀的代码永远匹配不上，未命中时回退内置翻译
-  /// （英文系统会显示英文），因此同时提供 'zh' 与 'en' 两份中文文案。
   List<BetterPlayerTranslations> _chineseTranslations() {
     final chinese = BetterPlayerTranslations.chinese();
     final englishKeyed = BetterPlayerTranslations(
