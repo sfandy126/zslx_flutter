@@ -84,13 +84,14 @@ dependencies:
   url_launcher: ^6.3.2
   # 日历控件
   table_calendar: ^3.3.0
-
   # baijia云依赖
   bjy_liveui_flutter: ^4.17.12
   bjy_playbackui_flutter: ^4.17.12
-
   #视频播放器
   better_player_plus: ^2.0.0
+  # isar数据库
+  isar_community: ^3.4.1
+  isar_community_flutter_libs: ^3.4.1
 
 #dart 依赖都放在此处
 dev_dependencies:
@@ -114,6 +115,7 @@ dev_dependencies:
   flutter_gen_runner: ^5.4.0 # 资源代码生成器
   json_serializable: ^6.14.1    # 代码生成器
   build_runner: ^2.15.1  # 运行生成器所需的工具
+  isar_community_generator: ^3.4.1
 
 flutter_gen:
   integrations:

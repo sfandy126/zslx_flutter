@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/history/history_server.dart';
 import '../../utils/utils.dart';
 import 'video_player.dart';
 
@@ -15,6 +16,9 @@ class VideoPage extends StatefulWidget {
     required this.courseId,
     required this.courseType,
     required this.sectionId,
+    this.sectionType = '',
+    this.sectionCourseId = '',
+    this.seekTime = 0,
     super.key,
   });
 
@@ -26,6 +30,15 @@ class VideoPage extends StatefulWidget {
   final String courseType;
   final String sectionId;
 
+  /// 节所属课程类型（real_type）
+  final String sectionType;
+
+  /// 节所属课程 id（real_id）
+  final String sectionCourseId;
+
+  /// 续播位置（秒）
+  final int seekTime;
+
   @override
   State<VideoPage> createState() => _VideoPageState();
 }
@@ -35,6 +48,15 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
   DateTime? _lastReportAt;
   bool _isPlaying = false;
   double _durationSeconds = 0;
+
+  /// 当前播放位置（秒），由 progress 事件更新
+  late double _positionSeconds = widget.seekTime.toDouble();
+
+  /// 播放器起播位置（秒），重新加载时从当前位置继续
+  late int _startSeconds = widget.seekTime;
+
+  /// 最近一次写入播放记录的 (total, time)，避免重复写入
+  (int, int)? _lastSavedProgress;
 
   /// 播放器加载失败（如视频地址失效、网络异常）时展示错误态
   bool _playFailed = false;
@@ -55,6 +77,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
         state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached) {
       _reportElapsedTime();
+      _saveHistory();
     }
   }
 
@@ -63,6 +86,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _stopHeart();
     _reportElapsedTime();
+    _saveHistory();
     super.dispose();
   }
 
@@ -72,15 +96,18 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
         _startHeart();
       case BetterPlayerEventType.pause:
       case BetterPlayerEventType.finished:
+        if (event.betterPlayerEventType == BetterPlayerEventType.finished &&
+            _durationSeconds > 0) {
+          _positionSeconds = _durationSeconds;
+        }
         _stopHeart();
         _reportElapsedTime();
+        _saveHistory();
       case BetterPlayerEventType.progress:
-        final duration = event.parameters?['duration'];
-        if (duration is Duration) {
-          _durationSeconds = duration.inMilliseconds / 1000;
-        } else if (duration is num) {
-          _durationSeconds = duration.toDouble();
-        }
+        final duration = _secondsFrom(event.parameters?['duration']);
+        if (duration != null) _durationSeconds = duration;
+        final position = _secondsFrom(event.parameters?['progress']);
+        if (position != null) _positionSeconds = position;
       case BetterPlayerEventType.exception:
         _stopHeart();
         _reportElapsedTime();
@@ -153,8 +180,39 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
     _reportElapsedTime();
     setState(() {
       _playFailed = false;
+      if (_positionSeconds > 0) _startSeconds = _positionSeconds.floor();
       _playerSeed += 1;
     });
+  }
+
+  static double? _secondsFrom(Object? value) {
+    if (value is Duration) return value.inMilliseconds / 1000;
+    if (value is num) return value.toDouble();
+    return null;
+  }
+
+  /// 保存录播播放进度：暂停/播完、离开页面、App 退到后台时调用
+  void _saveHistory() {
+    // 播放器未就绪（未拿到时长）时不记录
+    if (_durationSeconds <= 0) return;
+    final total = _durationSeconds.round();
+    final time = _positionSeconds.clamp(0, _durationSeconds).round();
+    if (_lastSavedProgress == (total, time)) return;
+    _lastSavedProgress = (total, time);
+    final record = PlayHistory()
+      ..cId = widget.courseId
+      ..cType = widget.courseType
+      ..cName = widget.courseTitle
+      ..cPhoto = widget.cover
+      ..sId = widget.sectionId
+      ..sType = widget.sectionType
+      ..sCid = widget.sectionCourseId
+      ..sName = widget.title
+      ..url = widget.url
+      ..total = total
+      ..time = time
+      ..source = PlayHistorySource.recording;
+    unawaited(HistoryServer.insertOrUpdate(record));
   }
 
   Widget _buildPlayer() {
@@ -209,6 +267,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
     return MDVideoPlayer.network(
       source,
       key: ValueKey(_playerSeed),
+      startAt: _startSeconds > 0 ? Duration(seconds: _startSeconds) : null,
       autoPlay: true,
       looping: false,
       aspectRatio: 16 / 9,

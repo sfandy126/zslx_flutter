@@ -73,15 +73,15 @@ class BjyServer {
       return false;
     }
 
-    enterPlayback(playback);
-    return true;
+    return enterPlayback(playback);
   }
 
-  static void enterPlayback(BjyPlayback playback) {
+  /// 进入回放，回放信息无效时返回 false
+  static bool enterPlayback(BjyPlayback playback) {
     _ensureInitialized();
     if (playback.room.isEmpty || playback.token.isEmpty) {
       MDTotast.showError('回放信息无效');
-      return;
+      return false;
     }
 
     _playbackSdk.startPlayback(playback.room, playback.token, {
@@ -89,6 +89,7 @@ class BjyServer {
       'userName': playback.name,
       'supportBackgroundAudio': true,
     });
+    return true;
   }
 
   static void _enterLive(BjyLive live) {

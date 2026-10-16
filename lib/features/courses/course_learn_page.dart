@@ -152,7 +152,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
   }
 
   Future<void> _openHistory() async {
-    // TODO: 学习记录功能即将开放
+    await AppRouter.pushNamed<void>(context, RouterNames.learnHistory);
   }
 
   Future<void> _openLogin() async {

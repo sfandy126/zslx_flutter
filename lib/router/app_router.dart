@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../features/courses/course_detail_page.dart';
 import '../features/courses/course_list_page.dart';
 import '../features/courses/course_search_page.dart';
+import '../features/courses/learn_history_page.dart';
 import '../features/logins/bind_page.dart';
 import '../features/logins/forgot_page.dart';
 import '../features/logins/info_page.dart';
@@ -36,6 +37,7 @@ enum RouterNames {
   courseList,
   courseSearch,
   courseDetail,
+  learnHistory,
   video,
   feedback,
   web,
@@ -180,8 +182,19 @@ class AppRouter {
             courseId: state.uri.queryParameters['courseId'] ?? '',
             courseType: state.uri.queryParameters['courseType'] ?? '',
             sectionId: state.uri.queryParameters['sectionId'] ?? '',
+            sectionType: state.uri.queryParameters['sectionType'] ?? '',
+            sectionCourseId:
+                state.uri.queryParameters['sectionCourseId'] ?? '',
+            seekTime:
+                int.tryParse(state.uri.queryParameters['seekTime'] ?? '') ?? 0,
           ),
         ),
+      ),
+      GoRoute(
+        path: '/learn-history',
+        name: RouterNames.learnHistory.routeName,
+        pageBuilder: (context, state) =>
+            _platformPage(key: state.pageKey, child: const LearnHistoryPage()),
       ),
       GoRoute(
         path: '/feedback',

@@ -197,6 +197,17 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
   /// 当前数据列表
   List<T> get items => List.unmodifiable(_items);
 
+  /// 外部调用：移除满足条件的数据（如删除成功后），移除后为空时展示空态
+  void removeWhere(bool Function(T item) test) {
+    if (!mounted) return;
+    setState(() {
+      _items.removeWhere(test);
+      if (_items.isEmpty && _status == RefreshListStatus.success) {
+        _status = RefreshListStatus.empty;
+      }
+    });
+  }
+
   Future<void> _initialLoad() {
     return _loadFirstPage(showLoading: true, finishRefresh: false);
   }
