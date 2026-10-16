@@ -331,8 +331,11 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
       return;
     }
     if (!_canAccessCourse()) return;
-    // TODO: 接入课程资料页面。
-    _showTodo('课程资料页面');
+    AppRouter.pushNamed<void>(
+      context,
+      RouterNames.courseFolder,
+      queryParameters: {'courseId': _courseId, 'courseType': _courseType},
+    );
   }
 
   Future<void> _openNode(_CourseNode node, {required bool live}) async {

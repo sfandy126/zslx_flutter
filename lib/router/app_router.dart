@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/courses/course_detail_page.dart';
+import '../features/courses/course_files_page.dart';
+import '../features/courses/course_folder_page.dart';
 import '../features/courses/course_list_page.dart';
 import '../features/courses/course_search_page.dart';
 import '../features/courses/learn_history_page.dart';
@@ -37,6 +39,8 @@ enum RouterNames {
   courseList,
   courseSearch,
   courseDetail,
+  courseFolder,
+  courseFiles,
   learnHistory,
   video,
   feedback,
@@ -170,6 +174,30 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: '/course-folder',
+        name: RouterNames.courseFolder.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: CourseFolderPage(
+            courseId: state.uri.queryParameters['courseId'] ?? '',
+            courseType: state.uri.queryParameters['courseType'] ?? '',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/course-files',
+        name: RouterNames.courseFiles.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: CourseFilesPage(
+            folderId: state.uri.queryParameters['folderId'] ?? '',
+            folderName: state.uri.queryParameters['folderName'] ?? '',
+            courseId: state.uri.queryParameters['courseId'] ?? '',
+            courseType: state.uri.queryParameters['courseType'] ?? '',
+          ),
+        ),
+      ),
+      GoRoute(
         path: '/video',
         name: RouterNames.video.routeName,
         pageBuilder: (context, state) => _platformPage(
@@ -223,6 +251,8 @@ class AppRouter {
             url: state.uri.queryParameters['url'],
             title: state.uri.queryParameters['title'] ?? '',
             disableFd: state.uri.queryParameters['disableFd'] == 'true',
+            shareType: WebShareType.values
+                .asNameMap()[state.uri.queryParameters['shareType']],
           ),
         ),
       ),
