@@ -54,8 +54,8 @@ class _MinePageState extends State<MinePage> {
                         onLogin: _handleHeaderTap,
                         // TODO: 课程订单功能即将开放
                         onOrders: () => _showMessage('课程订单功能即将开放'),
-                        // TODO: 钱包功能即将开放
-                        onWallet: () => _showMessage('钱包功能即将开放'),
+                        onWallet: () =>
+                            AppRouter.pushNamed(context, RouterNames.wallet),
                       ),
                       const SizedBox(height: 24),
                       _MineActionTile(

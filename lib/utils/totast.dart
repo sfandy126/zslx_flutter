@@ -15,6 +15,10 @@ class MDTotast {
     EasyLoading.showSuccess(message);
   }
 
+  static void showMessage(String message) {
+    EasyLoading.showToast(message);
+  }
+
   static void hideLoading() {
     EasyLoading.dismiss();
   }

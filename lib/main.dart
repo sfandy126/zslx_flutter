@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '/utils/utils.dart';
+import 'features/pay/storekit.dart';
 import 'router/app_router.dart';
 import 'services/history/history_server.dart';
 
@@ -13,6 +16,9 @@ void main() async {
   await MDUser.defualt.init();
   await HistoryServer.init();
   await AppConfig.printInfo();  
+  if (Platform.isIOS) {
+    MDStoreKit.configuration();
+  }
   runApp(const MyApp());
 }
 

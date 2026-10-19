@@ -92,6 +92,8 @@ dependencies:
   # isar数据库
   isar_community: ^3.4.1
   isar_community_flutter_libs: ^3.4.1
+  # iOS内购(StoreKit2)
+  in_app_purchase_storekit: ^0.4.14
 
   # fluwx: ^6.0.6
   # fluwx_no_pay: ^6.0.6

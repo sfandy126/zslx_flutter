@@ -25,6 +25,8 @@ import '../features/settings/setup_page.dart';
 import '../features/starts/start_page.dart';
 import '../features/starts/tabbar_page.dart';
 import '../features/video/video_page.dart';
+import '../features/wallet/wallet_order.dart';
+import '../features/wallet/wallet_page.dart';
 import '../features/web/web_page.dart';
 
 enum RouterNames {
@@ -50,6 +52,8 @@ enum RouterNames {
   feedback,
   web,
   setup,
+  wallet,
+  walletOrder,
   about;
 
   String get routeName => name;
@@ -257,6 +261,18 @@ class AppRouter {
         name: RouterNames.setup.routeName,
         pageBuilder: (context, state) =>
             _platformPage(key: state.pageKey, child: const SetupPage()),
+      ),
+      GoRoute(
+        path: '/wallet',
+        name: RouterNames.wallet.routeName,
+        pageBuilder: (context, state) =>
+            _platformPage(key: state.pageKey, child: const WalletPage()),
+      ),
+      GoRoute(
+        path: '/wallet-order',
+        name: RouterNames.walletOrder.routeName,
+        pageBuilder: (context, state) =>
+            _platformPage(key: state.pageKey, child: const WalletOrderPage()),
       ),
       GoRoute(
         path: '/about',
