@@ -182,7 +182,7 @@ SPEC REPOS:
     - BRTC
     - BRTCCore
     - SVGAPlayer
-  trunk:
+  https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git:
     - Alamofire
     - ExCodable
     - ExtSwift

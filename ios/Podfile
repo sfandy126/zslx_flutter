@@ -1,6 +1,5 @@
 source 'https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git'
 source 'https://git.baijiashilian.com/open-ios/specs.git'
-source 'https://cdn.cocoapods.org/'
 
 # Runner and Pods require iOS 15.
 platform :ios, '15.0'
