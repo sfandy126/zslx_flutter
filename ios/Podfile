@@ -1,3 +1,4 @@
+source 'https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git'
 source 'https://git.baijiashilian.com/open-ios/specs.git'
 source 'https://cdn.cocoapods.org/'
 
