@@ -19,7 +19,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 2.0.0+1
 
 environment:
-  sdk: ^3.12.2
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -36,8 +37,8 @@ dependencies:
   #Cupertino apple 风格的图标
   cupertino_icons: ^1.0.8
   #获取当前设备信息 
-  device_info_plus: ^11.5.0
-  package_info_plus: ^8.3.1
+  device_info_plus: ^13.0.0
+  package_info_plus: ^10.1.0
   # https://github.com/ReactiveX/rxdart
   rxdart: ^0.28.0
   #网络请求
@@ -67,7 +68,7 @@ dependencies:
   keyboard_actions: ^4.2.1
   color: ^3.0.0
   webview_flutter: ^4.14.1
-  share_plus: ^12.0.2
+  share_plus: ^13.0.0
   path_provider: ^2.1.6
   # totast提示框
   flutter_easyloading: ^4.0.2
@@ -83,10 +84,17 @@ dependencies:
   url_launcher: ^6.3.2
   # 日历控件
   table_calendar: ^3.3.0
-
   # baijia云依赖
   bjy_liveui_flutter: ^4.17.12
   bjy_playbackui_flutter: ^4.17.12
+  #视频播放器
+  better_player_plus: ^2.0.0
+  # isar数据库
+  isar_community: ^3.4.1
+  isar_community_flutter_libs: ^3.4.1
+
+  # fluwx: ^6.0.6
+  # fluwx_no_pay: ^6.0.6
 
 #dart 依赖都放在此处
 dev_dependencies:
@@ -110,6 +118,7 @@ dev_dependencies:
   flutter_gen_runner: ^5.4.0 # 资源代码生成器
   json_serializable: ^6.14.1    # 代码生成器
   build_runner: ^2.15.1  # 运行生成器所需的工具
+  isar_community_generator: ^3.4.1
 
 flutter_gen:
   integrations:

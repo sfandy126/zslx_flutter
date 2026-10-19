@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../router/app_router.dart';
 import '../../services/bjy_server.dart';
+import '../../services/history/history_server.dart';
 import '../../utils/utils.dart';
 import '../../widgets/refresh_list_view.dart';
 
@@ -46,11 +49,19 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   String? _loadError;
   Key _workListKey = UniqueKey();
 
+  /// 录播播放记录，key 见 [_historyKey]
+  final Map<String, PlayHistory> _histories = {};
+
+  /// 最近一次播放的录播节
+  String? _lastPlayKey;
+  StreamSubscription<PlayHistory>? _historySubscription;
+
   @override
   void initState() {
     super.initState();
     _courseId = widget.id;
     _courseType = widget.type;
+    _historySubscription = HistoryServer.changes.listen(_onHistoryChanged);
     _htmlController = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(AppColors.white)
@@ -77,6 +88,54 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
         ),
       );
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadDetail());
+  }
+
+  @override
+  void dispose() {
+    _historySubscription?.cancel();
+    super.dispose();
+  }
+
+  static String _historyKey(String sType, String sId) => '$sType|$sId';
+
+  /// 读取本课程的录播播放记录，用于展示播放进度与“上次播放”
+  Future<void> _loadHistories() async {
+    final info = _detail?.info;
+    if (info == null) return;
+    final histories = await HistoryServer.fetchFor(
+      cId: info.id,
+      cType: info.type,
+      source: PlayHistorySource.recording,
+    );
+    if (!mounted || _detail?.info != info) return;
+    setState(() {
+      _histories
+        ..clear()
+        ..addEntries(
+          histories.map((item) => MapEntry(_historyKey(item.sType, item.sId), item)),
+        );
+      // 结果按更新时间倒序，第一条即为最近播放
+      _lastPlayKey = histories.isEmpty
+          ? null
+          : _historyKey(histories.first.sType, histories.first.sId);
+    });
+  }
+
+  void _onHistoryChanged(PlayHistory history) {
+    final info = _detail?.info;
+    if (!mounted ||
+        info == null ||
+        history.cId != info.id ||
+        history.cType != info.type ||
+        history.source != PlayHistorySource.recording ||
+        history.total <= 0) {
+      return;
+    }
+    final key = _historyKey(history.sType, history.sId);
+    setState(() {
+      _histories[key] = history;
+      _lastPlayKey = key;
+    });
   }
 
   Future<void> _loadDetail() async {
@@ -121,6 +180,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           _mainTab = 0;
           _workListKey = UniqueKey();
         });
+        unawaited(_loadHistories());
         await _loadDescription(detail.info.html);
       }
     } catch (error) {
@@ -258,8 +318,16 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
         // TODO: 接入课程下单页面。
         _showTodo('课程购买页面');
       case _CourseStartType.prebook:
-        // TODO: 接入一对一预约页面。
-        _showTodo('课程预约页面');
+        final prebooked = await AppRouter.pushNamed<bool>(
+          context,
+          RouterNames.coursePrebook,
+          queryParameters: {
+            'id': _courseId,
+            'orderId': widget.orderId,
+            'name': info.title,
+          },
+        );
+        if (prebooked == true && mounted) await _loadDetail();
       case _CourseStartType.none:
         break;
     }
@@ -271,8 +339,11 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
       return;
     }
     if (!_canAccessCourse()) return;
-    // TODO: 接入课程资料页面。
-    _showTodo('课程资料页面');
+    AppRouter.pushNamed<void>(
+      context,
+      RouterNames.courseFolder,
+      queryParameters: {'courseId': _courseId, 'courseType': _courseType},
+    );
   }
 
   Future<void> _openNode(_CourseNode node, {required bool live}) async {
@@ -290,13 +361,28 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
     }
 
     if (live) {
+      final sectionType = node.realType.isEmpty ? info.type : node.realType;
       final params = {
-        'type': node.realType.isEmpty ? info.type : node.realType,
+        'type': sectionType,
         'section_id': node.id,
         'get_hf_data_check': node.historyCheck,
       };
       if (node.isFinished) {
-        await BjyServer.loadAndToPlayback(params: params);
+        final entered = await BjyServer.loadAndToPlayback(params: params);
+        // 直播回放开始播放即记录，进度为 0
+        if (entered) {
+          final record = PlayHistory()
+            ..cId = info.id
+            ..cType = info.type
+            ..cName = info.title
+            ..cPhoto = info.picture
+            ..sId = node.id
+            ..sType = sectionType
+            ..sCid = node.realId.isEmpty ? info.id : node.realId
+            ..sName = node.title
+            ..source = PlayHistorySource.playback;
+          unawaited(HistoryServer.insertOrUpdate(record));
+        }
       } else {
         await BjyServer.loadAndToLive(params: params);
       }
@@ -308,6 +394,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
       return;
     }
     MDTotast.showLoading();
+    String? playbackUrl;
     try {
       final result = await MDPost.sendApiSession(
         cmd: .ossUrl,
@@ -323,7 +410,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
         MDTotast.showError(result.msg ?? '视频加载失败');
         return;
       }
-      final playbackUrl = _stringFrom(result.data ?? const {}, const [
+      playbackUrl = _stringFrom(result.data ?? const {}, const [
         'm3u8_url',
         'url',
       ]);
@@ -338,8 +425,24 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
     } finally {
       MDTotast.hideLoading();
     }
-    // TODO: 使用解析后的视频地址接入录播播放器。
-    _showTodo('录播播放器');
+    if (!mounted) return;
+    final history = _histories[_historyKey(node.realType, node.id)];
+    await AppRouter.pushNamed<void>(
+      context,
+      RouterNames.video,
+      queryParameters: {
+        'url': playbackUrl,
+        'title': node.title,
+        'courseTitle': info.title,
+        'cover': info.picture,
+        'courseId': info.id,
+        'courseType': info.type,
+        'sectionId': node.id,
+        'sectionType': node.realType,
+        'sectionCourseId': node.realId,
+        'seekTime': '${history?.seekTime ?? 0}',
+      },
+    );
   }
 
   Future<RefreshResult<_CourseWork>> _loadWorkPage(int page) async {
@@ -908,6 +1011,8 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
         node: nodes[index],
         live: live,
         initiallyExpanded: index == 0,
+        histories: live ? const {} : _histories,
+        lastPlayKey: live ? null : _lastPlayKey,
         onTap: (item) => _openNode(item, live: live),
       ),
     );
@@ -1014,12 +1119,29 @@ class _NodeGroup extends StatelessWidget {
     required this.live,
     required this.initiallyExpanded,
     required this.onTap,
+    this.histories = const {},
+    this.lastPlayKey,
   });
 
   final _CourseNode node;
   final bool live;
   final bool initiallyExpanded;
   final ValueChanged<_CourseNode> onTap;
+
+  /// 录播播放记录，仅录播目录使用
+  final Map<String, PlayHistory> histories;
+  final String? lastPlayKey;
+
+  Widget _buildCard(_CourseNode item) {
+    final key = _CourseDetailPageState._historyKey(item.realType, item.id);
+    return _NodeCard(
+      node: item,
+      live: live,
+      progress: histories[key]?.progress ?? 0,
+      isLastPlay: key == lastPlayKey,
+      onTap: () => onTap(item),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1028,50 +1150,44 @@ class _NodeGroup extends StatelessWidget {
       if (node.isTopLive) {
         return _TopLiveNodeCard(node: node, onTap: () => onTap(node));
       }
-      return _NodeCard(node: node, live: live, onTap: () => onTap(node));
+      return _buildCard(node);
     }
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(color: AppColors.white, borderRadius: .zero),
-      child: Theme(
-        data: Theme.of(context).copyWith(dividerColor: AppColors.transparent),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.fromLTRB(14, 0, 12, 0),
-          childrenPadding: const EdgeInsets.only(bottom: 4),
-          initiallyExpanded: initiallyExpanded,
-          trailing: const Icon(Icons.expand_more, size: 16),
-          title: Row(
-            children: [
-              Container(
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: AppColors.theme,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  node.title,
-                  style: TextStyle(
-                    color: AppColors.title,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+      child: Material(
+        color: AppColors.white,
+        child: Theme(
+          data: Theme.of(context).copyWith(dividerColor: AppColors.transparent),
+          child: ExpansionTile(
+            tilePadding: const EdgeInsets.fromLTRB(14, 0, 12, 0),
+            childrenPadding: const EdgeInsets.only(bottom: 4),
+            initiallyExpanded: initiallyExpanded,
+            trailing: const Icon(Icons.expand_more, size: 16),
+            title: Row(
+              children: [
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: AppColors.theme,
+                    shape: BoxShape.circle,
                   ),
                 ),
-              ),
-            ],
-          ),
-          children: children
-              .map(
-                (child) => _NodeCard(
-                  node: child,
-                  live: live,
-                  onTap: () => onTap(child),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    node.title,
+                    style: TextStyle(
+                      color: AppColors.title,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
-              )
-              .toList(),
+              ],
+            ),
+            children: children.map(_buildCard).toList(),
+          ),
         ),
       ),
     );
@@ -1083,11 +1199,27 @@ class _NodeCard extends StatelessWidget {
     required this.node,
     required this.live,
     required this.onTap,
+    this.progress = 0,
+    this.isLastPlay = false,
   });
 
   final _CourseNode node;
   final bool live;
   final VoidCallback onTap;
+
+  /// 录播播放进度 0~1
+  final double progress;
+
+  /// 是否为最近一次播放的录播
+  final bool isLastPlay;
+
+  /// 最多保留 1 位小数，如 12.5%、12%
+  static String _percentText(double progress) {
+    final percent = (progress * 1000).round() / 10;
+    return percent == percent.truncateToDouble()
+        ? percent.toStringAsFixed(0)
+        : percent.toStringAsFixed(1);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1147,6 +1279,30 @@ class _NodeCard extends StatelessWidget {
                   Text(
                     node.teacher,
                     style: TextStyle(color: AppColors.content, fontSize: 12),
+                  ),
+                ],
+                if (!live && (progress > 0 || isLastPlay)) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      if (progress > 0)
+                        Text(
+                          '播放进度：${_percentText(progress)}%',
+                          style: TextStyle(
+                            color: AppColors.content,
+                            fontSize: 12,
+                          ),
+                        ),
+                      if (progress > 0 && isLastPlay) const SizedBox(width: 16),
+                      if (isLastPlay)
+                        Text(
+                          '上次播放',
+                          style: TextStyle(
+                            color: AppColors.theme,
+                            fontSize: 12,
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ],
@@ -1230,7 +1386,7 @@ class _TopLiveNodeCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 6),
               shape: const StadiumBorder(),
             ),
-            child: const Text('正在直播', style: TextStyle(fontSize: 12)),
+            child: const Text('正在直播', style: TextStyle(fontSize: 10)),
           ),
         ],
       ),
@@ -1563,9 +1719,7 @@ class _CourseNode {
         'get_hf_data_check',
         'hf_data_check',
       ]),
-      isLive:
-          _intFrom(json['is_zhibo']) == 1 ||
-          _stringFrom(json, const ['title']) == '第一节小节',
+      isLive: _intFrom(json['is_zhibo']) == 1,
       isFinished: _intFrom(json['is_finish']) == 1,
       allowTry: _intFrom(json['allow_try']),
       isOwn: isOwn,

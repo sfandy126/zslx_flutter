@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+
 import '/utils/utils.dart';
 import 'router/app_router.dart';
+import 'services/history/history_server.dart';
+
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await AppOrientation.configure();
   await AppConfig.init();
   await MDUser.defualt.init();
-  await AppConfig.printInfo();
+  await HistoryServer.init();
+  await AppConfig.printInfo();  
   runApp(const MyApp());
 }
 

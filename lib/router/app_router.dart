@@ -4,9 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/courses/course_detail_page.dart';
+import '../features/courses/course_files_page.dart';
+import '../features/courses/course_folder_page.dart';
 import '../features/courses/course_list_page.dart';
+import '../features/courses/course_prebook_page.dart';
 import '../features/courses/course_search_page.dart';
+import '../features/courses/learn_history_page.dart';
 import '../features/logins/bind_page.dart';
+import '../features/logins/favorites_page.dart';
 import '../features/logins/forgot_page.dart';
 import '../features/logins/info_page.dart';
 import '../features/logins/login_page.dart';
@@ -19,6 +24,7 @@ import '../features/settings/about_page.dart';
 import '../features/settings/setup_page.dart';
 import '../features/starts/start_page.dart';
 import '../features/starts/tabbar_page.dart';
+import '../features/video/video_page.dart';
 import '../features/web/web_page.dart';
 
 enum RouterNames {
@@ -35,6 +41,12 @@ enum RouterNames {
   courseList,
   courseSearch,
   courseDetail,
+  courseFolder,
+  courseFiles,
+  coursePrebook,
+  learnHistory,
+  favorites,
+  video,
   feedback,
   web,
   setup,
@@ -166,6 +178,75 @@ class AppRouter {
         ),
       ),
       GoRoute(
+        path: '/course-folder',
+        name: RouterNames.courseFolder.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: CourseFolderPage(
+            courseId: state.uri.queryParameters['courseId'] ?? '',
+            courseType: state.uri.queryParameters['courseType'] ?? '',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/course-files',
+        name: RouterNames.courseFiles.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: CourseFilesPage(
+            folderId: state.uri.queryParameters['folderId'] ?? '',
+            folderName: state.uri.queryParameters['folderName'] ?? '',
+            courseId: state.uri.queryParameters['courseId'] ?? '',
+            courseType: state.uri.queryParameters['courseType'] ?? '',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/course-prebook',
+        name: RouterNames.coursePrebook.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: CoursePrebookPage(
+            id: state.uri.queryParameters['id'] ?? '',
+            orderId: state.uri.queryParameters['orderId'] ?? '',
+            name: state.uri.queryParameters['name'] ?? '',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/video',
+        name: RouterNames.video.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: VideoPage(
+            url: state.uri.queryParameters['url'] ?? '',
+            title: state.uri.queryParameters['title'] ?? '',
+            courseTitle: state.uri.queryParameters['courseTitle'] ?? '',
+            cover: state.uri.queryParameters['cover'] ?? '',
+            courseId: state.uri.queryParameters['courseId'] ?? '',
+            courseType: state.uri.queryParameters['courseType'] ?? '',
+            sectionId: state.uri.queryParameters['sectionId'] ?? '',
+            sectionType: state.uri.queryParameters['sectionType'] ?? '',
+            sectionCourseId:
+                state.uri.queryParameters['sectionCourseId'] ?? '',
+            seekTime:
+                int.tryParse(state.uri.queryParameters['seekTime'] ?? '') ?? 0,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/learn-history',
+        name: RouterNames.learnHistory.routeName,
+        pageBuilder: (context, state) =>
+            _platformPage(key: state.pageKey, child: const LearnHistoryPage()),
+      ),
+      GoRoute(
+        path: '/favorites',
+        name: RouterNames.favorites.routeName,
+        pageBuilder: (context, state) =>
+            _platformPage(key: state.pageKey, child: const FavoritesPage()),
+      ),
+      GoRoute(
         path: '/feedback',
         name: RouterNames.feedback.routeName,
         pageBuilder: (context, state) =>
@@ -192,6 +273,8 @@ class AppRouter {
             url: state.uri.queryParameters['url'],
             title: state.uri.queryParameters['title'] ?? '',
             disableFd: state.uri.queryParameters['disableFd'] == 'true',
+            shareType: WebShareType.values
+                .asNameMap()[state.uri.queryParameters['shareType']],
           ),
         ),
       ),

@@ -59,7 +59,7 @@ class ChannelInfo {
   });
 }
 
-class ChannelConfig {
+class AppChannel {
   static const String _rawChannel = String.fromEnvironment(
     'CHANNEL',
     defaultValue: '',

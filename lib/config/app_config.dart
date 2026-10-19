@@ -1,7 +1,7 @@
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 
-import 'channel_config.dart';
+import 'app_channel.dart';
 import 'device_info.dart';
 
 class AppConfig {
@@ -9,7 +9,7 @@ class AppConfig {
   static String? _deviceBrand;
 
   static Future<void> init() async {
-    await ChannelConfig.init();
+    await AppChannel.init();
     _packageInfo = await PackageInfo.fromPlatform();
     _deviceBrand = await DeviceInfo.getDeviceBrand();
   }
@@ -26,7 +26,7 @@ class AppConfig {
   /// 一键打印配置信息（调试用）
   static Future<void> printInfo() async {
     final pkg = packageInfo;
-    final channelInfo = ChannelConfig.getChannelInfo();
+    final channelInfo = AppChannel.getChannelInfo();
     final channelId = channelInfo.id.trim().isEmpty
         ? 'unknown'
         : channelInfo.id.trim();
@@ -57,7 +57,7 @@ class AppConfig {
 
   static String get deviceBrand => _deviceBrand ?? DeviceInfo.cachedBrand;
 
-  static BuildChannel get currentChannel => ChannelConfig.currentChannel;
+  static BuildChannel get currentChannel => AppChannel.currentChannel;
 
   static String get systemType {
     final channel = currentChannel;

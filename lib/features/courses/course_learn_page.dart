@@ -81,7 +81,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
           'CourseLearnPage .dateCourses failed: ${result.msg ?? 'unknown error'}',
         );
       }
-    } catch (error, _) {
+    } catch (error) {
       if (!mounted || request != _dateRequest) return;
       Utils.log('CourseLearnPage .dateCourses failed: $error');
     } finally {
@@ -152,7 +152,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
   }
 
   Future<void> _openHistory() async {
-    // TODO: 学习记录功能即将开放
+    await AppRouter.pushNamed<void>(context, RouterNames.learnHistory);
   }
 
   Future<void> _openLogin() async {
@@ -189,7 +189,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
       return;
     }
     if (course.expired == 1) {
-      // 课程过期了，不可点击
+      MDTotast.showError('该课程已过期');
       return;
     }
     final params = {'type': course.type, 'section_id': course.id};

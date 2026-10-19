@@ -1,17 +1,14 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:zslx_flutter/features/share/system_share.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 import 'package:zslx_flutter/extensions/string_sign.dart';
 
 enum WebType { url, html }
 
-enum WebShareType { systemShare }
+enum WebShareType { system }
 
 class WebPage extends StatefulWidget {
   const WebPage({
@@ -162,40 +159,10 @@ class _WebPageState extends State<WebPage> {
   }
 
   Future<void> _shareToSystem() async {
-    if (_isSharing || widget.shareType != WebShareType.systemShare) return;
-    final value = widget.url;
-    final uri = value == null ? null : Uri.tryParse(value);
-    const extensions = {'pdf', 'doc', 'docx', 'xls', 'xlsx'};
-    final extension = uri?.pathSegments.last.split('.').last.toLowerCase();
-    if (uri == null || !extensions.contains(extension)) {
-      _showError('暂不支持分享该文件格式');
-      return;
-    }
-
+    if (_isSharing || widget.shareType != WebShareType.system) return;
     setState(() => _isSharing = true);
     try {
-      final response = await Dio().get<List<int>>(
-        uri.toString(),
-        options: Options(responseType: ResponseType.bytes),
-      );
-      final bytes = response.data;
-      if (bytes == null || bytes.isEmpty) {
-        _showError('文件内容为空，无法分享');
-        return;
-      }
-      final directory = await getTemporaryDirectory();
-      final name = uri.pathSegments.last.isEmpty
-          ? 'download.$extension'
-          : uri.pathSegments.last;
-      final file = File('${directory.path}/$name');
-      await file.writeAsBytes(bytes, flush: true);
-      await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
-    } on DioException catch (error) {
-      _showError('文件下载失败，请检查网络连接');
-      Utils.log('WebPage share download error: ${error.message}');
-    } catch (error) {
-      _showError('分享失败，请稍后重试');
-      Utils.log('WebPage share error: $error');
+      await SystemShare.shareFile(widget.url);
     } finally {
       if (mounted) setState(() => _isSharing = false);
     }
@@ -211,7 +178,7 @@ class _WebPageState extends State<WebPage> {
           title: widget.title,
           onBackPressed: _goBack,
           actions: [
-            if (widget.shareType == WebShareType.systemShare)
+            if (widget.shareType == WebShareType.system)
               IconButton(
                 icon: const Icon(Icons.share),
                 onPressed: _isSharing ? null : _shareToSystem,
