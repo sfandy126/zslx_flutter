@@ -11,6 +11,7 @@ import '../features/courses/course_prebook_page.dart';
 import '../features/courses/course_search_page.dart';
 import '../features/courses/learn_history_page.dart';
 import '../features/logins/bind_page.dart';
+import '../features/logins/favorites_page.dart';
 import '../features/logins/forgot_page.dart';
 import '../features/logins/info_page.dart';
 import '../features/logins/login_page.dart';
@@ -44,6 +45,7 @@ enum RouterNames {
   courseFiles,
   coursePrebook,
   learnHistory,
+  favorites,
   video,
   feedback,
   web,
@@ -237,6 +239,12 @@ class AppRouter {
         name: RouterNames.learnHistory.routeName,
         pageBuilder: (context, state) =>
             _platformPage(key: state.pageKey, child: const LearnHistoryPage()),
+      ),
+      GoRoute(
+        path: '/favorites',
+        name: RouterNames.favorites.routeName,
+        pageBuilder: (context, state) =>
+            _platformPage(key: state.pageKey, child: const FavoritesPage()),
       ),
       GoRoute(
         path: '/feedback',

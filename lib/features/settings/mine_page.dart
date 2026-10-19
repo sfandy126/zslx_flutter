@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zslx_flutter/router/app_router.dart';
+
 import '../../utils/utils.dart';
 
 class MinePage extends StatefulWidget {
@@ -51,7 +52,9 @@ class _MinePageState extends State<MinePage> {
                         name: _viewModel.displayName,
                         avatar: _viewModel.avatar,
                         onLogin: _handleHeaderTap,
+                        // TODO: 课程订单功能即将开放
                         onOrders: () => _showMessage('课程订单功能即将开放'),
+                        // TODO: 钱包功能即将开放
                         onWallet: () => _showMessage('钱包功能即将开放'),
                       ),
                       const SizedBox(height: 24),
@@ -59,7 +62,7 @@ class _MinePageState extends State<MinePage> {
                         icon: 'assets/images/mine/mineFavorites.svg',
                         title: '收藏',
                         subtitle: '喜欢的课程',
-                        onTap: () => _showMessage('请先登录后查看收藏'),
+                        onTap: _openFavorites,
                       ),
                       _MineActionTile(
                         icon: 'assets/images/mine/mineFeedback.svg',
@@ -104,6 +107,14 @@ class _MinePageState extends State<MinePage> {
         }
       });
     }
+  }
+
+  void _openFavorites() {
+    if (!_viewModel.isLoggedIn) {
+      _handleHeaderTap();
+      return;
+    }
+    AppRouter.pushNamed(context, RouterNames.favorites);
   }
 
   Future<void> _callCustomerService() async {
