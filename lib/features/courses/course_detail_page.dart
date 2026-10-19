@@ -318,8 +318,16 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
         // TODO: 接入课程下单页面。
         _showTodo('课程购买页面');
       case _CourseStartType.prebook:
-        // TODO: 接入一对一预约页面。
-        _showTodo('课程预约页面');
+        final prebooked = await AppRouter.pushNamed<bool>(
+          context,
+          RouterNames.coursePrebook,
+          queryParameters: {
+            'id': _courseId,
+            'orderId': widget.orderId,
+            'name': info.title,
+          },
+        );
+        if (prebooked == true && mounted) await _loadDetail();
       case _CourseStartType.none:
         break;
     }

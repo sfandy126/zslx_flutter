@@ -93,6 +93,9 @@ dependencies:
   isar_community: ^3.4.1
   isar_community_flutter_libs: ^3.4.1
 
+  # fluwx: ^6.0.6
+  # fluwx_no_pay: ^6.0.6
+
 #dart 依赖都放在此处
 dev_dependencies:
   flutter_test:

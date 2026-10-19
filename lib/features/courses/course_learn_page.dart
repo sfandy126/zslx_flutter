@@ -189,7 +189,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
       return;
     }
     if (course.expired == 1) {
-      // 课程过期了，不可点击
+      MDTotast.showError('该课程已过期');
       return;
     }
     final params = {'type': course.type, 'section_id': course.id};

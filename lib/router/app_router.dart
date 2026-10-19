@@ -7,6 +7,7 @@ import '../features/courses/course_detail_page.dart';
 import '../features/courses/course_files_page.dart';
 import '../features/courses/course_folder_page.dart';
 import '../features/courses/course_list_page.dart';
+import '../features/courses/course_prebook_page.dart';
 import '../features/courses/course_search_page.dart';
 import '../features/courses/learn_history_page.dart';
 import '../features/logins/bind_page.dart';
@@ -41,6 +42,7 @@ enum RouterNames {
   courseDetail,
   courseFolder,
   courseFiles,
+  coursePrebook,
   learnHistory,
   video,
   feedback,
@@ -194,6 +196,18 @@ class AppRouter {
             folderName: state.uri.queryParameters['folderName'] ?? '',
             courseId: state.uri.queryParameters['courseId'] ?? '',
             courseType: state.uri.queryParameters['courseType'] ?? '',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/course-prebook',
+        name: RouterNames.coursePrebook.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: CoursePrebookPage(
+            id: state.uri.queryParameters['id'] ?? '',
+            orderId: state.uri.queryParameters['orderId'] ?? '',
+            name: state.uri.queryParameters['name'] ?? '',
           ),
         ),
       ),
