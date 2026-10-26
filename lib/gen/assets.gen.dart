@@ -190,10 +190,6 @@ class $AssetsImagesMineGen {
   SvgGenImage get mineDonwloads =>
       const SvgGenImage('assets/images/mine/mineDonwloads.svg');
 
-  /// File path: assets/images/mine/mineFavorites.svg
-  SvgGenImage get mineFavorites =>
-      const SvgGenImage('assets/images/mine/mineFavorites.svg');
-
   /// File path: assets/images/mine/mineFeedback.svg
   SvgGenImage get mineFeedback =>
       const SvgGenImage('assets/images/mine/mineFeedback.svg');
@@ -206,16 +202,20 @@ class $AssetsImagesMineGen {
   SvgGenImage get mineSetting =>
       const SvgGenImage('assets/images/mine/mineSetting.svg');
 
+  /// File path: assets/images/mine/mineWallet.svg
+  SvgGenImage get mineWallet =>
+      const SvgGenImage('assets/images/mine/mineWallet.svg');
+
   /// List of all assets
   List<dynamic> get values => [
     carama,
     defaultProfile,
     mineBg3x,
     mineDonwloads,
-    mineFavorites,
     mineFeedback,
     mineOnline,
     mineSetting,
+    mineWallet,
   ];
 }
 

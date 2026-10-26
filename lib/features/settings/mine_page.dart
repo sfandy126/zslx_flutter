@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zslx_flutter/router/app_router.dart';
@@ -54,16 +56,17 @@ class _MinePageState extends State<MinePage> {
                         onLogin: _handleHeaderTap,
                         onOrders: () =>
                             AppRouter.pushNamed(context, RouterNames.courseOrderList),
-                        onWallet: () =>
-                            AppRouter.pushNamed(context, RouterNames.wallet),
+                        onFavorites: () =>
+                            AppRouter.pushNamed(context, RouterNames.favorites),
                       ),
                       const SizedBox(height: 24),
-                      _MineActionTile(
-                        icon: 'assets/images/mine/mineFavorites.svg',
-                        title: '收藏',
-                        subtitle: '喜欢的课程',
-                        onTap: _openFavorites,
-                      ),
+                      if (Platform.isIOS)
+                        _MineActionTile(
+                          icon: 'assets/images/mine/mineWallet.svg',
+                          title: '钱包',
+                          subtitle: '学豆和明细',
+                          onTap: _openWallet,
+                        ),
                       _MineActionTile(
                         icon: 'assets/images/mine/mineFeedback.svg',
                         title: '意见反馈',
@@ -117,6 +120,10 @@ class _MinePageState extends State<MinePage> {
     AppRouter.pushNamed(context, RouterNames.favorites);
   }
 
+  void _openWallet() {
+    AppRouter.pushNamed(context, RouterNames.wallet);
+  }
+
   Future<void> _callCustomerService() async {
     final uri = Uri(scheme: 'tel', path: MDEnv.telephone);
     if (await canLaunchUrl(uri)) {
@@ -132,14 +139,14 @@ class _MineHeader extends StatelessWidget {
     required this.avatar,
     required this.onLogin,
     required this.onOrders,
-    required this.onWallet,
+    required this.onFavorites,
   });
 
   final String name;
   final String? avatar;
   final VoidCallback onLogin;
   final VoidCallback onOrders;
-  final VoidCallback onWallet;
+  final VoidCallback onFavorites;
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +177,7 @@ class _MineHeader extends StatelessWidget {
           children: [
             _HeaderButton(label: '课程订单', onTap: onOrders),
             const SizedBox(width: 12),
-            _HeaderButton(label: '钱包', onTap: onWallet),
+            _HeaderButton(label: '收藏', onTap: onFavorites),
           ],
         ),
       ],

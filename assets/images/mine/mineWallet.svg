@@ -1,0 +1,21 @@
+<svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="44.000000" height="44.000000" fill="none" customFrame="url(#clipPath_1)">
+	<defs>
+		<clipPath id="clipPath_1">
+			<rect width="44.000000" height="44.000000" x="0.000000" y="0.000000" rx="22.000000" fill="rgb(255,255,255)" />
+		</clipPath>
+		<clipPath id="clipPath_2">
+			<rect width="24.000000" height="24.000000" x="10.000000" y="10.000000" fill="rgb(255,255,255)" />
+		</clipPath>
+		<clipPath id="clipPath_3">
+			<rect width="18.000000" height="16.000000" x="13.000000" y="14.000000" fill="rgb(255,255,255)" />
+		</clipPath>
+	</defs>
+	<rect id="icon_bg1" width="44.000000" height="44.000000" x="0.000000" y="0.000000" rx="22.000000" fill="rgb(230,244,251)" />
+	<g id="wallet-outline" customFrame="url(#clipPath_2)">
+		<rect id="wallet-outline" width="24.000000" height="24.000000" x="10.000000" y="10.000000" />
+		<g id="wallet body" customFrame="url(#clipPath_3)">
+			<rect id="wallet body" width="18.000000" height="16.000000" x="13.000000" y="14.000000" />
+			<path id="矢量 57" d="M28 15L15 15C13.6667 15 13 15.6667 13 17L13 27C13 28.3333 13.6667 29 15 29L28 29C29.3333 29 30 28.3333 30 27L30 17C30 15.6667 29.3333 15 28 15ZM26 20C24.6667 20 24 20.6667 24 22C24 23.3333 24.6667 24 26 24L30 24L30 20L26 20Z" fill-rule="nonzero" stroke="rgb(26,174,229)" stroke-linecap="round" stroke-width="1.600000" />
+		</g>
+	</g>
+</svg>
