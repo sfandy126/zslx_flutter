@@ -10,6 +10,7 @@ import '../../widgets/dialog.dart';
 import '../../widgets/phone_field.dart';
 import '../../widgets/text_field.dart';
 import '../../extensions/string_rsa.dart';
+import 'wx_login.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -161,6 +162,17 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
+                    if (_viewModel.wxOpen) ...[
+                      const SizedBox(height: 24),
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: _wxLogin,
+                        child: Assets.images.public.wx.svg(
+                          width: 36,
+                          height: 36,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -211,21 +223,26 @@ class _LoginPageState extends State<LoginPage> {
     AppRouter.pushNamed(context, RouterNames.forgotPassword);
   }
 
+  /// 未勾选协议时弹窗确认，返回是否已同意
+  Future<bool> _ensureAgreed() async {
+    if (_viewModel.agreed) return true;
+    final confirmed = await MDDialog.show(
+      context,
+      title: '温馨提示',
+      content: '同意用户协议、隐私政策',
+    );
+    if (!confirmed || !mounted) return false;
+    _viewModel.setAgreed(true);
+    return true;
+  }
+
   Future<void> _login() async {
     final validation = _viewModel.validateLogin();
     if (validation != null) {
       MDTotast.showError(validation);
       return;
     }
-    if (!_viewModel.agreed) {
-      final confirmed = await MDDialog.show(
-        context,
-        title: '温馨提示',
-        content: '同意用户协议、隐私政策',
-      );
-      if (!confirmed || !mounted) return;
-      _viewModel.setAgreed(true);
-    }
+    if (!await _ensureAgreed()) return;
 
     final error = await _viewModel.login();
     if (!mounted) return;
@@ -235,6 +252,26 @@ class _LoginPageState extends State<LoginPage> {
     }
     AppRouter.pop(context, true);
   }
+
+  Future<void> _wxLogin() async {
+    FocusScope.of(context).unfocus();
+    if (!await _ensureAgreed()) return;
+
+    final result = await WxLogin.login();
+    if (result == null || !mounted) return;
+    if (!result.needMobile) {
+      AppRouter.pop(context, true);
+      return;
+    }
+    // 需绑定手机号：绑定完成或放弃后均关闭登录页
+    final bound = await AppRouter.pushNamed<bool>(
+      context,
+      RouterNames.bind,
+      queryParameters: {'token': result.token, 'userId': result.userId},
+    );
+    if (!mounted) return;
+    AppRouter.pop(context, bound == true);
+  }
 }
 
 class LoginViewModel extends ChangeNotifier {
@@ -242,17 +279,36 @@ class LoginViewModel extends ChangeNotifier {
   bool agreed = false;
   bool isLoading = false;
 
+  /// 后台开启微信登录且已安装微信
+  bool wxOpen = false;
+
   String phone = '';
   String password = '';
   String code = '';
 
+  bool _disposed = false;
+
   Future<void> initialize() async {
+    _loadWxOpen();
     final last = await MDUser.readLast();
-    if (last == null) return;
+    if (last == null || _disposed) return;
     phone = last['phone'] ?? '';
     password = last['passwd'] ?? '';
     isCodeLogin = password.isEmpty;
     notifyListeners();
+  }
+
+  Future<void> _loadWxOpen() async {
+    final open = await WxLogin.isInstalled() && await WxLogin.isOpen();
+    if (_disposed || open == wxOpen) return;
+    wxOpen = open;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 
   void setPhone(String value) {

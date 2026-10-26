@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
+import 'wx_login.dart';
 
 class InfoPage extends StatefulWidget {
   const InfoPage({super.key});
@@ -14,6 +15,7 @@ class InfoPage extends StatefulWidget {
 class _InfoPageState extends State<InfoPage> {
   late final InfoViewModel _viewModel;
   final _imagePicker = ImagePicker();
+  bool _isBindingWx = false;
 
   @override
   void initState() {
@@ -126,8 +128,11 @@ class _InfoPageState extends State<InfoPage> {
         );
         if (changed == true) await _viewModel.refresh();
       case InfoDataType.wx:
-        if (_viewModel.hasBindWx) return;
-      //TODO 微信绑定功能
+        if (_viewModel.hasBindWx || _isBindingWx) return;
+        _isBindingWx = true;
+        // 绑定成功后 MDUser.updateWx 会通知刷新列表
+        await WxLogin.bind();
+        _isBindingWx = false;
     }
   }
 }

@@ -173,8 +173,13 @@ class AppRouter {
       GoRoute(
         path: '/bind',
         name: RouterNames.bind.routeName,
-        pageBuilder: (context, state) =>
-            _platformPage(key: state.pageKey, child: const BindPage()),
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: BindPage(
+            token: state.uri.queryParameters['token'],
+            userId: state.uri.queryParameters['userId'],
+          ),
+        ),
       ),
       GoRoute(
         path: '/off',

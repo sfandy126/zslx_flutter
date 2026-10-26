@@ -5,8 +5,15 @@ import '../../utils/utils.dart';
 import '../../widgets/code_field.dart';
 import '../../widgets/phone_field.dart';
 
+/// 绑定手机号
+/// - 游客绑定：不传 token、userId
+/// - 第三方登录绑定：必传 token、userId，绑定成功即完成登录
+/// 返回 true 表示绑定成功
 class BindPage extends StatefulWidget {
-  const BindPage({super.key});
+  const BindPage({this.token, this.userId, super.key});
+
+  final String? token;
+  final String? userId;
 
   @override
   State<BindPage> createState() => _BindPageState();
@@ -18,6 +25,9 @@ class _BindPageState extends State<BindPage> {
   String _phone = '';
   String _code = '';
   bool _isLoading = false;
+
+  /// 是否为游客绑定手机号
+  bool get _isGuest => (widget.token ?? '').isEmpty;
 
   @override
   void dispose() {
@@ -35,12 +45,16 @@ class _BindPageState extends State<BindPage> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(40, 60, 40, 24),
           children: [
-            Text(
-              '绑定手机号体验完整功能',
-              style: TextStyle(
-                color: AppColors.black,
-                fontSize: 24,
-                fontWeight: FontWeight.w500,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '绑定手机号体验完整功能',
+                style: TextStyle(
+                  color: AppColors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             const SizedBox(height: 40),
@@ -74,6 +88,7 @@ class _BindPageState extends State<BindPage> {
   }
 
   Future<void> _submit() async {
+    FocusScope.of(context).unfocus();
     if (_phone.isEmpty) {
       MDTotast.showError('请输入手机号');
       return;
@@ -89,10 +104,20 @@ class _BindPageState extends State<BindPage> {
 
     setState(() => _isLoading = true);
     MDTotast.showLoading();
-    final result = await MDPost.sendApiSession(
-      cmd: .bindGuest,
-      params: {'phone': _phone, 'yzm': _code},
-    );
+    final result = _isGuest
+        ? await MDPost.sendApiSession(
+            cmd: .bindGuest,
+            params: {'phone': _phone, 'yzm': _code},
+          )
+        : await MDPost.sendApiSession(
+            cmd: .bindMobile,
+            params: {
+              'mobile': _phone,
+              'code': _code,
+              'user_id': widget.userId ?? '',
+              'token': widget.token ?? '',
+            },
+          );
     MDTotast.hideLoading();
     if (!mounted) return;
     setState(() => _isLoading = false);
@@ -100,7 +125,11 @@ class _BindPageState extends State<BindPage> {
       MDTotast.showError(result.msg ?? '绑定失败');
       return;
     }
-    await MDUser.defualt.updatePhone(_phone);
+    if (_isGuest) {
+      await MDUser.defualt.updatePhone(_phone);
+    } else {
+      await MDUser.defualt.login(result.data);
+    }
     if (!mounted) return;
     MDTotast.showSuccess(result.msg ?? '绑定成功');
     AppRouter.pop(context, true);

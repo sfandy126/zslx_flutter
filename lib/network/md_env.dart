@@ -21,7 +21,8 @@ enum MDEnv {
       case .test:
       case .product:
       // TODO: 测试api
-        return 'http://api_test.edugkw.com';//'http://api.zhuoshilx.com';
+        // return 'http://api_test.edugkw.com';
+        return 'http://api.zhuoshilx.com';
     }
   }
 
