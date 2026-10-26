@@ -12,16 +12,25 @@ enum MDEnv {
   static const String telephone = '18527671224';
   static const String icpLicense = '鄂ICP备2026035920号-2A';
 
-  /// 百家云sdk appId TODO: bjyAppId
-  static const String bjyAppId = '54200585'; //66514664
+  /// 当前使用的域名
+  static bool get isZslx =>
+      Uri.tryParse(MDEnv.current.url)?.host.contains('zhuoshilx') ?? true;
+
+  /// 百家云sdk appId
+  static String get bjyAppId {
+    if (isZslx) return '66514664';
+    return '54200585';
+  }
+
+  /// 当前使用的环境
+  static const MDEnv current = .product;
 
   /// api地址
   String get url {
     switch (this) {
       case .test:
+        return 'http://api_test.edugkw.com';
       case .product:
-      // TODO: 测试api
-        // return 'http://api_test.edugkw.com';
         return 'http://api.zhuoshilx.com';
     }
   }
@@ -30,8 +39,9 @@ enum MDEnv {
   String get iapUrl {
     switch (this) {
       case .test:
+        return "http://api.eduxingchen.com/apiv1/";
       case .product:
-        return "http://api.eduxingchen.com/apiv1/"; //'https://apiios.zhuoshilx.com/apiv1';
+        return 'https://apiios.zhuoshilx.com/apiv1';
     }
   }
 
@@ -47,5 +57,3 @@ enum MDEnv {
     return allCases[nextIndex];
   }
 }
-
-

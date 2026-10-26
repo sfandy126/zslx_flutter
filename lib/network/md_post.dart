@@ -77,7 +77,7 @@ class MDPost {
       name: await MultipartFile.fromFile(filePath, filename: '$name.$format'),
     };
 
-    const MDEnv domain = .product;
+    const MDEnv domain = MDEnv.current;
     final url = '${domain.url}/${cmd.value}';
     Utils.log(
       'upload_cmd = ${cmd.value} finalParams = $finalParams headers = $headers',
@@ -150,7 +150,7 @@ class MDPost {
     final finalParams = <String, dynamic>{...params, 'user_id': uid};
     finalParams['sign'] = StringSign.mdSign(finalParams, token);
 
-    const MDEnv domain = .product;
+    const MDEnv domain = MDEnv.current;
     final url = isIap
         ? '${domain.iapUrl}/${cmd.value}'
         : '${domain.url}/${cmd.value}';
