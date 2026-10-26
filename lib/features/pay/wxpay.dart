@@ -8,7 +8,9 @@ class WxPay {
   WxPay._();
 
   /// 与 pubspec.yaml 中 fluwx 的 app_id 保持一致
-  static const String _appId = 'wxd2948149a86a0237';
+  static const String _appId = 'wx4bddc0d3d10d3d0a';
+
+  // static const String _universalLink = 'https://www.zhuoshilx.com';
 
   static final Fluwx _fluwx = Fluwx();
 

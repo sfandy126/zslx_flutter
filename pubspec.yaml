@@ -101,8 +101,8 @@ dependencies:
   
 
 fluwx:
-  app_id:  "wxd2948149a86a0237" # "wx4bddc0d3d10d3d0a"
-  universal_link: "https://www.edulxw.cn" #"https://www.zhuoshilx.com"
+  app_id: "wx4bddc0d3d10d3d0a"
+  universal_link: "https://www.zhuoshilx.com"
   no_pay: true  # 关键！iOS端将不包含微信支付功能
 
 
