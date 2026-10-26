@@ -69,5 +69,7 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- 支付宝支付：Android 11+ 需声明应用可见性，才能感知是否已安装支付宝 -->
+        <package android:name="com.eg.android.AlipayGphone" />
     </queries>
 </manifest>

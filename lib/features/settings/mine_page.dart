@@ -52,8 +52,8 @@ class _MinePageState extends State<MinePage> {
                         name: _viewModel.displayName,
                         avatar: _viewModel.avatar,
                         onLogin: _handleHeaderTap,
-                        // TODO: 课程订单功能即将开放
-                        onOrders: () => _showMessage('课程订单功能即将开放'),
+                        onOrders: () =>
+                            AppRouter.pushNamed(context, RouterNames.courseOrderList),
                         onWallet: () =>
                             AppRouter.pushNamed(context, RouterNames.wallet),
                       ),
@@ -123,10 +123,6 @@ class _MinePageState extends State<MinePage> {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
       return;
     }
-  }
-
-  void _showMessage(String message) {
-    MDTotast.showError(message);
   }
 }
 

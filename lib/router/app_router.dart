@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +8,12 @@ import 'package:go_router/go_router.dart';
 import '../features/courses/course_detail_page.dart';
 import '../features/courses/course_files_page.dart';
 import '../features/courses/course_folder_page.dart';
+import '../features/courses/course_ios_orderlist_page.dart';
+import '../features/courses/course_ios_orderpay_page.dart';
 import '../features/courses/course_list_page.dart';
+import '../features/courses/course_orderconfirm_page.dart';
+import '../features/courses/course_orderlist_page.dart';
+import '../features/courses/course_orderpay_page.dart';
 import '../features/courses/course_prebook_page.dart';
 import '../features/courses/course_search_page.dart';
 import '../features/courses/learn_history_page.dart';
@@ -46,6 +53,11 @@ enum RouterNames {
   courseFolder,
   courseFiles,
   coursePrebook,
+  courseIosPay,
+  courseOrderConfirm,
+  courseOrderPay,
+  courseOrderList,
+  courseIosOrderList,
   learnHistory,
   favorites,
   video,
@@ -79,6 +91,29 @@ class AppRouter {
     if (!router.canPop()) return false;
     router.pop(result);
     return true;
+  }
+
+  /// 返回上一页，并跳过路由栈中连续的订单确认页、待支付页
+  ///
+  /// 支付成功进入订单列表后，返回时不再回到待支付、订单确认页
+  static void popOrderFlow(BuildContext context) {
+    final router = GoRouter.of(context);
+    if (!router.canPop()) return;
+    final skipNames = {
+      RouterNames.courseOrderConfirm.routeName,
+      RouterNames.courseOrderPay.routeName,
+    };
+    final matches = router.routerDelegate.currentConfiguration.matches;
+    var count = 1; // 当前页面本身
+    for (final match in matches.reversed.skip(1)) {
+      final route = match.route;
+      if (route is! GoRoute || !skipNames.contains(route.name)) break;
+      count++;
+    }
+    for (var index = 0; index < count; index++) {
+      if (!router.canPop()) return;
+      router.pop();
+    }
   }
 
   static void goNamed(
@@ -214,6 +249,48 @@ class AppRouter {
             id: state.uri.queryParameters['id'] ?? '',
             orderId: state.uri.queryParameters['orderId'] ?? '',
             name: state.uri.queryParameters['name'] ?? '',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/course-iospay',
+        name: RouterNames.courseIosPay.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: CourseIosPayPage(
+            type: state.uri.queryParameters['type'] ?? '',
+            id: state.uri.queryParameters['id'] ?? '',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/course-order-list',
+        name: RouterNames.courseOrderList.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: Platform.isIOS
+              ? const CourseIosOrderListPage()
+              : const CourseOrderListPage(),
+        ),
+      ),
+      GoRoute(
+        path: '/course-order-confirm',
+        name: RouterNames.courseOrderConfirm.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: CourseOrderConfirmPage(
+            type: state.uri.queryParameters['type'] ?? '',
+            id: state.uri.queryParameters['id'] ?? '',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/course-order-pay',
+        name: RouterNames.courseOrderPay.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: CourseOrderPayPage(
+            orderId: state.uri.queryParameters['orderId'] ?? '',
           ),
         ),
       ),

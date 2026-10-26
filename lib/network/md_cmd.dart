@@ -19,6 +19,17 @@ enum MDCmd {
   zySubmit('zy_submit_new'),
 
 // v1
+
+  courseIosOrders('course_dj_list'),
+  courseOrders('new_my_order'),
+  courseOrderConfirm('course_confirm_order'),
+  courseGenerateOrder('course_generate_order'),
+  courseOrderJump('course_order_jump'),
+  coursePayment('course_payment'),
+  courseGetPay('get_pay'),
+  courseDelOrder('del_order'),
+  courseOrderFakeDel('order_fake_del'),
+
   memberInfo('member_info'),
   login('login_v2'),
   courseDetail('course_detail'),
@@ -33,7 +44,6 @@ enum MDCmd {
   logout('logout'),
   modifyPwd('my_pwd'),
   logoff('account_off'),
-  courseOrders('course_dj_list'),
   collects('collection_list'),
   feedback('feedback'),
   iapProducts('recharge_products'),
@@ -73,6 +83,16 @@ enum MDCmd {
 //   zySubmit('zs_zy_submit'),
 
 // // v1
+//   courseIosOrders('course_dj_list'),  
+//   courseOrders('new_my_order'),
+//   courseOrderConfirm('course_confirm_order'),
+//   courseGenerateOrder('course_generate_order'),
+//   courseOrderJump('course_order_jump'),
+//   coursePayment('course_payment'),
+//   courseGetPay('get_pay'),
+//   courseDelOrder('del_order'),
+//   courseOrderFakeDel('order_fake_del'),
+
 //   memberInfo('zs_member_info'),
 //   login('zs_login'),
 //   courseDetail('zs_course_detail'),
@@ -87,7 +107,6 @@ enum MDCmd {
 //   logout('zs_logout'),
 //   modifyPwd('zs_modify_pwd'),
 //   logoff('zs_logoff'),
-//   courseOrders('zs_course_orders'),
 //   collects('zs_collects'),
 //   feedback('zs_feedback'),
 //   iapProducts('zs_iap_products'),

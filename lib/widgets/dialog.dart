@@ -22,6 +22,7 @@ enum MDDialogMode {
 class MDDialog extends StatelessWidget {
   const MDDialog({
     required this.content,
+    this.contentSpan,
     this.title,
     this.buttons = defaultButtons,
     this.mode = .face,
@@ -36,6 +37,9 @@ class MDDialog extends StatelessWidget {
   /// 正文
   final String content;
 
+  /// 富文本正文，传入时替代 [content] 展示，用于局部高亮（如价格）
+  final InlineSpan? contentSpan;
+
   /// 底部按钮名称，2 个时为 [取消, 确定]，1 个时居中显示，为空时显示「确定」
   final List<String> buttons;
 
@@ -46,6 +50,7 @@ class MDDialog extends StatelessWidget {
   static Future<bool> show(
     BuildContext context, {
     required String content,
+    InlineSpan? contentSpan,
     String? title,
     List<String> buttons = defaultButtons,
     MDDialogMode mode = .face,
@@ -60,6 +65,7 @@ class MDDialog extends StatelessWidget {
       pageBuilder: (context, animation, secondaryAnimation) => MDDialog(
         title: title,
         content: content,
+        contentSpan: contentSpan,
         buttons: buttons,
         mode: mode,
       ),
@@ -143,8 +149,8 @@ class MDDialog extends StatelessWidget {
               Flexible(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    content,
+                  child: Text.rich(
+                    contentSpan ?? TextSpan(text: content),
                     style: _contentStyle,
                     textAlign: TextAlign.center,
                   ),

@@ -2,7 +2,7 @@
 
 新增或修改代码时遵循以下约定：
 
-1. **跨平台 Widget**：优先使用 `flutter_platform_widgets` 提供的平台自适应组件，避免在页面中硬编码仅适用于单一平台的 Material 或 Cupertino 交互组件；库未提供对应组件时，使用合适的 Flutter Widget。
+1. **跨平台 Widget**：优先使用 `flutter_adaptive_scaffold` 提供的平台自适应组件，避免在页面中硬编码仅适用于单一平台的 Material 或 Cupertino 交互组件；库未提供对应组件时，使用合适的 Flutter Widget。
 2. **状态管理**：使用 `provider` 管理和共享应用状态，优先沿用项目已有的 Provider 模式。
 3. **网络图片**：统一使用 `MDNetImage`（`lib/widgets/network_image.dart`），不要直接使用 `Image.network` 或自行创建网络图片缓存逻辑。
 4. **提示和加载状态**：统一使用 `MDTotast`（`lib/utils/totast.dart`）显示提示、错误、成功状态和加载状态，不要直接调用其他 Toast 或 Loading API。页面加载进度使用 `MDTotast.showLoading()`，避免使用页面自带的进度组件（如 `CircularProgressIndicator`、`LinearProgressIndicator`）。

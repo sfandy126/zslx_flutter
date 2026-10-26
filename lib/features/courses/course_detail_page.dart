@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -287,6 +288,44 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
     }
   }
 
+  /// 检查之前有没有同一笔待支付的订单，有则直接跳转至待支付页面
+  Future<void> _orderJump() async {
+    MDTotast.showLoading();
+    MDResult result;
+    try {
+      result = await MDPost.sendApiSession(
+        cmd: .courseOrderJump,
+        params: {'course_id': _courseId, 'type': _courseType},
+      );
+    } catch (error) {
+      MDTotast.hideLoading();
+      if (mounted) MDTotast.showError('订单信息获取失败，请稍后重试');
+      return;
+    }
+    MDTotast.hideLoading();
+    if (!mounted) return;
+    if (!result.isSuccess) {
+      if (result.state == .outed) {
+        await AppRouter.pushNamed<void>(context, RouterNames.login);
+        return;
+      }
+      MDTotast.showError(result.msg ?? '订单信息获取失败');
+      return;
+    }
+    final orderId = (result.data?['order_id'] ?? '').toString().trim();
+    await AppRouter.pushNamed<bool>(
+      context,
+      orderId.isEmpty
+          ? RouterNames.courseOrderConfirm
+          : RouterNames.courseOrderPay,
+      queryParameters: orderId.isEmpty
+          ? {'id': _courseId, 'type': _courseType}
+          : {'orderId': orderId},
+    );
+    // 从下单流程返回后刷新详情，支付成功或订单状态变化都能及时更新
+    if (mounted) await _loadDetail();
+  }
+
   Future<void> _handleBottomAction() async {
     final info = _detail?.info;
     if (info == null || !await _requireLogin() || !mounted) return;
@@ -315,8 +354,21 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
         _openDirectorySheet();
       case _CourseStartType.buy:
       case _CourseStartType.buyAgain:
-        // TODO: 接入课程下单页面。
-        _showTodo('课程购买页面');
+        if (!MDUser.defualt.islogined) {
+          AppRouter.pushNamed<void>(context, RouterNames.login);
+          return;
+        }
+        // if (Platform.isIOS) {
+        //   final paid = await AppRouter.pushNamed<bool>(
+        //     context,
+        //     RouterNames.courseIosPay,
+        //     queryParameters: {'id': _courseId, 'type': _courseType},
+        //   );
+        //   if (paid == true && mounted) await _loadDetail();
+        // } else {
+          await _orderJump();
+        // }
+
       case _CourseStartType.prebook:
         final prebooked = await AppRouter.pushNamed<bool>(
           context,
@@ -486,10 +538,6 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
     }
     MDTotast.showError('请先购买课程～');
     return false;
-  }
-
-  void _showTodo(String name) {
-    MDTotast.showError('$name待实现');
   }
 
   @override
@@ -1062,7 +1110,6 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
     }
     if (!_canAccessCourse(allowExpired: true)) return;
     // TODO: 接入作业详情/提交页面。
-    _showTodo('作业详情页面');
   }
 }
 

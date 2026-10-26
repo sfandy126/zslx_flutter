@@ -35,7 +35,7 @@ dependencies:
   # 自适应不同平台的系统组件(不支持鸿蒙系统)
   flutter_platform_widgets: ^10.0.1
   #Cupertino apple 风格的图标
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.9
   #获取当前设备信息 
   device_info_plus: ^13.0.0
   package_info_plus: ^10.1.0
@@ -61,11 +61,11 @@ dependencies:
   # 轮播图 
   carousel_slider: ^5.1.2 
   # 图片选择插件 
-  image_picker: 1.2.0
+  image_picker: 1.2.4
   # 侧滑删除 
   flutter_slidable: ^4.0.3
   # 处理键盘事件 
-  keyboard_actions: ^4.2.1
+  keyboard_actions: ^5.0.3
   color: ^3.0.0
   webview_flutter: ^4.14.1
   share_plus: ^13.0.0
@@ -73,9 +73,9 @@ dependencies:
   # totast提示框
   flutter_easyloading: ^4.0.2
   # 下拉刷新、上拉加载更多
-  easy_refresh: ^3.5.1
+  easy_refresh: ^4.0.0
   # 路由管理
-  go_router: ^14.0.0
+  go_router: ^18.1.1
   # json注解
   json_annotation: ^4.12.0
   # android app内安装，iOS url应用市场
@@ -95,8 +95,16 @@ dependencies:
   # iOS内购(StoreKit2)
   in_app_purchase_storekit: ^0.4.14
 
-  # fluwx: ^6.0.6
-  # fluwx_no_pay: ^6.0.6
+  fluwx: ^6.0.6
+  alipay_kit_new: ^6.0.3  # 支付宝支付
+  alipay_kit_android_new: ^6.0.1  # 支付宝支付(Android实现)
+  
+
+fluwx:
+  app_id:  "wxd2948149a86a0237" # "wx4bddc0d3d10d3d0a"
+  universal_link: "https://www.edulxw.cn" #"https://www.zhuoshilx.com"
+  no_pay: true  # 关键！iOS端将不包含微信支付功能
+
 
 #dart 依赖都放在此处
 dev_dependencies:
@@ -117,9 +125,10 @@ dev_dependencies:
   flutter_launcher_icons: "^0.14.4" 
   #工程配置、安全、资源、权限、发布检查
   flutter_auditor: ^1.1.0
-  flutter_gen_runner: ^5.4.0 # 资源代码生成器
+  flutter_gen_runner: ^5.15.0 # 资源代码生成器
   json_serializable: ^6.14.1    # 代码生成器
-  build_runner: ^2.15.1  # 运行生成器所需的工具
+  # isar_community_generator 3.4.1 依赖 build ^4.0.0，build_runner 2.17+ 要求 build ^5.0.0，需钉在 2.16.2
+  build_runner: 2.16.2  # 运行生成器所需的工具
   isar_community_generator: ^3.4.1
 
 flutter_gen:
@@ -129,7 +138,7 @@ flutter_gen:
 # Keep the Foundation path provider on its platform-channel implementation
 # until the FFI-based class lookup works reliably in Apple-platform debugging.
 dependency_overrides:
-  path_provider_foundation: 2.5.1
+  path_provider_foundation: 2.6.0
 
 #此处与dev_dependencies平级，不能缩进
 flutter_launcher_icons:

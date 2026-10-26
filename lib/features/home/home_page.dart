@@ -29,6 +29,17 @@ class _HomePageState extends State<HomePage> {
       contextProvider: () => mounted ? context : null,
     )..start();
     unawaited(MDUser.defualt.updateData());
+    unawaited(_fakeDeleteOrders());
+  }
+
+  /// 进入首页时，已登录用户清理无效订单
+  Future<void> _fakeDeleteOrders() async {
+    if (MDUser.defualt.uid == null) return;
+    try {
+      await MDPost.sendApiSession(cmd: .courseOrderFakeDel);
+    } catch (error) {
+      Utils.log('fake delete orders failed: $error');
+    }
   }
 
   @override

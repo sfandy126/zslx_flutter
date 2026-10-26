@@ -30,7 +30,7 @@ enum MDEnv {
     switch (this) {
       case .test:
       case .product:
-        return 'https://apiios.zhuoshilx.com/apiv1';
+        return "http://api.eduxingchen.com/apiv1/"; //'https://apiios.zhuoshilx.com/apiv1';
     }
   }
 
