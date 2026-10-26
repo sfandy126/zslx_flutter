@@ -52,7 +52,7 @@ class UpdateServer {
     _checking = true;
     try {
       // type =1 android, type=2 ios, type=3 harmonyOS
-      // TODO: 2024-06-05 目前只支持安卓和iOS，暂不支持鸿蒙
+      // 目前只支持安卓和iOS，暂不支持鸿蒙
       final String type = Theme.of(context).platform == TargetPlatform.android
           ? '1'
           : '2';
