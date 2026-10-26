@@ -304,13 +304,12 @@ class _CategorySection extends StatelessWidget {
   const _CategorySection({required this.onTap});
 
   final ValueChanged<String> onTap;
-  // TODO：图片显示不对
   static final _items = [
-    _CategoryItem('gk', '公开课', Assets.images.home.courseGk),
-    _CategoryItem('bs', '笔试课', Assets.images.home.courseBs),
-    _CategoryItem('ms', '面试课', Assets.images.home.courseMs),
-    _CategoryItem('ydy', '一对一', Assets.images.home.courseYdy),
-    _CategoryItem('zx', '微课堂', Assets.images.home.courseZx),
+    _CategoryItem('gk', '公开课', Assets.images.home.courseGk3x),
+    _CategoryItem('bs', '笔试课', Assets.images.home.courseBs3x),
+    _CategoryItem('ms', '面试课', Assets.images.home.courseMs3x),
+    _CategoryItem('ydy', '一对一', Assets.images.home.courseYdy3x),
+    _CategoryItem('zx', '微课堂', Assets.images.home.courseZx3x),
   ];
 
   @override
@@ -347,7 +346,7 @@ class _CategorySection extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _items[index].icon.svg(
+                          _items[index].icon.image(
                             key: ValueKey(_items[index].icon.path),
                             width: 36,
                             height: 36,
@@ -636,7 +635,7 @@ class _CategoryItem {
 
   final String type;
   final String title;
-  final SvgGenImage icon;
+  final AssetGenImage icon;
 }
 
 Object? _readBannerList(Map<dynamic, dynamic> json, String _) {

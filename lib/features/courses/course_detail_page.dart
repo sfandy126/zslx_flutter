@@ -358,16 +358,16 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
           AppRouter.pushNamed<void>(context, RouterNames.login);
           return;
         }
-        // if (Platform.isIOS) {
-        //   final paid = await AppRouter.pushNamed<bool>(
-        //     context,
-        //     RouterNames.courseIosPay,
-        //     queryParameters: {'id': _courseId, 'type': _courseType},
-        //   );
-        //   if (paid == true && mounted) await _loadDetail();
-        // } else {
+        if (Platform.isIOS) {
+          final paid = await AppRouter.pushNamed<bool>(
+            context,
+            RouterNames.courseIosPay,
+            queryParameters: {'id': _courseId, 'type': _courseType},
+          );
+          if (paid == true && mounted) await _loadDetail();
+        } else {
           await _orderJump();
-        // }
+        }
 
       case _CourseStartType.prebook:
         final prebooked = await AppRouter.pushNamed<bool>(

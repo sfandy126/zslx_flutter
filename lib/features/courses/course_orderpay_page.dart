@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import '../../router/app_router.dart';
@@ -376,12 +374,13 @@ class _PayMethodCard extends StatelessWidget {
             ),
           ),
           _PayMethodRow(
+            icon: Assets.images.public.ali,
             label: _PayType.alipay.label,
             selected: payType == _PayType.alipay,
             onTap: () => onChanged(_PayType.alipay),
           ),
-          // 微信支付在 iOS 端未开启（pubspec.yaml fluwx.no_pay），仅 Android 支持
            _PayMethodRow(
+              icon: Assets.images.public.wx,
               label: _PayType.wechat.label,
               selected: payType == _PayType.wechat,
               onTap: () => onChanged(_PayType.wechat),
@@ -395,11 +394,13 @@ class _PayMethodCard extends StatelessWidget {
 /// 支付方式单选行
 class _PayMethodRow extends StatelessWidget {
   const _PayMethodRow({
+    required this.icon,
     required this.label,
     required this.selected,
     required this.onTap,
   });
 
+  final SvgGenImage icon;
   final String label;
   final bool selected;
   final VoidCallback onTap;
@@ -413,6 +414,8 @@ class _PayMethodRow extends StatelessWidget {
         height: 44,
         child: Row(
           children: [
+            icon.svg(width: 24, height: 24),
+            const SizedBox(width: 10),
             Expanded(
               child: Text(
                 label,
