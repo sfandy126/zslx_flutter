@@ -55,9 +55,9 @@ class _MinePageState extends State<MinePage> {
                         avatar: _viewModel.avatar,
                         onLogin: _handleHeaderTap,
                         onOrders: () =>
-                            AppRouter.pushNamed(context, RouterNames.courseOrderList),
+                            _openOrders(),
                         onFavorites: () =>
-                            AppRouter.pushNamed(context, RouterNames.favorites),
+                            _openFavorites(),
                       ),
                       const SizedBox(height: 24),
                       if (Platform.isIOS)
@@ -110,6 +110,14 @@ class _MinePageState extends State<MinePage> {
         }
       });
     }
+  }
+
+  void _openOrders() {
+    if (!_viewModel.isLoggedIn) {
+      _handleHeaderTap();
+      return;
+    }
+    AppRouter.pushNamed(context, RouterNames.courseOrderList);
   }
 
   void _openFavorites() {
