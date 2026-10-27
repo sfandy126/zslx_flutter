@@ -1,6 +1,7 @@
-import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 
@@ -46,19 +47,25 @@ class WxShare {
     );
   }
 
+  /// 分享链接，未传缩略图时默认使用 App 图标压缩后的缩略图，
+  /// 未传标题时默认使用 App 桌面名称
   static Future<bool> shareWebPage(
     String webPage,
     String? title,
     String? description,
-    WeChatScene scene,
-  ) async {
+    WeChatScene scene, {
+    Uint8List? thumbData,
+  }) async {
     if (!await _ensureInstalled()) return false;
     return _fluwx.share(
       WeChatShareWebPageModel(
         webPage,
-        title: title ?? '',
+        title: (title == null || title.isEmpty)
+            ? AppConfig.appName
+            : title,
         description: description,
         scene: scene,
+        thumbData: thumbData ?? await defaultThumbnail(),
       ),
     );
   }
@@ -77,11 +84,12 @@ class WxShare {
     );
   }
 
-  /// 分享文件，朋友圈不支持文件分享，会回退为发给好友
+  /// 分享文件，朋友圈不支持文件分享，会回退为发给好友；
   static Future<bool> shareFile({
     required Uint8List bytes,
     required String name,
     String? title,
+    Uint8List? thumbData,
   }) async {
     if (!await _ensureInstalled()) return false;
     return _fluwx.share(
@@ -89,6 +97,7 @@ class WxShare {
         WeChatFile.binary(bytes, suffix: _suffix(name)),
         title: title ?? '',
         scene: WeChatScene.session,
+        thumbData: thumbData ?? await defaultThumbnail(),
       ),
     );
   }
@@ -104,6 +113,84 @@ class WxShare {
   static String _suffix(String name) {
     final ext = name.contains('.') ? name.split('.').last : '';
     return ext.isEmpty ? 'dat' : ext;
+  }
+
+  /// 微信缩略图大小限制（32KB）
+  static const int maxThumbBytes = 32 * 1024;
+
+  /// 微信原图分享大小限制（10MB）
+  static const int maxShareImageBytes = 10 * 1024 * 1024;
+
+  /// 默认缩略图源：App 桌面图标
+  static const String _defaultIconAsset = 'assets/images/appLogo1024.png';
+
+  static Uint8List? _defaultThumbCache;
+
+  /// 加载 App 图标并压缩到低于微信缩略图限制，失败返回 null
+  static Future<Uint8List?> defaultThumbnail() async {
+    final cached = _defaultThumbCache;
+    if (cached != null) return cached;
+    try {
+      final iconBytes = await rootBundle.load(_defaultIconAsset);
+      final compressed = await compressImage(
+        iconBytes.buffer.asUint8List(),
+        maxBytes: maxThumbBytes,
+        startWidth: 120,
+      );
+      if (compressed.lengthInBytes <= maxThumbBytes) {
+        _defaultThumbCache = compressed;
+        return compressed;
+      }
+    } catch (error) {
+      Utils.log('WxShare defaultThumbnail error: $error');
+    }
+    return null;
+  }
+
+  /// 从资源 url 下载图片并压缩为缩略图，失败返回 null
+  static Future<Uint8List?> thumbnailFromUrl(String url) async {
+    try {
+      final bytes = await downloadBytes(url);
+      if (bytes == null) return null;
+      return await compressImage(bytes, maxBytes: maxThumbBytes);
+    } catch (error) {
+      Utils.log('WxShare thumbnailFromUrl error: $error');
+      return null;
+    }
+  }
+
+  /// 压缩图片到低于 [maxBytes]：宽度逐级减半重编码，无法达标时返回最后一次结果
+  static Future<Uint8List> compressImage(
+    Uint8List bytes, {
+    required int maxBytes,
+    int startWidth = 1280,
+  }) async {
+    if (bytes.lengthInBytes <= maxBytes) return bytes;
+    var width = startWidth;
+    Uint8List? last;
+    while (width >= 80) {
+      final resized = await _resize(bytes, targetWidth: width);
+      if (resized == null) break;
+      last = resized;
+      if (resized.lengthInBytes <= maxBytes) return resized;
+      width ~/= 2;
+    }
+    return last ?? bytes;
+  }
+
+  /// 解码后缩放到指定宽度并编码为 PNG
+  static Future<Uint8List?> _resize(
+    Uint8List bytes, {
+    required int targetWidth,
+  }) async {
+    final codec = await ui.instantiateImageCodec(
+      bytes,
+      targetWidth: targetWidth,
+      targetHeight: targetWidth,
+    );
+    final frame = await codec.getNextFrame();
+    final data = await frame.image.toByteData(format: ui.ImageByteFormat.png);
+    return data?.buffer.asUint8List();
   }
 }
 

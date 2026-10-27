@@ -88,14 +88,14 @@ Future<(List<_ShareItem>, List<_ShareItem>)> _buildItems(
   for (final tool in data.tools) {
     switch (tool) {
       case .saveImage:
-        if (!data.isImage) break;
+        if (data.method != .image) break;
         tools.add(_ShareItem(
           Icons.save_alt,
           '保存图片',
           () => _saveImage(data),
         ));
       case .copyLink:
-        if (!data.isLink) break;
+        if (data.method != .link) break;
         tools.add(_ShareItem(
           Icons.link,
           '复制链接',
@@ -118,38 +118,46 @@ Future<void> _executeWx(
 Future<bool> _sendToWx(MDShareData data, WeChatScene scene) async {
   MDTotast.showLoading();
   try {
-    if (data.isImage) {
-      final bytes = await downloadBytes(data.url!);
-      MDTotast.hideLoading();
-      if (bytes == null) {
-        MDTotast.message('图片获取失败，无法分享');
-        return false;
-      }
-      return await WxShare.shareImage(bytes: bytes, scene: scene);
+    switch (data.method) {
+      case .image:
+        var bytes = await downloadBytes(data.url!);
+        MDTotast.hideLoading();
+        if (bytes == null) {
+          MDTotast.message('图片获取失败，无法分享');
+          return false;
+        }
+        // 压缩到微信原图分享大小限制内
+        bytes = await WxShare.compressImage(
+          bytes,
+          maxBytes: WxShare.maxShareImageBytes,
+        );
+        return await WxShare.shareImage(bytes: bytes, scene: scene);
+      case .file:
+        final bytes = await downloadBytes(data.url!);
+        MDTotast.hideLoading();
+        if (bytes == null) {
+          MDTotast.message('文件获取失败，无法分享');
+          return false;
+        }
+        return await WxShare.shareFile(
+          bytes: bytes,
+          name: data.fileName.isEmpty ? 'file' : data.fileName,
+          title: data.title,
+        );
+      case .link:
+        MDTotast.hideLoading();
+        // 链接缩略图：优先取资源 url 图片压缩，无资源时由 WxShare 回退默认图标
+        final thumb = data.url == null
+            ? null
+            : await WxShare.thumbnailFromUrl(data.url!);
+        return await WxShare.shareWebPage(
+          data.link ?? '',
+          data.title,
+          data.text,
+          scene,
+          thumbData: thumb,
+        );
     }
-    if (data.isFile) {
-      final bytes = await downloadBytes(data.url!);
-      MDTotast.hideLoading();
-      if (bytes == null) {
-        MDTotast.message('文件获取失败，无法分享');
-        return false;
-      }
-      return await WxShare.shareFile(
-        bytes: bytes,
-        name: data.fileName.isEmpty ? 'file' : data.fileName,
-        title: data.title,
-      );
-    }
-    MDTotast.hideLoading();
-    if (data.isLink) {
-      return await WxShare.shareWebPage(
-        data.link!,
-        data.title,
-        data.text,
-        scene,
-      );
-    }
-    return await WxShare.shareText(data.text ?? '', scene);
   } catch (error) {
     MDTotast.hideLoading();
     MDTotast.message('分享失败，请稍后重试');
@@ -218,13 +226,13 @@ class _ShareRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         children: [
-          for (final item in items)
-            Expanded(
-              child: _ShareCell(item: item),
-            ),
+          for (final (index, item) in items.indexed) ...[
+            if (index > 0) const SizedBox(width: 24),
+            _ShareCell(item: item),
+          ],
         ],
       ),
     );

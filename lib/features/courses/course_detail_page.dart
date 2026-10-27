@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../router/app_router.dart';
@@ -10,6 +9,7 @@ import '../../services/bjy_server.dart';
 import '../../services/history/history_server.dart';
 import '../../utils/utils.dart';
 import '../../widgets/refresh_list_view.dart';
+import '../../features/share/share.dart';
 
 class CourseDetailPage extends StatefulWidget {
   const CourseDetailPage({
@@ -275,11 +275,12 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
     final url = info?.shareUrl ?? '';
     if (url.isEmpty) return;
     try {
-      await SharePlus.instance.share(
-        ShareParams(
-          title: info?.title,
+      await MDShare.toShare(
+        context,
+        MDShareData(
           text: info?.title,
-          uri: Uri.tryParse(url),
+          link: url,
+          url: info?.picture,
         ),
       );
     } catch (error) {
