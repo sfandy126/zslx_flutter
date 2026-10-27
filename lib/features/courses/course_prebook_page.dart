@@ -171,16 +171,16 @@ class _CoursePrebookPageState extends State<CoursePrebookPage> {
     final start = _start;
     final end = _end;
     if (start == null) {
-      MDTotast.showError('选择$_startTitle');
+      MDTotast.error('选择$_startTitle');
       return;
     }
     if (end == null) {
-      MDTotast.showError('选择$_endTitle');
+      MDTotast.error('选择$_endTitle');
       return;
     }
     if (!await _requireLogin() || !mounted) return;
     if (!end.isAfter(start)) {
-      MDTotast.showError('结束时间必须大于开始时间');
+      MDTotast.error('结束时间必须大于开始时间');
       return;
     }
     final startText = _format(start);
@@ -209,10 +209,10 @@ class _CoursePrebookPageState extends State<CoursePrebookPage> {
     if (!mounted) return;
     setState(() => _submitting = false);
     if (!result.isSuccess) {
-      MDTotast.showError(result.msg ?? '预约失败');
+      MDTotast.error(result.msg ?? '预约失败');
       return;
     }
-    MDTotast.showSuccess(result.msg ?? '预约成功');
+    MDTotast.success(result.msg ?? '预约成功');
     await Future<void>.delayed(const Duration(milliseconds: 150));
     if (!mounted) return;
     AppRouter.pop(context, true);

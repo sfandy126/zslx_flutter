@@ -33,13 +33,13 @@ class BjyServer {
       MDTotast.hideLoading();
     }
     if (!result.isSuccess) {
-      MDTotast.showError(result.msg ?? '直播加载失败');
+      MDTotast.error(result.msg ?? '直播加载失败');
       return false;
     }
 
     final live = BjyLive.fromJson(_mapFrom(result.data?['live_data']));
     if (live.room.isEmpty) {
-      MDTotast.showError('直播未开始～');
+      MDTotast.error('直播未开始～');
       return false;
     }
 
@@ -59,17 +59,17 @@ class BjyServer {
       MDTotast.hideLoading();
     }
     if (!result.isSuccess) {
-      MDTotast.showError(result.msg ?? '回放加载失败');
+      MDTotast.error(result.msg ?? '回放加载失败');
       return false;
     }
 
     final playback = BjyPlayback.fromJson(_mapFrom(result.data?['hf_data']));
     if (playback.room.isEmpty) {
-      MDTotast.showError('没有生成回放～');
+      MDTotast.error('没有生成回放～');
       return false;
     }
     if (playback.token.isEmpty) {
-      MDTotast.showError('token失效～');
+      MDTotast.error('token失效～');
       return false;
     }
 
@@ -80,7 +80,7 @@ class BjyServer {
   static bool enterPlayback(BjyPlayback playback) {
     _ensureInitialized();
     if (playback.room.isEmpty || playback.token.isEmpty) {
-      MDTotast.showError('回放信息无效');
+      MDTotast.error('回放信息无效');
       return false;
     }
 

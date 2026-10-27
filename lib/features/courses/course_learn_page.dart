@@ -168,7 +168,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
       return;
     }
     if (course.isHidden) {
-      MDTotast.showError('该课程已下架');
+      MDTotast.error('该课程已下架');
       return;
     }
     if (course.id.isEmpty) return;
@@ -189,7 +189,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
       return;
     }
     if (course.expired == 1) {
-      MDTotast.showError('该课程已过期');
+      MDTotast.error('该课程已过期');
       return;
     }
     final params = {'type': course.type, 'section_id': course.id};
@@ -232,7 +232,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
     );
     if (!mounted) return false;
     if (!result.isSuccess) {
-      MDTotast.showError(result.msg ?? '取消约课失败');
+      MDTotast.error(result.msg ?? '取消约课失败');
       return false;
     }
     setState(() {

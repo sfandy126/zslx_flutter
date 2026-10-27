@@ -52,7 +52,7 @@ class _GuestLoginDialogState extends State<GuestLoginDialog> {
         params: {'uuid': uuid ?? ''},
       );
       if (!result.isSuccess) {
-        MDTotast.showError(result.msg ?? '游客登录失败');
+        MDTotast.error(result.msg ?? '游客登录失败');
         return;
       }
       await MDUser.defualt.login(result.data);
@@ -60,7 +60,7 @@ class _GuestLoginDialogState extends State<GuestLoginDialog> {
       if (mounted) Navigator.of(context).pop(_LoginMethod.guest);
     } catch (error) {
       Utils.log('GuestLoginDialog guest login failed: $error');
-      MDTotast.showError('游客登录失败，请稍后重试');
+      MDTotast.error('游客登录失败，请稍后重试');
     } finally {
       MDTotast.hideLoading();
       _isLoading = false;

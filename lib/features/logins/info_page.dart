@@ -105,7 +105,7 @@ class _InfoPageState extends State<InfoPage> {
     final error = await _viewModel.uploadAvatar(image.path);
     if (!mounted) return;
     if (error != null) {
-      MDTotast.showError(error);
+      MDTotast.error(error);
     }
   }
 

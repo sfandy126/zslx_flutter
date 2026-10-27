@@ -54,7 +54,7 @@ class _CourseIosPayPageState extends State<CourseIosPayPage> {
           _loading = false;
           _loadError = result.msg ?? '订单信息加载失败';
         });
-        MDTotast.showError(result.msg ?? '订单信息加载失败');
+        MDTotast.error(result.msg ?? '订单信息加载失败');
         return;
       }
       setState(() {
@@ -68,7 +68,7 @@ class _CourseIosPayPageState extends State<CourseIosPayPage> {
         _loading = false;
         _loadError = '订单信息加载失败，请稍后重试';
       });
-      MDTotast.showError('订单信息加载失败，请稍后重试');
+      MDTotast.error('订单信息加载失败，请稍后重试');
     } finally {
       MDTotast.hideLoading();
     }
@@ -130,7 +130,7 @@ class _CourseIosPayPageState extends State<CourseIosPayPage> {
       MDTotast.hideLoading();
       if (!mounted) return;
       setState(() => _paying = false);
-      MDTotast.showMessage(result.msg ?? (result.isSuccess ? '支付成功' : '支付失败'));
+      MDTotast.message(result.msg ?? (result.isSuccess ? '支付成功' : '支付失败'));
       if (result.isSuccess) {
         await Future<void>.delayed(const Duration(milliseconds: 150));
         if (!mounted) return;
@@ -142,7 +142,7 @@ class _CourseIosPayPageState extends State<CourseIosPayPage> {
       MDTotast.hideLoading();
       if (!mounted) return;
       setState(() => _paying = false);
-      MDTotast.showError('支付失败，请稍后重试');
+      MDTotast.error('支付失败，请稍后重试');
     }
   }
 

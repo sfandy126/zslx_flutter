@@ -7,15 +7,15 @@ class MDTotast {
     EasyLoading.show(status: message);
   }
 
-  static void showError(String message) {
+  static void error(String message) {
     EasyLoading.showError(message);
   }
 
-  static void showSuccess(String message) {
+  static void success(String message) {
     EasyLoading.showSuccess(message);
   }
 
-  static void showMessage(String message) {
+  static void message(String message) {
     EasyLoading.showToast(message);
   }
 

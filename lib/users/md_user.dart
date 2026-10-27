@@ -184,7 +184,7 @@ class MDUser extends ChangeNotifier {
         await update(result.data);
       }
     } else if (animate && result.state == .failed) {
-      MDTotast.showError(result.msg ?? 'ERROR：数据返回错误');
+      MDTotast.error(result.msg ?? 'ERROR：数据返回错误');
     }
   }
 

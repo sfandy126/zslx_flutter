@@ -51,7 +51,7 @@ class _LearnHistoryPageState extends State<LearnHistoryPage> {
     final deleted = await HistoryServer.delete(history);
     if (!mounted) return;
     if (!deleted) {
-      MDTotast.showError('删除失败，请重试');
+      MDTotast.error('删除失败，请重试');
       return;
     }
     _listKey.currentState?.removeWhere(
@@ -82,14 +82,14 @@ class _LearnHistoryPageState extends State<LearnHistoryPage> {
       result = await MDPost.sendApiSession(cmd: .checkCourse, params: params);
     } catch (error) {
       Utils.log('LearnHistoryPage check course failed: $error');
-      if (mounted) MDTotast.showError('资源加载异常，请稍后重试~');
+      if (mounted) MDTotast.error('资源加载异常，请稍后重试~');
       return;
     } finally {
       MDTotast.hideLoading();
     }
     if (!mounted) return;
     if (!result.isSuccess) {
-      MDTotast.showError(result.msg ?? '资源加载异常，请稍后重试~');
+      MDTotast.error(result.msg ?? '资源加载异常，请稍后重试~');
       return;
     }
 
@@ -97,7 +97,7 @@ class _LearnHistoryPageState extends State<LearnHistoryPage> {
     if (history.source == PlayHistorySource.playback) {
       final playback = BjyPlayback.fromJson(data);
       if (playback.room.isEmpty) {
-        MDTotast.showError('没有直播回放~');
+        MDTotast.error('没有直播回放~');
         return;
       }
       if (BjyServer.enterPlayback(playback)) {
@@ -109,7 +109,7 @@ class _LearnHistoryPageState extends State<LearnHistoryPage> {
 
     final url = data['url']?.toString() ?? '';
     if (url.isEmpty) {
-      MDTotast.showError('资源加载异常，请稍后重试~');
+      MDTotast.error('资源加载异常，请稍后重试~');
       return;
     }
     await AppRouter.pushNamed<void>(

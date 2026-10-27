@@ -43,7 +43,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   Future<void> _open(_FavoriteCourse course) async {
     if (!course.isAvailable) {
-      MDTotast.showError('课程已下架或下线');
+      MDTotast.error('课程已下架或下线');
       return;
     }
     await AppRouter.pushNamed<void>(

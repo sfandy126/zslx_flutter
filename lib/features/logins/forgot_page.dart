@@ -168,11 +168,11 @@ class _ForgotPageState extends State<ForgotPage> {
     final error = await _viewModel.resetPassword();
     if (!mounted) return;
     if (error != null) {
-      MDTotast.showError(error);
+      MDTotast.error(error);
       return;
     }
 
-    MDTotast.showSuccess('密码设置成功');
+    MDTotast.success('密码设置成功');
     await Future<void>.delayed(const Duration(milliseconds: 1500));
     if (!mounted) return;
     AppRouter.pop(context);

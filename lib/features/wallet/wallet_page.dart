@@ -46,7 +46,7 @@ class _WalletPageState extends State<WalletPage> {
     if (loading) MDTotast.hideLoading();
     if (!mounted) return;
     if (!result.isSuccess) {
-      MDTotast.showError(result.msg ?? 'ERROR：数据返回错误');
+      MDTotast.error(result.msg ?? 'ERROR：数据返回错误');
       return;
     }
     final model = _WalletData.fromJson(result.data);
@@ -151,7 +151,7 @@ class _WalletPageState extends State<WalletPage> {
   Future<void> _payMethod() async {
     final good = _selectedGood;
     if (good == null) {
-      MDTotast.showMessage('请选择充值档位');
+      MDTotast.message('请选择充值档位');
       return;
     }
     if (!MDUser.defualt.islogined) {
@@ -163,7 +163,7 @@ class _WalletPageState extends State<WalletPage> {
 
   void _startPay(_Good good) {
     if (good.pId.isEmpty) {
-      MDTotast.showError('商品id不存在，请联系客服');
+      MDTotast.error('商品id不存在，请联系客服');
       return;
     }
     MDStoreKit.start(good.pId);

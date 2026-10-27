@@ -53,7 +53,7 @@ class _CourseOrderConfirmPageState extends State<CourseOrderConfirmPage> {
           _loading = false;
           _loadError = result.msg ?? '订单信息加载失败';
         });
-        MDTotast.showError(result.msg ?? '订单信息加载失败');
+        MDTotast.error(result.msg ?? '订单信息加载失败');
         return;
       }
       setState(() {
@@ -67,7 +67,7 @@ class _CourseOrderConfirmPageState extends State<CourseOrderConfirmPage> {
         _loading = false;
         _loadError = '订单信息加载失败，请稍后重试';
       });
-      MDTotast.showError('订单信息加载失败，请稍后重试');
+      MDTotast.error('订单信息加载失败，请稍后重试');
     } finally {
       MDTotast.hideLoading();
     }
@@ -99,12 +99,12 @@ class _CourseOrderConfirmPageState extends State<CourseOrderConfirmPage> {
           await AppRouter.pushNamed<void>(context, RouterNames.login);
           return;
         }
-        MDTotast.showError(result.msg ?? '生成订单失败');
+        MDTotast.error(result.msg ?? '生成订单失败');
         return;
       }
       final orderId = (result.data?['order_id'] ?? '').toString().trim();
       if (orderId.isEmpty) {
-        MDTotast.showError(result.msg ?? '生成订单失败');
+        MDTotast.error(result.msg ?? '生成订单失败');
         return;
       }
       final paid = await AppRouter.pushNamed<bool>(
@@ -120,7 +120,7 @@ class _CourseOrderConfirmPageState extends State<CourseOrderConfirmPage> {
       MDTotast.hideLoading();
       if (!mounted) return;
       setState(() => _paying = false);
-      MDTotast.showError('生成订单失败，请稍后重试');
+      MDTotast.error('生成订单失败，请稍后重试');
     }
   }
 

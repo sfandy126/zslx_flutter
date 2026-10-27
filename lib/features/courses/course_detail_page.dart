@@ -199,7 +199,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       if (_activeDetailLoads == 0) MDTotast.hideLoading();
     }
     if (errorToShow != null && mounted) {
-      MDTotast.showError(errorToShow);
+      MDTotast.error(errorToShow);
     }
   }
 
@@ -256,15 +256,15 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
       );
       if (!mounted) return;
       if (!result.isSuccess) {
-        MDTotast.showError(result.msg ?? '收藏操作失败');
+        MDTotast.error(result.msg ?? '收藏操作失败');
         return;
       }
       final state = result.data?['is_collect'].mdToInt();
       setState(() => _isFavorite = state == 1);
-      MDTotast.showSuccess(result.msg ?? '操作成功');
+      MDTotast.success(result.msg ?? '操作成功');
     } catch (error) {
       Utils.log('CourseDetailPage favorite failed: $error');
-      if (mounted) MDTotast.showError('收藏操作失败，请稍后重试');
+      if (mounted) MDTotast.error('收藏操作失败，请稍后重试');
     } finally {
       MDTotast.hideLoading();
     }
@@ -284,7 +284,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
       );
     } catch (error) {
       Utils.log('CourseDetailPage share failed: $error');
-      if (mounted) MDTotast.showError('分享失败，请稍后重试');
+      if (mounted) MDTotast.error('分享失败，请稍后重试');
     }
   }
 
@@ -299,7 +299,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
       );
     } catch (error) {
       MDTotast.hideLoading();
-      if (mounted) MDTotast.showError('订单信息获取失败，请稍后重试');
+      if (mounted) MDTotast.error('订单信息获取失败，请稍后重试');
       return;
     }
     MDTotast.hideLoading();
@@ -309,7 +309,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
         await AppRouter.pushNamed<void>(context, RouterNames.login);
         return;
       }
-      MDTotast.showError(result.msg ?? '订单信息获取失败');
+      MDTotast.error(result.msg ?? '订单信息获取失败');
       return;
     }
     final orderId = (result.data?['order_id'] ?? '').toString().trim();
@@ -342,11 +342,11 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
           if (result.isSuccess) {
             await _loadDetail();
           } else {
-            MDTotast.showError(result.msg ?? '加入学习失败');
+            MDTotast.error(result.msg ?? '加入学习失败');
           }
         } catch (error) {
           Utils.log('CourseDetailPage join course failed: $error');
-          if (mounted) MDTotast.showError('加入学习失败，请稍后重试');
+          if (mounted) MDTotast.error('加入学习失败，请稍后重试');
         } finally {
           MDTotast.hideLoading();
         }
@@ -404,11 +404,11 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
     if (info == null) return;
     if (node.realType == 'gk') {
       if (info.buyed != 1) {
-        MDTotast.showError('请加入学习～');
+        MDTotast.error('请加入学习～');
         return;
       }
     } else if (info.buyed != 1 && node.allowTry != 1) {
-      MDTotast.showError('请先购买课程～');
+      MDTotast.error('请先购买课程～');
       return;
     }
 
@@ -442,7 +442,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
     }
 
     if (node.videoLink.isEmpty) {
-      MDTotast.showError('url不存在，请联系客服');
+      MDTotast.error('url不存在，请联系客服');
       return;
     }
     MDTotast.showLoading();
@@ -459,7 +459,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
       );
       if (!mounted) return;
       if (!result.isSuccess) {
-        MDTotast.showError(result.msg ?? '视频加载失败');
+        MDTotast.error(result.msg ?? '视频加载失败');
         return;
       }
       playbackUrl = _stringFrom(result.data ?? const {}, const [
@@ -467,12 +467,12 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
         'url',
       ]);
       if (playbackUrl.isEmpty) {
-        MDTotast.showError('视频地址为空，请联系客服');
+        MDTotast.error('视频地址为空，请联系客服');
         return;
       }
     } catch (error) {
       Utils.log('CourseDetailPage resolve recording url failed: $error');
-      if (mounted) MDTotast.showError('视频加载失败，请稍后重试');
+      if (mounted) MDTotast.error('视频加载失败，请稍后重试');
       return;
     } finally {
       MDTotast.hideLoading();
@@ -536,7 +536,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
     if (info.buyed == 1 || (allowExpired && info.buyedExpired == 1)) {
       return true;
     }
-    MDTotast.showError('请先购买课程～');
+    MDTotast.error('请先购买课程～');
     return false;
   }
 

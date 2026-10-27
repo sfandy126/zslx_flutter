@@ -133,11 +133,11 @@ class _FeedbackPageState extends State<FeedbackPage> {
     final error = await _viewModel.submitFeedback();
     if (!mounted) return;
     if (error != null) {
-      MDTotast.showError(error);
+      MDTotast.error(error);
       return;
     }
 
-    MDTotast.showSuccess('反馈提交成功');
+    MDTotast.success('反馈提交成功');
     await Future<void>.delayed(const Duration(milliseconds: 1500));
     if (!mounted) return;
     AppRouter.pop(context, true);

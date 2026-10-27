@@ -75,7 +75,7 @@ class _MDCodeFieldState extends State<MDCodeField> {
 
   Future<void> _sendCode() async {
     if (widget.phone.length != 11) {
-      MDTotast.showError('请输入11位手机号');
+      MDTotast.error('请输入11位手机号');
       return;
     }
 
@@ -88,7 +88,7 @@ class _MDCodeFieldState extends State<MDCodeField> {
 
     setState(() => _isSending = false);
     if (!result.isSuccess) {
-      MDTotast.showError(result.msg ?? '验证码发送失败');
+      MDTotast.error(result.msg ?? '验证码发送失败');
       return;
     }
 

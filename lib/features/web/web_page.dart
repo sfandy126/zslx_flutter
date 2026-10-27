@@ -121,7 +121,7 @@ class _WebPageState extends State<WebPage> {
   }
 
   void _showError(String message) {
-    MDTotast.showError(message);
+    MDTotast.error(message);
   }
 
   Future<void> _updateCanGoBack() async {

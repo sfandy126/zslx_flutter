@@ -79,7 +79,7 @@ class MDStoreKit implements InAppPurchase2CallbackAPI {
 
   Future<void> _start(String productId) async {
     if (_isProcessing) {
-      MDTotast.showMessage('正在处理交易，请稍候');
+      MDTotast.message('正在处理交易，请稍候');
       return;
     }
     _isProcessing = true;
@@ -88,9 +88,9 @@ class MDStoreKit implements InAppPurchase2CallbackAPI {
       final unfinished = await _resolveUnfinished(productId);
       if (unfinished != null) {
         if (unfinished.ok) {
-          MDTotast.showSuccess('购买成功');
+          MDTotast.success('购买成功');
         } else {
-          MDTotast.showError(unfinished.msg ?? 'ERROR：存在未完成的订单，请稍后重试');
+          MDTotast.error(unfinished.msg ?? 'ERROR：存在未完成的订单，请稍后重试');
         }
         return;
       }
@@ -98,7 +98,7 @@ class MDStoreKit implements InAppPurchase2CallbackAPI {
       MDTotast.showLoading('商品查询中...');
       final product = await _loadProduct(productId);
       if (product == null) {
-        MDTotast.showError('ERROR：未获取到商品信息，请检查网络后重试');
+        MDTotast.error('ERROR：未获取到商品信息，请检查网络后重试');
         return;
       }
 
@@ -106,12 +106,12 @@ class MDStoreKit implements InAppPurchase2CallbackAPI {
       final order = await _createOrder(productId);
       Utils.log('MDStoreKit 订单uuid=${order.uuid}, order_id=${order.id}');
       if (order.uuid.isEmpty || order.id.isEmpty) {
-        MDTotast.showError('ERROR：创建订单失败(${order.msg})');
+        MDTotast.error('ERROR：创建订单失败(${order.msg})');
         return;
       }
       // 插件会静默忽略非法 UUID 的 appAccountToken，导致交易无法关联订单，必须提前校验
       if (!_uuidReg.hasMatch(order.uuid)) {
-        MDTotast.showError('ERROR：创建UUID失败=${order.uuid}');
+        MDTotast.error('ERROR：创建UUID失败=${order.uuid}');
         return;
       }
 
@@ -128,26 +128,26 @@ class MDStoreKit implements InAppPurchase2CallbackAPI {
         case .success:
           final transaction = await _findUnfinished(productId, order.uuid);
           if (transaction == null) {
-            MDTotast.showError('ERROR：未查询到交易信息，请稍后查看');
+            MDTotast.error('ERROR：未查询到交易信息，请稍后查看');
             return;
           }
           final verify = await _verifyAndFinish(transaction);
           if (verify.ok) {
-            MDTotast.showSuccess('购买成功');
+            MDTotast.success('购买成功');
           } else {
-            MDTotast.showError(verify.msg ?? 'ERROR：订单校验失败，请稍后重试');
+            MDTotast.error(verify.msg ?? 'ERROR：订单校验失败，请稍后重试');
           }
         case .unverified:
-          MDTotast.showError('ERROR：交易校验失败，请联系客服');
+          MDTotast.error('ERROR：交易校验失败，请联系客服');
         case .userCancelled:
-          MDTotast.showMessage('用户取消了支付');
+          MDTotast.message('用户取消了支付');
         case .pending:
-          MDTotast.showMessage('交易正在处理中，请稍后查看');
+          MDTotast.message('交易正在处理中，请稍后查看');
       }
     } on PlatformException catch (error) {
-      MDTotast.showError('ERROR：购买失败：${error.message ?? error.code}');
+      MDTotast.error('ERROR：购买失败：${error.message ?? error.code}');
     } catch (error) {
-      MDTotast.showError('ERROR：购买失败：$error');
+      MDTotast.error('ERROR：购买失败：$error');
     } finally {
       _purchasingToken = null;
       _isProcessing = false;

@@ -98,6 +98,7 @@ dependencies:
   fluwx: ^6.0.6
   alipay_kit_new: ^6.0.3  # 支付宝支付
   alipay_kit_android_new: ^6.0.1  # 支付宝支付(Android实现)
+  gal: ^2.3.3
   
 
 fluwx:

@@ -67,7 +67,7 @@ class _CourseOrderListPageState extends State<CourseOrderListPage> {
     } catch (error) {
       Utils.log('CourseOrderListPage order jump failed: $error');
       MDTotast.hideLoading();
-      if (mounted) MDTotast.showError('订单信息获取失败，请稍后重试');
+      if (mounted) MDTotast.error('订单信息获取失败，请稍后重试');
       return;
     }
     MDTotast.hideLoading();
@@ -78,13 +78,13 @@ class _CourseOrderListPageState extends State<CourseOrderListPage> {
         await _openLogin();
         return;
       }
-      MDTotast.showError(result.msg ?? '订单信息获取失败');
+      MDTotast.error(result.msg ?? '订单信息获取失败');
       return;
     }
     // 返回数据带有 order_id 才能进入待支付页，否则是后端返回的提示信息
     final orderId = (result.data?['order_id'] ?? '').toString().trim();
     if (orderId.isEmpty) {
-      MDTotast.showMessage(result.msg ?? '订单信息异常，请稍后重试');
+      MDTotast.message(result.msg ?? '订单信息异常，请稍后重试');
       return;
     }
     await AppRouter.pushNamed<void>(
@@ -113,7 +113,7 @@ class _CourseOrderListPageState extends State<CourseOrderListPage> {
     } catch (error) {
       Utils.log('CourseOrderListPage delete order failed: $error');
       MDTotast.hideLoading();
-      if (mounted) MDTotast.showError('取消订单失败，请稍后重试');
+      if (mounted) MDTotast.error('取消订单失败，请稍后重试');
       return;
     }
     MDTotast.hideLoading();
@@ -124,10 +124,10 @@ class _CourseOrderListPageState extends State<CourseOrderListPage> {
         await _openLogin();
         return;
       }
-      MDTotast.showError(result.msg ?? '取消订单失败');
+      MDTotast.error(result.msg ?? '取消订单失败');
       return;
     }
-    MDTotast.showMessage(result.msg ?? '订单已取消');
+    MDTotast.message(result.msg ?? '订单已取消');
     _listKey.currentState?.refresh();
   }
 

@@ -66,7 +66,7 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
           _loading = false;
           _loadError = result.msg ?? '订单信息加载失败';
         });
-        MDTotast.showError(result.msg ?? '订单信息加载失败');
+        MDTotast.error(result.msg ?? '订单信息加载失败');
         return;
       }
       final model = _PayOrder.fromJson(result.data ?? const {});
@@ -82,7 +82,7 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
         _loading = false;
         _loadError = '订单信息加载失败，请稍后重试';
       });
-      MDTotast.showError('订单信息加载失败，请稍后重试');
+      MDTotast.error('订单信息加载失败，请稍后重试');
     } finally {
       MDTotast.hideLoading();
     }
@@ -112,7 +112,7 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
       MDTotast.hideLoading();
       if (!mounted) return;
       setState(() => _paying = false);
-      MDTotast.showError('支付发起失败，请稍后重试');
+      MDTotast.error('支付发起失败，请稍后重试');
       return;
     }
     MDTotast.hideLoading();
@@ -127,11 +127,11 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
       final msg = result.msg ?? '支付发起失败';
       // 免费购买、已购买等场景不会返回支付参数，提示后直接进入订单列表
       if (const {'购买成功', '该课程已购买', '该订单已被删除'}.contains(msg)) {
-        MDTotast.showMessage(msg);
+        MDTotast.message(msg);
         await AppRouter.pushNamed<void>(context, RouterNames.courseOrderList);
         return;
       }
-      MDTotast.showError(msg);
+      MDTotast.error(msg);
       return;
     }
 
@@ -139,11 +139,11 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
     if (!mounted) return;
     setState(() => _paying = false);
     if (message != null) {
-      MDTotast.showError(message);
+      MDTotast.error(message);
       return;
     }
     // 支付成功：进入订单列表，返回时由订单列表页过滤订单确认、待支付页面
-    MDTotast.showSuccess('支付成功');
+    MDTotast.success('支付成功');
     await AppRouter.pushNamed<void>(context, RouterNames.courseOrderList);
   }
 
@@ -200,7 +200,7 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
     setState(() => _remainSeconds = 0);
     // 支付中或页面不在栈顶时不自动返回
     if (_paying || !(ModalRoute.of(context)?.isCurrent ?? false)) return;
-    MDTotast.showMessage('订单已超时');
+    MDTotast.message('订单已超时');
     _back();
   }
 

@@ -125,11 +125,11 @@ class _OffPageState extends State<OffPage> {
     if (!mounted) return;
     setState(() => _isLoading = false);
     if (!result.isSuccess) {
-      MDTotast.showError(result.msg ?? '注销失败');
+      MDTotast.error(result.msg ?? '注销失败');
       return;
     }
 
-    MDTotast.showSuccess(result.msg ?? '注销申请已提交');
+    MDTotast.success(result.msg ?? '注销申请已提交');
     await MDUser.defualt.logout();
     await Future<void>.delayed(const Duration(milliseconds: 1500));
     if (!mounted) return;

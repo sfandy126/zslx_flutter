@@ -73,11 +73,11 @@ class _NickPageState extends State<NickPage> {
   Future<void> _submit() async {
     final nick = _controller.text.replaceAll(RegExp(r'\s+'), '');
     if (nick.isEmpty) {
-      MDTotast.showError('请输入昵称');
+      MDTotast.error('请输入昵称');
       return;
     }
     if (nick == MDUser.defualt.nick) {
-      MDTotast.showSuccess('昵称修改成功');
+      MDTotast.success('昵称修改成功');
       AppRouter.pop(context, true);
       return;
     }
@@ -93,12 +93,12 @@ class _NickPageState extends State<NickPage> {
     setState(() => _isLoading = false);
 
     if (!result.isSuccess) {
-      MDTotast.showError(result.msg ?? '昵称修改失败');
+      MDTotast.error(result.msg ?? '昵称修改失败');
       return;
     }
     await MDUser.defualt.updateNick(nick);
     if (!mounted) return;
-    MDTotast.showSuccess('昵称修改成功');
+    MDTotast.success('昵称修改成功');
     await Future<void>.delayed(const Duration(milliseconds: 1500));
     if (mounted) AppRouter.pop(context, true);
   }

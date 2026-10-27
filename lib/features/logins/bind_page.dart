@@ -90,15 +90,15 @@ class _BindPageState extends State<BindPage> {
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
     if (_phone.isEmpty) {
-      MDTotast.showError('请输入手机号');
+      MDTotast.error('请输入手机号');
       return;
     }
     if (_phone.length != 11) {
-      MDTotast.showError('请输入11位的手机号');
+      MDTotast.error('请输入11位的手机号');
       return;
     }
     if (_code.isEmpty) {
-      MDTotast.showError('请输入验证码');
+      MDTotast.error('请输入验证码');
       return;
     }
 
@@ -122,7 +122,7 @@ class _BindPageState extends State<BindPage> {
     if (!mounted) return;
     setState(() => _isLoading = false);
     if (!result.isSuccess) {
-      MDTotast.showError(result.msg ?? '绑定失败');
+      MDTotast.error(result.msg ?? '绑定失败');
       return;
     }
     if (_isGuest) {
@@ -131,7 +131,7 @@ class _BindPageState extends State<BindPage> {
       await MDUser.defualt.login(result.data);
     }
     if (!mounted) return;
-    MDTotast.showSuccess(result.msg ?? '绑定成功');
+    MDTotast.success(result.msg ?? '绑定成功');
     AppRouter.pop(context, true);
   }
 }

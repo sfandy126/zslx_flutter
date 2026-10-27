@@ -104,7 +104,7 @@ class WxLogin {
     MDTotast.hideLoading();
     final data = result.data;
     if (!result.isSuccess || data == null || data.isEmpty) {
-      MDTotast.showError(result.msg ?? '微信登录失败');
+      MDTotast.error(result.msg ?? '微信登录失败');
       return null;
     }
     final needMobile = data['need_mobile']?.toString() == '1';
@@ -120,7 +120,7 @@ class WxLogin {
     MDTotast.hideLoading();
     final data = result.data;
     if (!result.isSuccess || data == null || data.isEmpty) {
-      MDTotast.showError(result.msg ?? '微信绑定失败');
+      MDTotast.error(result.msg ?? '微信绑定失败');
       return false;
     }
     await MDUser.defualt.updateWx(data);
@@ -143,10 +143,10 @@ class WxLogin {
         'unionid': _text(user['unionid']),
       };
     } on WxAuthError catch (error) {
-      MDTotast.showError(error.message);
+      MDTotast.error(error.message);
     } catch (error) {
       Utils.log('WxLogin auth failed: $error');
-      MDTotast.showError('微信授权失败，请稍后重试');
+      MDTotast.error('微信授权失败，请稍后重试');
     }
     return null;
   }

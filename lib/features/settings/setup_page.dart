@@ -132,12 +132,12 @@ class SetupViewModel extends ChangeNotifier {
     final result = await MDPost.sendApiSession(cmd: .logout);
     MDTotast.hideLoading();
     if (result.isSuccess) {
-      MDTotast.showSuccess(result.msg ?? '退出成功');
+      MDTotast.success(result.msg ?? '退出成功');
       await user.logout();
       return true;
     }
 
-    MDTotast.showError(result.msg ?? '退出失败，请稍后重试');
+    MDTotast.error(result.msg ?? '退出失败，请稍后重试');
     return false;
   }
 
@@ -178,7 +178,7 @@ class SetupViewModel extends ChangeNotifier {
       Utils.log('SetupViewModel clear temp directory error: $error');
     }
     MDTotast.hideLoading();
-    MDTotast.showSuccess('清除完成');
+    MDTotast.success('清除完成');
   }
 
   void _handleUserChanged() {

@@ -63,7 +63,7 @@ class _CourseFilesPageState extends State<CourseFilesPage> {
 
   void _open(_CourseFile file) {
     if (file.fileUrl.isEmpty) {
-      MDTotast.showError('资料地址无效，请稍后重试');
+      MDTotast.error('资料地址无效，请稍后重试');
       return;
     }
     AppRouter.pushNamed<void>(
