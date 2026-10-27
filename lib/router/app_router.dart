@@ -35,6 +35,7 @@ import '../features/video/video_page.dart';
 import '../features/wallet/wallet_order.dart';
 import '../features/wallet/wallet_page.dart';
 import '../features/web/web_page.dart';
+import 'not_found_page.dart';
 
 enum RouterNames {
   home,
@@ -77,9 +78,8 @@ class AppRouter {
     RouterNames name, {
     Map<String, String> queryParameters = const {},
   }) {
-    return GoRouter.of(
-      context,
-    ).pushNamed<T>(name.routeName, queryParameters: queryParameters);
+    return GoRouter.of(context)
+        .pushNamed<T>(name.routeName, queryParameters: queryParameters);
   }
 
   static void pop<T>(BuildContext context, [T? result]) {
@@ -121,12 +121,13 @@ class AppRouter {
     RouterNames name, {
     Map<String, String> queryParameters = const {},
   }) {
-    GoRouter.of(
-      context,
-    ).goNamed(name.routeName, queryParameters: queryParameters);
+    GoRouter.of(context)
+        .goNamed(name.routeName, queryParameters: queryParameters);
   }
 
   static final GoRouter router = GoRouter(
+    // 未匹配到任何路由时统一进入 404 页面
+    errorBuilder: (context, state) => const NotFoundPage(),
     routes: [
       GoRoute(
         path: '/',
@@ -313,8 +314,7 @@ class AppRouter {
             courseType: state.uri.queryParameters['courseType'] ?? '',
             sectionId: state.uri.queryParameters['sectionId'] ?? '',
             sectionType: state.uri.queryParameters['sectionType'] ?? '',
-            sectionCourseId:
-                state.uri.queryParameters['sectionCourseId'] ?? '',
+            sectionCourseId: state.uri.queryParameters['sectionCourseId'] ?? '',
             seekTime:
                 int.tryParse(state.uri.queryParameters['seekTime'] ?? '') ?? 0,
           ),
