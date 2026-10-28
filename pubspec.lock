@@ -483,6 +483,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_oss_aliyun:
+    dependency: "direct main"
+    description:
+      name: flutter_oss_aliyun
+      sha256: "8280c1e8dfb792dec6449d1e6052e1d3492b3b3a1dfee456cc41d3f31b4cbc26"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.4.2"
   flutter_platform_widgets:
     dependency: "direct main"
     description:
@@ -926,7 +934,7 @@ packages:
     source: hosted
     version: "1.19.0"
   mime:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: mime
       sha256: bd47de35f07e27267e69c8c8b22edf9473bfee170a60d60fcc93730c5144b7f6

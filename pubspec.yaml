@@ -100,6 +100,7 @@ dependencies:
   alipay_kit_android_new: ^6.0.1  # 支付宝支付(Android实现)
   gal: ^2.3.3
   
+  flutter_oss_aliyun: ^6.4.2
 
 fluwx:
   app_id: "wx4bddc0d3d10d3d0a"
@@ -140,6 +141,8 @@ flutter_gen:
 # until the FFI-based class lookup works reliably in Apple-platform debugging.
 dependency_overrides:
   path_provider_foundation: 2.6.0
+  # OSS 6.4.2 仅调用兼容的 lookupMimeType，统一使用分享插件要求的 mime 2.x。
+  mime: ^2.0.0
 
 #此处与dev_dependencies平级，不能缩进
 flutter_launcher_icons:

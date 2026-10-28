@@ -91,6 +91,11 @@ kotlin {
     }
 }
 
+dependencies {
+    // OSS 图片降采样后修正 EXIF 方向，不保留 GPS 等原图元数据。
+    implementation("androidx.exifinterface:exifinterface:1.4.2")
+}
+
 flutter {
     source = "../.."
 }
