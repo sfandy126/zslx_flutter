@@ -16,7 +16,7 @@ import '../features/courses/course_orderlist_page.dart';
 import '../features/courses/course_orderpay_page.dart';
 import '../features/courses/course_prebook_page.dart';
 import '../features/courses/course_search_page.dart';
-import '../features/courses/learn_history_page.dart';
+import '../features/courses/course_history_page.dart';
 import '../features/logins/bind_page.dart';
 import '../features/logins/favorites_page.dart';
 import '../features/logins/forgot_page.dart';
@@ -324,7 +324,7 @@ class AppRouter {
         path: '/learn-history',
         name: RouterNames.learnHistory.routeName,
         pageBuilder: (context, state) =>
-            _platformPage(key: state.pageKey, child: const LearnHistoryPage()),
+            _platformPage(key: state.pageKey, child: const CourseHistoryPage()),
       ),
       GoRoute(
         path: '/favorites',

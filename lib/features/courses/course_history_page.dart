@@ -10,14 +10,14 @@ import '../../utils/utils.dart';
 import '../../widgets/refresh_list_view.dart';
 
 /// 学习历史：展示本地保存的录播/直播回放播放记录
-class LearnHistoryPage extends StatefulWidget {
-  const LearnHistoryPage({super.key});
+class CourseHistoryPage extends StatefulWidget {
+  const CourseHistoryPage({super.key});
 
   @override
-  State<LearnHistoryPage> createState() => _LearnHistoryPageState();
+  State<CourseHistoryPage> createState() => _CourseHistoryPageState();
 }
 
-class _LearnHistoryPageState extends State<LearnHistoryPage> {
+class _CourseHistoryPageState extends State<CourseHistoryPage> {
   static const _plainTextStyle = TextStyle(decoration: TextDecoration.none);
 
   final _listKey = GlobalKey<RefreshListViewState<PlayHistory>>();
@@ -33,7 +33,7 @@ class _LearnHistoryPageState extends State<LearnHistoryPage> {
         noMore: histories.length < HistoryServer.pageSize,
       );
     } catch (error) {
-      Utils.log('LearnHistoryPage load failed: $error');
+      Utils.log('CourseHistoryPage load failed: $error');
       return RefreshResult.failed('加载失败，请重试');
     }
   }
@@ -81,7 +81,7 @@ class _LearnHistoryPageState extends State<LearnHistoryPage> {
     try {
       result = await MDPost.sendApiSession(cmd: .checkCourse, params: params);
     } catch (error) {
-      Utils.log('LearnHistoryPage check course failed: $error');
+      Utils.log('CourseHistoryPage check course failed: $error');
       if (mounted) MDTotast.error('资源加载异常，请稍后重试~');
       return;
     } finally {
