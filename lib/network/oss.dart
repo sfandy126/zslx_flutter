@@ -7,8 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_oss_aliyun/flutter_oss_aliyun.dart' as aliyun;
 import 'package:path_provider/path_provider.dart';
-
-import 'md_cmd.dart';
 import 'md_post.dart';
 
 enum MDOssTaskState { waiting, compressing, uploading, success, failed }

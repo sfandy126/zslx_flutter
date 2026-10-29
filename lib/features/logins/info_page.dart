@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
+import '../../widgets/image_picker.dart';
 import 'wx_login.dart';
 
 class InfoPage extends StatefulWidget {
@@ -14,7 +14,6 @@ class InfoPage extends StatefulWidget {
 
 class _InfoPageState extends State<InfoPage> {
   late final InfoViewModel _viewModel;
-  final _imagePicker = ImagePicker();
   bool _isBindingWx = false;
 
   @override
@@ -94,15 +93,10 @@ class _InfoPageState extends State<InfoPage> {
     if (!await _ensureLogin() || !mounted || _viewModel.isUploadingAvatar) {
       return;
     }
-    final image = await _imagePicker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 200,
-      maxHeight: 200,
-      imageQuality: 85,
-    );
-    if (image == null) return;
+    final path = await MDImagePicker.pickImage(context);
+    if (!mounted || path == null) return;
 
-    final error = await _viewModel.uploadAvatar(image.path);
+    final error = await _viewModel.uploadAvatar(path);
     if (!mounted) return;
     if (error != null) {
       MDTotast.error(error);

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '/utils/utils.dart';
 import 'features/pay/storekit.dart';
@@ -34,7 +35,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.theme),
       ),
       routerConfig: AppRouter.router,
-      builder: EasyLoading.init(),
+      // 打开第三方页面（如相册选择器）退出后由这里的根区域自动恢复。
+      builder: EasyLoading.init(
+        builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.dark,
+          child: child ?? const SizedBox.shrink(),
+        ),
+      ),
     );
   }
 }

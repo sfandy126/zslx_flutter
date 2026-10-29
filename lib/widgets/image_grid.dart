@@ -2,12 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:gal/gal.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../network/oss.dart';
 import '../utils/app_colors.dart';
 import '../utils/totast.dart';
+import 'image_picker.dart';
 import 'image_preview.dart';
 import 'network_image.dart';
 
@@ -244,7 +243,6 @@ class MDImageGrid extends StatefulWidget {
 }
 
 class _MDImageGridState extends State<MDImageGrid> {
-  final _picker = ImagePicker();
 
   MDImageGridController? _inner;
   List<String> _lastUrls = const [];
@@ -366,35 +364,16 @@ class _MDImageGridState extends State<MDImageGrid> {
     if (rest <= 0) return;
     _picking = true;
     try {
-      if (!await _ensureAccess()) return;
-      // 不传 maxWidth/imageQuality，交给 MDOss 在原生侧降采样压缩
-      final picked = await _picker.pickMultiImage(limit: rest);
-      if (picked.isEmpty) return;
-      // 系统选择器的上限不完全可靠，这里再兜底裁剪
-      final paths = picked
-          .take(rest)
-          .map((e) => e.path)
-          .toList(growable: false);
+      // 相册权限由 picker（photo_manager）内部处理；
+      // 不做压缩，交给 MDOss 在原生侧降采样压缩
+      final paths = await MDImagePicker.pickImages(context, max: rest);
+      if (paths.isEmpty) return;
       await _controller.addPaths(paths);
     } catch (error) {
       debugPrint('选择图片失败：$error');
       MDTotast.error('打开相册失败，请重试');
     } finally {
       _picking = false;
-    }
-  }
-
-  /// 打开相册前先申请权限；Android 10 及以上由系统选择器自行授权
-  Future<bool> _ensureAccess() async {
-    try {
-      if (await Gal.hasAccess(toAlbum: true)) return true;
-      if (await Gal.requestAccess(toAlbum: true)) return true;
-      MDTotast.message('请在系统设置中开启相册权限');
-      return false;
-    } catch (error) {
-      // 权限查询本身失败时不阻断流程，交由系统选择器的权限弹窗兜底
-      debugPrint('相册权限检查失败：$error');
-      return true;
     }
   }
 }
