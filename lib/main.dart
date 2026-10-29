@@ -7,11 +7,14 @@ import '/utils/utils.dart';
 import 'features/pay/storekit.dart';
 import 'router/app_router.dart';
 import 'services/history/history_server.dart';
+import 'services/um_server.dart';
 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // 友盟合规预初始化，隐私同意前调用；渠道从 AppChannel 动态传入
+  await UmServer.preInit();
   await AppOrientation.configure();
   await AppConfig.init();
   await MDUser.defualt.init();

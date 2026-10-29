@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zslx_flutter/router/app_router.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 import 'package:zslx_flutter/services/bjy_server.dart';
+import 'package:zslx_flutter/services/um_server.dart';
 import 'package:zslx_flutter/update/update_server.dart';
 
 class StartPage extends StatefulWidget {
@@ -74,6 +75,9 @@ class _StartPageState extends State<StartPage> {
 
   Future<void> _goToMain() async {
     if (!mounted) return;
+    // 隐私政策同意后（含已同意的冷启动）才初始化友盟，并绑定已登录用户
+    await UmServer.init();
+    UmServer.bindUserId(MDUser.defualt.uid);
     BjyServer.initialize();
     await _showSystemBars();
     if (!mounted) return;

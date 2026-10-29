@@ -3,10 +3,12 @@ package com.example.zslx_flutter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Process
 import androidx.exifinterface.media.ExifInterface
+import com.umeng.commonsdk.UMConfigure
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -17,6 +19,9 @@ import kotlin.math.max
 
 class MainActivity : FlutterActivity() {
     companion object {
+        // 友盟 preInit 只执行一次
+        private var umengPreInited = false
+
         // 跨批次串行压缩，后台优先级避免挤占 UI 线程。
         private val compressionQueue = Executors.newSingleThreadExecutor { action ->
             Thread({
@@ -26,9 +31,34 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         val main = Handler(Looper.getMainLooper())
+        // 友盟合规预初始化：渠道由 Dart 侧从 AppChannel 传入，
+        // 隐私政策同意前仅采集必要设备标识，正式初始化由 Dart 侧隐私同意后调用 initCommon 完成
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.zs.zslx/umeng")
+            .setMethodCallHandler { call, result ->
+                if (call.method == "preInit" && !umengPreInited) {
+                    umengPreInited = true
+                    val meta = packageManager
+                        .getApplicationInfo(
+                            packageName,
+                            android.content.pm.PackageManager.GET_META_DATA,
+                        ).metaData
+                    UMConfigure.preInit(
+                        this,
+                        meta?.getString("UMENG_APPKEY") ?: "",
+                        call.argument<String>("channel") ?: "",
+                    )
+                    result.success(null)
+                } else {
+                    result.notImplemented()
+                }
+            }
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.zs.zslx/oss_image")
             .setMethodCallHandler { call, result ->
                 if (call.method != "compress") {

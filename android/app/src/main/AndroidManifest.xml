@@ -58,6 +58,11 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- 友盟：AppKey，须与 lib/services/um_server.dart 中的常量保持一致；
+             渠道由 Dart 侧从 AppChannel 动态传入，不在 Manifest 固定 -->
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="5f0d0d0d0d0d0d0d0d0d0d0d0d" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

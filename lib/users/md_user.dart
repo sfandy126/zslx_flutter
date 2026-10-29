@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../network/md_post.dart';
+import '../services/um_server.dart';
 import '../utils/totast.dart';
 
 ///
@@ -96,6 +97,7 @@ class MDUser extends ChangeNotifier {
     await _save(SaveKey.uid, _priUid);
     await _save(SaveKey.guest, _priGuest);
     await _updateFromMap(res);
+    UmServer.bindUserId(_priUid);
     _eventController.add(notificationForLogin);
     notifyListeners();
   }
@@ -111,6 +113,7 @@ class MDUser extends ChangeNotifier {
     wxOpenid = null;
     wxName = null;
     await _removeAllKey();
+    UmServer.unbind();
     _eventController.add(notificationForLogout);
     _eventController.add(notificationForInfoUpdate);
     notifyListeners();
