@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -48,134 +49,144 @@ class _LoginPageState extends State<LoginPage> {
       animation: _viewModel,
       builder: (context, child) => PlatformScaffold(
         body: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 32, 16, 24),
+          child: Stack(
             children: [
-              SizedBox.square(
-                dimension: 40,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: PlatformIconButton(
-                    onPressed: () => AppRouter.pop(context),
-                    icon: Assets.images.public.back.svg(width: 24, height: 24),
-                    padding: EdgeInsets.zero,
-                    material: (_, _) => MaterialIconButtonData(
-                      constraints: const BoxConstraints.tightFor(
-                        width: 40,
-                        height: 40,
+              ListView(
+                padding: const EdgeInsets.fromLTRB(16, 32, 16, 24),
+                children: [
+                  SizedBox.square(
+                    dimension: 40,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: PlatformIconButton(
+                        onPressed: () => AppRouter.pop(context),
+                        icon: Assets.images.public.back.svg(
+                          width: 24,
+                          height: 24,
+                        ),
+                        padding: EdgeInsets.zero,
+                        material: (_, _) => MaterialIconButtonData(
+                          constraints: const BoxConstraints.tightFor(
+                            width: 40,
+                            height: 40,
+                          ),
+                          padding: EdgeInsets.zero,
+                          iconSize: 24,
+                        ),
+                        cupertino: (_, _) => CupertinoIconButtonData(
+                          sizeStyle: CupertinoButtonSize.small,
+                          minimumSize: const Size(40, 40),
+                          padding: EdgeInsets.zero,
+                        ),
                       ),
-                      padding: EdgeInsets.zero,
-                      iconSize: 24,
-                    ),
-                    cupertino: (_, _) => CupertinoIconButtonData(
-                      sizeStyle: CupertinoButtonSize.small,
-                      minimumSize: const Size(40, 40),
-                      padding: EdgeInsets.zero,
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 48),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        '登录体验完整功能',
-                        style: TextStyle(
-                          color: AppColors.title,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
-                          decoration: .none,
-                          decorationColor: AppColors.transparent,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                    MDPhoneField(
-                      controller: _phoneController,
-                      onChanged: _viewModel.setPhone,
-                    ),
-                    const SizedBox(height: 10),
-                    if (_viewModel.isCodeLogin)
-                      MDCodeField(
-                        controller: _codeController,
-                        phone: _viewModel.phone,
-                        onChanged: _viewModel.setCode,
-                      )
-                    else
-                      MDTextField(
-                        controller: _passwordController,
-                        hintText: '请输入密码',
-                        obscureText: true,
-                        onChanged: _viewModel.setPassword,
-                      ),
-                    const SizedBox(height: 16),
-                    MDAgreement(
-                      value: _viewModel.agreed,
-                      onChanged: _viewModel.setAgreed,
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: PlatformElevatedButton(
-                        onPressed: _viewModel.isLoading ? null : _login,
-                        color: AppColors.theme,
-                        child: Text(
-                          _viewModel.isLoading ? '登录中...' : '登录',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: .w500,
+                  const SizedBox(height: 48),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            '登录体验完整功能',
+                            style: TextStyle(
+                              color: AppColors.title,
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                              decoration: .none,
+                              decorationColor: AppColors.transparent,
+                            ),
                           ),
                         ),
-                        material: (_, _) => MaterialElevatedButtonData(
-                          style: ButtonStyle(
-                            minimumSize: const WidgetStatePropertyAll(
-                              Size.fromHeight(48),
-                            ),
-                            shape: WidgetStatePropertyAll(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
+                        const SizedBox(height: 40),
+                        MDPhoneField(
+                          controller: _phoneController,
+                          onChanged: _viewModel.setPhone,
+                        ),
+                        const SizedBox(height: 10),
+                        if (_viewModel.isCodeLogin)
+                          MDCodeField(
+                            controller: _codeController,
+                            phone: _viewModel.phone,
+                            onChanged: _viewModel.setCode,
+                          )
+                        else
+                          MDTextField(
+                            controller: _passwordController,
+                            hintText: '请输入密码',
+                            obscureText: true,
+                            onChanged: _viewModel.setPassword,
+                          ),
+                        const SizedBox(height: 16),
+                        MDAgreement(
+                          value: _viewModel.agreed,
+                          onChanged: _viewModel.setAgreed,
+                        ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: PlatformElevatedButton(
+                            onPressed: _viewModel.isLoading ? null : _login,
+                            color: AppColors.theme,
+                            child: Text(
+                              _viewModel.isLoading ? '登录中...' : '登录',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: .w500,
                               ),
                             ),
+                            material: (_, _) => MaterialElevatedButtonData(
+                              style: ButtonStyle(
+                                minimumSize: const WidgetStatePropertyAll(
+                                  Size.fromHeight(48),
+                                ),
+                                shape: WidgetStatePropertyAll(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            cupertino: (_, _) => CupertinoElevatedButtonData(
+                              borderRadius: BorderRadius.circular(24),
+                              sizeStyle: CupertinoButtonSize.small,
+                              minimumSize: const Size(double.infinity, 48),
+                            ),
                           ),
                         ),
-                        cupertino: (_, _) => CupertinoElevatedButtonData(
-                          borderRadius: BorderRadius.circular(24),
-                          sizeStyle: CupertinoButtonSize.small,
-                          minimumSize: const Size(double.infinity, 48),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _textButton('忘记密码', _openForgotPassword),
-                        const SizedBox(width: 16),
-                        _textButton(
-                          _viewModel.isCodeLogin ? '密码登录' : '验证码登录',
-                          _viewModel.toggleLoginMode,
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _textButton('忘记密码', _openForgotPassword),
+                            const SizedBox(width: 16),
+                            _textButton(
+                              _viewModel.isCodeLogin ? '密码登录' : '验证码登录',
+                              _viewModel.toggleLoginMode,
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    if (_viewModel.wxOpen) ...[
-                      const SizedBox(height: 24),
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: _wxLogin,
-                        child: Assets.images.public.wx.svg(
-                          width: 36,
-                          height: 36,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
+                  ),
+                ],
               ),
+              // 微信登录固定距底部 48，不随表单内容滚动
+              if (_viewModel.wxOpen)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 20,
+                  child: Center(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: _wxLogin,
+                      child: Assets.images.public.wx.svg(width: 36, height: 36),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

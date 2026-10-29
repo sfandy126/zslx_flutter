@@ -15,6 +15,8 @@ import '../features/courses/course_orderconfirm_page.dart';
 import '../features/courses/course_orderlist_page.dart';
 import '../features/courses/course_orderpay_page.dart';
 import '../features/courses/course_prebook_page.dart';
+import '../features/courses/course_task_list_page.dart';
+import '../features/courses/course_task_edit_page.dart';
 import '../features/courses/course_search_page.dart';
 import '../features/courses/course_history_page.dart';
 import '../features/logins/bind_page.dart';
@@ -53,6 +55,8 @@ enum RouterNames {
   courseDetail,
   courseFolder,
   courseFiles,
+  courseTaskList,
+  courseTaskEdit,
   coursePrebook,
   courseIosPay,
   courseOrderConfirm,
@@ -243,6 +247,35 @@ class AppRouter {
             folderName: state.uri.queryParameters['folderName'] ?? '',
             courseId: state.uri.queryParameters['courseId'] ?? '',
             courseType: state.uri.queryParameters['courseType'] ?? '',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/course-task-list',
+        name: RouterNames.courseTaskList.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: CourseTaskListPage(
+            courseType: state.uri.queryParameters['courseType'] ?? '',
+            sectionId: state.uri.queryParameters['sectionId'] ?? '',
+            workId: state.uri.queryParameters['workId'] ?? '',
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/course-task-edit',
+        name: RouterNames.courseTaskEdit.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: CourseTaskEditPage(
+            courseType: state.uri.queryParameters['courseType'] ?? '',
+            sectionId: state.uri.queryParameters['sectionId'] ?? '',
+            workId: state.uri.queryParameters['workId'] ?? '',
+            logId: state.uri.queryParameters['logId'] ?? '',
+            validate: state.uri.queryParameters['validate'] ?? '',
+            bjTime: state.uri.queryParameters['bjTime'] ?? '',
+            fileName: state.uri.queryParameters['fileName'] ?? '',
+            fileUrl: state.uri.queryParameters['fileUrl'] ?? '',
           ),
         ),
       ),

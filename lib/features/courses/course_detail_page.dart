@@ -259,7 +259,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
         MDTotast.error(result.msg ?? '收藏操作失败');
         return;
       }
-      final state = result.data?['is_collect'].mdToInt();
+      final state = result.data?.mdInt('is_collect') ?? 0;
       setState(() => _isFavorite = state == 1);
       MDTotast.success(result.msg ?? '操作成功');
     } catch (error) {
@@ -1110,7 +1110,18 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
       if (!mounted || !MDUser.defualt.islogined) return;
     }
     if (!_canAccessCourse(allowExpired: true)) return;
-    // TODO: 接入作业详情/提交页面。
+    final changed = await AppRouter.pushNamed<bool>(
+      context,
+      RouterNames.courseTaskList,
+      queryParameters: {
+        'courseType': _courseType,
+        'sectionId': work.sectionId,
+        'workId': work.id,
+      },
+    );
+    if (mounted && changed == true) {
+      setState(() => _workListKey = UniqueKey());
+    }
   }
 }
 

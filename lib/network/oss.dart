@@ -18,7 +18,7 @@ class MDOssTask {
   const MDOssTask({
     required this.index,
     required this.imagePath,
-    this.state = MDOssTaskState.waiting,
+    this.state = .waiting,
     this.progress = 0,
     this.sentBytes = 0,
     this.totalBytes = 0,
@@ -66,13 +66,23 @@ class MDOssResult {
       List.unmodifiable(tasks.map((e) => e.url).whereType<String>());
   List<String?> get orderedUrls => List.unmodifiable(tasks.map((e) => e.url));
   List<MDOssTask> get fails =>
-      List.unmodifiable(tasks.where((e) => e.state == MDOssTaskState.failed));
+      List.unmodifiable(tasks.where((e) => e.state == .failed));
   bool get isSuccess => fails.isEmpty;
 }
 
+typedef _OssClient = ({aliyun.Client client, String host});
+
 /// 多图 OSS 上传；直接传入 ImagePicker 返回的本地文件路径。
+/// 单个文档（pdf/word）使用 [MDOss.uploadFile]。
 class MDOss {
   MDOss._();
+
+  /// [uploadFile] 支持的扩展名及上传时使用的 MIME
+  static const fileTypes = {
+    'pdf': 'application/pdf',
+    'doc': 'application/msword',
+    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  };
 
   static const _imageChannel = MethodChannel('com.zs.zslx/oss_image');
   static final _compressionGate = _OssGate(1);
@@ -150,21 +160,7 @@ class MDOss {
     if (tasks.isEmpty) return MDOssResult(tasks);
     Directory? directory;
     try {
-      var config = await _loadConfig();
-      final endpoint = config.endpoint;
-      final bucket = config.bucket;
-      final client = aliyun.Client.init(
-        ossEndpoint: endpoint,
-        bucketName: bucket,
-        dio: _session,
-        authGetter: () async {
-          if (!config.isUsable) config = await _loadConfig();
-          if (config.endpoint != endpoint || config.bucket != bucket) {
-            throw StateError('OSS 配置已变更，请重新上传');
-          }
-          return config.auth;
-        },
-      );
+      final oss = await _client();
       final temp = await getTemporaryDirectory();
       directory = await temp.createTemp('md_oss_');
       final batchDirectory = directory;
@@ -177,7 +173,7 @@ class MDOss {
           try {
             await _compressionGate.run(() async {
               tasks[index] = tasks[index]._with(
-                state: MDOssTaskState.compressing,
+                state: .compressing,
               );
               report();
               final dimensions = await _imageChannel
@@ -206,11 +202,11 @@ class MDOss {
 
             await _uploadGate.run(() async {
               tasks[index] = tasks[index]._with(
-                state: MDOssTaskState.uploading,
+                state: .uploading,
               );
               report();
               final key = _objectKey();
-              await client.putObjectFile(
+              await oss.client.putObjectFile(
                 target,
                 fileKey: key,
                 option: aliyun.PutRequestOption(
@@ -229,15 +225,15 @@ class MDOss {
                 ),
               );
               tasks[index] = tasks[index]._with(
-                state: MDOssTaskState.success,
+                state: .success,
                 progress: 1,
                 sentBytes: tasks[index].totalBytes,
-                url: 'https://$bucket.$endpoint/$key',
+                url: 'https://${oss.host}/$key',
               );
             });
           } catch (error) {
             tasks[index] = tasks[index]._with(
-              state: MDOssTaskState.failed,
+              state: .failed,
               error: _message(error),
             );
           }
@@ -251,9 +247,9 @@ class MDOss {
     } catch (error) {
       // STS/临时目录初始化失败仍返回完整任务，方便逐张展示和重试。
       for (var i = 0; i < tasks.length; i++) {
-        if (tasks[i].state != MDOssTaskState.success) {
+        if (tasks[i].state != .success) {
           tasks[i] = tasks[i]._with(
-            state: MDOssTaskState.failed,
+            state: .failed,
             error: _message(error),
           );
         }
@@ -270,7 +266,108 @@ class MDOss {
     return MDOssResult(tasks);
   }
 
-  static String _objectKey() {
+  /// 单文件上传，一次只上传一个文件，仅支持 [fileTypes] 中的扩展名。
+  ///
+  /// 文档不做任何转码，按原始扩展名和 MIME 直传；与图片共享全局上传并发门。
+  /// [progress] 实时返回任务快照；上传过程不会抛出异常，失败查看返回值的 state/error。
+  static Future<MDOssTask> uploadFile(
+    String filePath, {
+    ValueChanged<MDOssTask>? progress,
+    CancelToken? cancelToken,
+    int maxBytes = 50 * 1024 * 1024,
+  }) async {
+    if (maxBytes < 1 || maxBytes > 200 * 1024 * 1024) {
+      throw ArgumentError.value(maxBytes, 'maxBytes', '必须在 1 到 200MB 之间');
+    }
+    var task = MDOssTask(index: 0, imagePath: filePath);
+    void report() {
+      if (progress == null) return;
+      try {
+        progress(task);
+      } catch (_) {
+        debugPrint('OSS 文件上传进度回调异常');
+      }
+    }
+
+    report();
+    try {
+      final dot = filePath.lastIndexOf('.');
+      final extension = dot < 0
+          ? ''
+          : filePath.substring(dot + 1).toLowerCase();
+      final contentType = fileTypes[extension];
+      if (contentType == null) {
+        throw StateError('仅支持上传 ${fileTypes.keys.join('、')} 文件');
+      }
+      final bytes = await File(filePath).length();
+      if (bytes < 1) throw StateError('文件内容为空');
+      if (bytes > maxBytes) {
+        throw StateError('文件不能超过 ${maxBytes ~/ (1024 * 1024)}MB');
+      }
+      task = task._with(totalBytes: bytes);
+      final oss = await _client();
+      await _uploadGate.run(() async {
+        if (cancelToken?.isCancelled == true) throw cancelToken!.cancelError!;
+        task = task._with(state: .uploading);
+        report();
+        final key = _objectKey(extension);
+        await oss.client.putObjectFile(
+          filePath,
+          fileKey: key,
+          cancelToken: cancelToken,
+          option: aliyun.PutRequestOption(
+            override: false,
+            headers: {'content-type': contentType},
+            onSendProgress: (sent, total) {
+              if (total <= 0) return;
+              final value = (sent / total).clamp(0.0, 0.99);
+              task = task._with(
+                progress: max(task.progress, value),
+                sentBytes: sent.clamp(0, total),
+                totalBytes: total,
+              );
+              report();
+            },
+          ),
+        );
+        task = task._with(
+          state: .success,
+          progress: 1,
+          sentBytes: task.totalBytes,
+          url: 'https://${oss.host}/$key',
+        );
+      });
+    } catch (error) {
+      task = task._with(
+        state: .failed,
+        error: _message(error, '文件'),
+      );
+    }
+    report();
+    return task;
+  }
+
+  /// 按当前 STS 配置创建客户端；凭证过期时自动续期，配置变更则中止本批。
+  static Future<_OssClient> _client() async {
+    var config = await _loadConfig();
+    final endpoint = config.endpoint;
+    final bucket = config.bucket;
+    final client = aliyun.Client.init(
+      ossEndpoint: endpoint,
+      bucketName: bucket,
+      dio: _session,
+      authGetter: () async {
+        if (!config.isUsable) config = await _loadConfig();
+        if (config.endpoint != endpoint || config.bucket != bucket) {
+          throw StateError('OSS 配置已变更，请重新上传');
+        }
+        return config.auth;
+      },
+    );
+    return (client: client, host: '$bucket.$endpoint');
+  }
+
+  static String _objectKey([String extension = 'jpg']) {
     final now = DateTime.now();
     final date =
         '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
@@ -278,7 +375,7 @@ class MDOss {
       16,
       (_) => _random.nextInt(256).toRadixString(16).padLeft(2, '0'),
     ).join();
-    return '$date/${now.microsecondsSinceEpoch}_$nonce.jpg';
+    return '$date/${now.microsecondsSinceEpoch}_$nonce.$extension';
   }
 
   /// 合并并发 STS 请求；失败后清除 Future，下一批可以重新获取。
@@ -295,31 +392,31 @@ class MDOss {
   }
 
   static Future<_OssConfig> _fetchConfig() async {
-    final result = await MDPost.sendApiSession(cmd: MDCmd.oss);
+    final result = await MDPost.sendApiSession(cmd: .oss);
     if (!result.isSuccess) throw StateError(result.msg ?? '加载 OSS 上传配置失败');
     final info = result.data?['info'];
     if (info is! Map) throw StateError('OSS 上传配置缺失');
     return _OssConfig.fromMap(info);
   }
 
-  static String _message(Object error) {
+  static String _message(Object error, [String name = '图片']) {
     if (error is StateError) return error.message;
     if (error is PlatformException) return error.message ?? '图片压缩失败';
     if (error is MissingPluginException) return '当前平台未接入图片压缩，请完整重启应用';
-    if (error is FileSystemException) return '图片文件不可读或临时目录不可写';
+    if (error is FileSystemException) return '$name不可读或临时目录不可写';
     if (error is DioException) {
       switch (error.type) {
         case DioExceptionType.connectionTimeout:
         case DioExceptionType.sendTimeout:
         case DioExceptionType.receiveTimeout:
-          return '图片上传超时，请稍后重试';
+          return '$name上传超时，请稍后重试';
         default:
           return error.response?.statusCode == 403
               ? 'OSS 上传权限失效，请重新上传'
-              : '图片上传失败，请检查网络';
+              : '$name上传失败，请检查网络';
       }
     }
-    return '图片上传失败';
+    return '$name上传失败';
   }
 }
 

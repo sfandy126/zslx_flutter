@@ -23,7 +23,7 @@ enum MDEnv {
   }
 
   /// 当前使用的环境
-  static const MDEnv current = .product;
+  static const MDEnv current = .test;
 
   /// api地址
   String get url {

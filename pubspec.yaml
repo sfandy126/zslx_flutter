@@ -62,6 +62,8 @@ dependencies:
   carousel_slider: ^5.1.2 
   # 图片选择插件 
   image_picker: 1.2.4
+  # 文档选择插件（作业附件 pdf/word）
+  file_picker: ^13.3.0
   # 侧滑删除 
   flutter_slidable: ^4.0.3
   # 处理键盘事件 

@@ -13,7 +13,7 @@ enum MDCmd {
   remindReport('zs_remind_report', 'add_pop_up_two'),
   videoDurationReport('zs_video_duration_report', 'course_lb_schedule'),
   checkCourse('zs_check_course', 'check_course'),
-  oss('zs_oss', 'oss'),
+  oss('zs_oss', 'oss_info'),
   zyList('zs_zy_list', 'course_zy_list'),
   zyLog('zs_zy_log', 'zy_list'),
   zyPublic('zs_zy_public', 'my_zy_show'),

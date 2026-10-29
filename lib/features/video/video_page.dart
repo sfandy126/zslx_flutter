@@ -193,6 +193,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
 
   /// 保存录播播放进度：暂停/播完、离开页面、App 退到后台时调用
   void _saveHistory() {
+    if (widget.courseId.isEmpty) return;
     // 播放器未就绪（未拿到时长）时不记录
     if (_durationSeconds <= 0) return;
     final total = _durationSeconds.round();
