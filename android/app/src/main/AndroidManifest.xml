@@ -62,7 +62,7 @@
              渠道由 Dart 侧从 AppChannel 动态传入，不在 Manifest 固定 -->
         <meta-data
             android:name="UMENG_APPKEY"
-            android:value="5f0d0d0d0d0d0d0d0d0d0d0d0d" />
+            android:value="6ae36ccb863270068caedee9" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

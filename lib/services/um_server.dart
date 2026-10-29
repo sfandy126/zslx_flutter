@@ -17,11 +17,10 @@ import '../config/app_channel.dart';
 class UmServer {
   UmServer._();
 
-  // TODO: umeng app key /更新隐私政策
   ///与AndroidManifest.xml必须保持一致
-  static const String _androidAppKey = '5f0d0d0d0d0d0d0d0d0d0d0d0d';
+  static const String _androidAppKey = '6ae36ccb863270068caedee9';
   /// 与info.plist中CFBundleURLTypes必须保持一致
-  static const String _iosAppKey = 'ios5f0d0d0d';
+  static const String _iosAppKey = '6ae36ccb6545637cd628fabc';
 
   static bool _inited = false;
 
