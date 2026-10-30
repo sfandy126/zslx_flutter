@@ -1,0 +1,9 @@
+Target dependency graph (4 targets)
+Target 'umeng_common_sdk' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+➜ Explicit dependency on target 'UMCommon' in project 'Pods'
+➜ Explicit dependency on target 'UMDevice' in project 'Pods'
+Target 'UMCommon' in project 'Pods'
+➜ Explicit dependency on target 'UMDevice' in project 'Pods'
+Target 'UMDevice' in project 'Pods' (no dependencies)
+Target 'Flutter' in project 'Pods' (no dependencies)

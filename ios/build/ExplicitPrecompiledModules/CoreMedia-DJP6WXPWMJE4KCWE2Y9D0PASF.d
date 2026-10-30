@@ -1,0 +1,15 @@
+moduledependenciestarget: \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/SDKSettings.json \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/_DarwinFoundation1-4IOF35G9FWBN8W1MCTWXDAV71.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/usr/include/DarwinFoundation1.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/21/include/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/_Builtin_stdint-AOT4R26111UKF3O942U7KFE7X.pcm \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/CoreFoundation-5BB06JT6252O5DJUF8O5TMZ9R.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/usr/include/dispatch.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CoreFoundation.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/CoreAudio-5LJAR6OUYVDAM1OD6XS4IC0CU.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CoreAudio.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/CoreGraphics-C9QCU8U3VAH9YK0NG8ODXN34C.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CoreGraphics.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/CoreVideo-3MQRMXOMMTMNNF3P6LKYMS43V.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CoreVideo.framework/Modules/module.modulemap

@@ -1,0 +1,67 @@
+# 渠道配置唯一入口：App 名称 / 包名 / 版本号 / 渠道列表（flutter_flavorizr）
+#
+# 只改本文件，改完执行 `dart run tool/build.dart sync`（打包命令会自动同步）。
+# 以下内容均由同步生成，勿手改：
+#   - android/app/flavorizr.gradle.kts   Android 渠道 flavor（applicationId、app_name）
+#   - ios/Flutter/AppInfo.xcconfig        iOS 显示名称、bundleId
+#   - lib/flavors.dart                    Dart 渠道枚举
+#   - pubspec.yaml 的 version             默认版本号 + 构建号（供 flutter run / IDE 调试使用）
+
+# ---------- 公共配置（flavorizr 不读取此节，仅供下方渠道引用） ----------
+common:
+  # App 显示名称，iOS / Android 全渠道共用
+  app: &app
+    name: "卓仕遴选"
+  android: &android
+    applicationId: "com.zs.zslx"
+  ios: &ios
+    bundleId: "com.xingchen.bkyd"
+  # Android 渠道默认版本号：渠道没配 version 时用这个
+  androidVersion: &androidVersion "2.0.0"
+  # iOS 渠道默认版本号：渠道没配 version 时用这个
+  iosVersion: &iosVersion "2.0.3"
+  # 构建号，全渠道共用，打包时自动 +1
+  buildNumber: 1
+
+instructions:
+  - android:flavorizrGradle
+  - android:buildGradle
+
+app:
+  android:
+    flavorDimensions: "channel"
+
+# ---------- 渠道 ----------
+# Android 渠道写 `android: *android`；iOS 固定 AppStore 渠道写 `ios: *ios`。
+# 版本号取渠道下的 version（与 android / ios 同级，写在它们里面无效）：
+#   - 不写 version 时，Android 渠道取 common.androidVersion，iOS 渠道取 common.iosVersion；
+#   - 某个渠道要单独版本号，在该渠道下加 `version: "x.y.z"`，如 version: "2.0.2"。
+flavors:
+  xiaomi:
+    app: *app
+    android: *android
+  huawei:
+    app: *app
+    android: *android
+  oppo:
+    app: *app
+    android: *android
+  vivo:
+    app: *app
+    android: *android
+  meizu:
+    app: *app
+    android: *android
+  tengxun:
+    app: *app
+    android: *android
+  honor:
+    app: *app
+    android: *android
+  companywebsite:
+    app: *app
+    android: *android
+  appstore:
+    app: *app
+    ios: *ios
+    version: *iosVersion

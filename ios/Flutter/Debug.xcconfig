@@ -1,4 +1,5 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
 #include "Generated.xcconfig"
-APP_DISPLAY_NAME = 卓仕遴选
+// 显示名称、bundleId 由 flavorizr.yaml 生成
+#include "AppInfo.xcconfig"
 BUILD_LIBRARY_FOR_DISTRIBUTION = NO

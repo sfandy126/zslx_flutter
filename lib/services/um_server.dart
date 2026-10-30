@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:umeng_apm_sdk/umeng_apm_sdk.dart';
 import 'package:umeng_common_sdk/umeng_common_sdk.dart';
 
-import '../config/app_channel.dart';
+import '../config/app_config.dart';
 
 /// 友盟统计 + APM 封装。
 ///
@@ -27,14 +27,14 @@ class UmServer {
   static const MethodChannel _nativeChannel = MethodChannel('com.zs.zslx/umeng');
 
   /// Android 合规预初始化，应用启动即调用（隐私同意前）。
-  /// 渠道从 [AppChannel] 动态传入原生侧，preInit 本身即为合规 API，
+  /// 渠道从 [AppConfig.channelId] 动态传入原生侧，preInit 本身即为合规 API，
   /// 隐私同意前仅采集必要设备标识。重复调用安全。
   static Future<void> preInit() async {
     if (!Platform.isAndroid) return;
     try {
       await _nativeChannel.invokeMethod<void>(
         'preInit',
-        {'channel': AppChannel.getChannelInfo().id},
+        {'channel': AppConfig.channelId},
       );
     } catch (error) {
       debugPrint('友盟预初始化失败：$error');
@@ -45,13 +45,16 @@ class UmServer {
   static Future<void> init() async {
     if (_inited) return;
     _inited = true;
-    try {
-      final channel = AppChannel.getChannelInfo().id;
-      await UmengCommonSdk.initCommon(_androidAppKey, _iosAppKey, channel);
-    } catch (error) {
-      debugPrint('友盟初始化失败：$error');
-      return;
-    }
+    // 插件原生实现（Android UmengCommonSdkPlugin.java / iOS UmengCommonSdkPlugin.m）处理完
+    // initCommon 后都不回调 result，await 会永久挂起并卡死启动页，因此只发起调用、不等待返回。
+    UmengCommonSdk.initCommon(
+      _androidAppKey,
+      _iosAppKey,
+      AppConfig.channelId,
+    ).then<void>(
+      (_) {},
+      onError: (Object error) => debugPrint('友盟初始化失败：$error'),
+    );
     _installErrorHandlers();
   }
 

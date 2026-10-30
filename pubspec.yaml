@@ -16,7 +16,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 2.0.0+1
+# 版本号统一在 flavorizr.yaml 配置（common.version + common.buildNumber），此行由 tool/build.dart 同步，勿手改
+version: 2.0.3+1
 
 environment:
   sdk: ^3.13.0
@@ -72,7 +73,6 @@ dependencies:
   webview_flutter: ^4.14.1
   share_plus: ^13.0.0
   path_provider: ^2.1.6
-  # totast提示框
   flutter_easyloading: ^4.0.2
   # 下拉刷新、上拉加载更多
   easy_refresh: ^4.0.0
@@ -104,7 +104,9 @@ dependencies:
 
   flutter_oss_aliyun: ^6.4.2
 
-  umeng_common_sdk: ^1.3.1  
+  # 1.3.1 误提交了模板文件，iOS 同时带 UmengCommonSdkPlugin.h/.m 与 .swift（Duplicate interface），
+  # Android 同时带同包名 .java 与 .kt（duplicate class），故钉在 1.3.0
+  umeng_common_sdk: 1.3.0
   umeng_apm_sdk: ^1.1.0     
 
 fluwx:
@@ -137,6 +139,11 @@ dev_dependencies:
   # isar_community_generator 3.4.1 依赖 build ^4.0.0，build_runner 2.17+ 要求 build ^5.0.0，需钉在 2.16.2
   build_runner: 2.16.2  # 运行生成器所需的工具
   isar_community_generator: ^3.4.1
+  # 渠道/包名/App 名称统一管理（配置见 flavorizr.yaml）
+  # 2.6.0 起依赖 xml ^7.0.0，与 flutter_auditor 的 xml ^6.6.0 冲突，钉在 2.5.x
+  flutter_flavorizr: ^2.5.0
+  # tool/build.dart 读取 flavorizr.yaml
+  yaml: ^3.1.2
 
 flutter_gen:
   integrations:

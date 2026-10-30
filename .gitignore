@@ -49,3 +49,5 @@ qoder/
 *qoder*
 */.qoder/
 .qoder/
+# Widget Preview related
+.widget_preview/

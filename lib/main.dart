@@ -13,7 +13,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // 友盟合规预初始化，隐私同意前调用；渠道从 AppChannel 动态传入
   await UmServer.preInit();
   await AppOrientation.configure();
   await AppConfig.init();
@@ -32,7 +31,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'zslx_flutter',
+      // 取原生显示名称（来自 flavorizr.yaml），Android 最近任务列表展示此标题
+      title: AppConfig.appName,
       theme: ThemeData(
         // 设置app主题颜色，自动影响 Theme.of(context).primaryColor
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.theme),

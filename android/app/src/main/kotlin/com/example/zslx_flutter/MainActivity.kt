@@ -38,7 +38,7 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         val main = Handler(Looper.getMainLooper())
-        // 友盟合规预初始化：渠道由 Dart 侧从 AppChannel 传入，
+        // 友盟合规预初始化：渠道由 Dart 侧从 AppConfig.channelId 传入，
         // 隐私政策同意前仅采集必要设备标识，正式初始化由 Dart 侧隐私同意后调用 initCommon 完成
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.zs.zslx/umeng")
             .setMethodCallHandler { call, result ->

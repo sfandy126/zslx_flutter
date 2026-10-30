@@ -226,7 +226,7 @@ class MDPost {
       'system-type': AppConfig.systemType,
       'versions': _plusOneMajorMinor(AppConfig.appVersion),
       'system_version': Platform.operatingSystemVersion, // 设备系统版本号
-      'flavor': AppConfig.currentChannel.name,
+      'flavor': AppConfig.channelId,
       'device_brand': AppConfig.deviceBrand,
       'device_model': AppConfig.deviceBrand,
     };

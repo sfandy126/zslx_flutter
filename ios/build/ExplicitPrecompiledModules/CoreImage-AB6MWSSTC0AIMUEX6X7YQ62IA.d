@@ -1,0 +1,19 @@
+moduledependenciestarget: \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/SDKSettings.json \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/_DarwinFoundation1-4IOF35G9FWBN8W1MCTWXDAV71.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/usr/include/DarwinFoundation1.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/21/include/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/_Builtin_stdbool-B71NDKQQR2WDKXRS3HVS0RZEA.pcm \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/_Builtin_stdint-AOT4R26111UKF3O942U7KFE7X.pcm \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/CoreGraphics-C9QCU8U3VAH9YK0NG8ODXN34C.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/usr/include/ObjectiveC.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CoreGraphics.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/Foundation-DCP4BLJ4I2OO2SISFGDO3BIDI.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/Foundation.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/CoreVideo-3MQRMXOMMTMNNF3P6LKYMS43V.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/IOSurface.framework/Modules/module.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/OpenGLES.framework/Modules/module.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/Metal.framework/Modules/module.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CoreVideo.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/ImageIO-EPSHV4GTEI9YMJA3FVOG75X81.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/ImageIO.framework/Modules/module.modulemap

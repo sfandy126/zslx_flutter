@@ -1,0 +1,15 @@
+moduledependenciestarget: \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/SDKSettings.json \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/usr/include/Darwin.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/CoreFoundation-5BB06JT6252O5DJUF8O5TMZ9R.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/usr/include/DarwinFoundation1.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/21/include/module.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/usr/include/ObjectiveC.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/usr/include/dispatch.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CoreFoundation.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/Security-70R1HZT7APMQA6QYJIXPTCMJ.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/Security.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/CFNetwork-176ECXT5R4BKVW236I4ZX1UF7.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CFNetwork.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/XPC-N59Y97SDCXUEKP6PFA5HIBTC.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/usr/include/xpc.modulemap

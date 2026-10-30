@@ -1,0 +1,5 @@
+ extern const unsigned char umeng_common_sdkVersionString[];
+ extern const double umeng_common_sdkVersionNumber;
+
+ const unsigned char umeng_common_sdkVersionString[] __attribute__ ((used)) = "@(#)PROGRAM:umeng_common_sdk  PROJECT:Pods-1" "\n";
+ const double umeng_common_sdkVersionNumber __attribute__ ((used)) = (double)1.;

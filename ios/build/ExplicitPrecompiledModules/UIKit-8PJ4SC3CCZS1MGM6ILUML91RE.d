@@ -1,0 +1,26 @@
+moduledependenciestarget: \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/SDKSettings.json \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/Foundation-DCP4BLJ4I2OO2SISFGDO3BIDI.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/usr/include/DarwinFoundation1.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CoreFoundation.framework/Modules/module.modulemap \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/Foundation.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/UIUtilities-68FWLFW49Q57GI0IECB2OOY6V.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/SubFrameworks/UIUtilities.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/CoreGraphics-C9QCU8U3VAH9YK0NG8ODXN34C.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CoreGraphics.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/CoreText-1HZ7KE0IMEF4RU9REGHB30GVI.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CoreText.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/CoreImage-AB6MWSSTC0AIMUEX6X7YQ62IA.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CoreImage.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/QuartzCore-5L7RV2RAEHOJ5SPM43WI1ZQGO.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/QuartzCore.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/CoreLocation-1NEH75FIXHDJJGHDISEBHJ8TN.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CoreLocation.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/CoreMotion-26U0QJZHHJWRSA9JF34D8LUCU.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/CoreMotion.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/Symbols-941CV0G43NYCR0CCW6IMNQOH5.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/Symbols.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/FileProvider-BWMCLPQGDSJQRY1PWE6I28VRH.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/FileProvider.framework/Modules/module.modulemap \
+  /Users/rt/Desktop/LK/zslx_flutter/ios/build/ExplicitPrecompiledModules/UserNotifications-188J9DZGUY37I9G9JM0OAZDQN.pcm \
+  /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS27.0.sdk/System/Library/Frameworks/UserNotifications.framework/Modules/module.modulemap

@@ -1,0 +1,3 @@
+// 由 tool/build.dart 根据 flavorizr.yaml 生成，勿手改
+APP_DISPLAY_NAME = 卓仕遴选
+PRODUCT_BUNDLE_IDENTIFIER = com.xingchen.bkyd

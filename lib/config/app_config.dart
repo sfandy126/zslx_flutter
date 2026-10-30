@@ -1,7 +1,10 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart' show appFlavor;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 
-import 'app_channel.dart';
+import '../flavors.dart';
 import 'device_info.dart';
 
 class AppConfig {
@@ -9,7 +12,6 @@ class AppConfig {
   static String? _deviceBrand;
 
   static Future<void> init() async {
-    await AppChannel.init();
     _packageInfo = await PackageInfo.fromPlatform();
     _deviceBrand = await DeviceInfo.getDeviceBrand();
   }
@@ -26,17 +28,12 @@ class AppConfig {
   /// 一键打印配置信息（调试用）
   static Future<void> printInfo() async {
     final pkg = packageInfo;
-    final channelInfo = AppChannel.getChannelInfo();
-    final channelId = channelInfo.id.trim().isEmpty
-        ? 'unknown'
-        : channelInfo.id.trim();
 
     Utils.log('''
       ╔══════════════════════════════════════════╗
       ║  App 配置信息
       ╠══════════════════════════════════════════╣
-      ║  渠道 id      : $channelId
-      ║  渠道名       : ${channelInfo.name}
+      ║  渠道         : $channelId
       ║  设备品牌     : $deviceBrand
       ║  版本号       : ${pkg.version}
       ║  Build Number : ${pkg.buildNumber}
@@ -57,17 +54,28 @@ class AppConfig {
 
   static String get deviceBrand => _deviceBrand ?? DeviceInfo.cachedBrand;
 
-  static BuildChannel get currentChannel => AppChannel.currentChannel;
+  /// 当前渠道（渠道定义见 flavorizr.yaml），不依赖 [init]，可在启动最早期读取
+  static final Flavor channel = _resolveChannel();
+
+  static String get channelId => channel.name;
+
+  /// Android 由 `--flavor` 编译期确定；iOS 固定 AppStore，
+  /// 未带 `--flavor` 运行（如直接 flutter run）时按平台回退
+  static Flavor _resolveChannel() {
+    for (final flavor in Flavor.values) {
+      if (flavor.name == appFlavor) return flavor;
+    }
+    return Platform.isIOS ? Flavor.appstore : Flavor.companywebsite;
+  }
 
   static String get systemType {
-    final channel = currentChannel;
-    if (channel.isAndroid) {
+    if (Platform.isAndroid) {
       return 'android';
     }
-    if (channel.isIOS) {
+    if (Platform.isIOS) {
       return 'ios';
     }
-    if (channel.isHarmony) {
+    if (Platform.operatingSystem == 'ohos') {
       return 'harmony';
     }
     return 'unknown';

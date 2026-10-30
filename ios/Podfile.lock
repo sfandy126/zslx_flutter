@@ -164,6 +164,18 @@ PODS:
   - TXLiteAVSDK_TRTC (11.3.14333):
     - TXLiteAVSDK_TRTC/TRTC (= 11.3.14333)
   - TXLiteAVSDK_TRTC/TRTC (11.3.14333)
+  - UMAPM (2.1.7):
+    - UMCommon
+  - UMCommon (7.7.0):
+    - UMDevice
+  - UMDevice (3.6.0)
+  - umeng_apm_sdk (0.0.1):
+    - Flutter
+    - UMAPM
+  - umeng_common_sdk (0.0.1):
+    - Flutter
+    - UMCommon
+    - UMDevice
 
 DEPENDENCIES:
   - bjy_liveui_flutter (from `.symlinks/plugins/bjy_liveui_flutter/ios`)
@@ -171,6 +183,8 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - install_plugin_v3 (from `.symlinks/plugins/install_plugin_v3/ios`)
   - SDWebImage
+  - umeng_apm_sdk (from `.symlinks/plugins/umeng_apm_sdk/ios`)
+  - umeng_common_sdk (from `.symlinks/plugins/umeng_common_sdk/ios`)
 
 SPEC REPOS:
   https://git.baijiashilian.com/open-ios/specs.git:
@@ -195,6 +209,9 @@ SPEC REPOS:
     - SnapKit
     - SSZipArchive
     - TXLiteAVSDK_TRTC
+    - UMAPM
+    - UMCommon
+    - UMDevice
 
 EXTERNAL SOURCES:
   bjy_liveui_flutter:
@@ -205,6 +222,10 @@ EXTERNAL SOURCES:
     :path: Flutter
   install_plugin_v3:
     :path: ".symlinks/plugins/install_plugin_v3/ios"
+  umeng_apm_sdk:
+    :path: ".symlinks/plugins/umeng_apm_sdk/ios"
+  umeng_common_sdk:
+    :path: ".symlinks/plugins/umeng_common_sdk/ios"
 
 SPEC CHECKSUMS:
   Alamofire: f36a35757af4587d8e4f4bfa223ad10be2422b8c
@@ -231,6 +252,11 @@ SPEC CHECKSUMS:
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   SVGAPlayer: 6ac99bddb71934b1ce1d85fd9e5b8824f90ced17
   TXLiteAVSDK_TRTC: 782401cf733d676c849a7d0a2f50150e1173351b
+  UMAPM: 24c100a2ec8ffd710f4f25575d92b46b9e4e63dd
+  UMCommon: 7740aabc9bdf25ee76d05c06ce09f980f4422cb2
+  UMDevice: 20b7b3c37a36b2c5c7ca8b5a54386ff9ed2b3b19
+  umeng_apm_sdk: 62096406fedba420191f284da145e63d64a3ffcb
+  umeng_common_sdk: 095b63e6f83b71548725a7c03a6c17b23be6674b
 
 PODFILE CHECKSUM: 426a4086dd219a0eb5dacb6ec65d105091d8efa9
 
