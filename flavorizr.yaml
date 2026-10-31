@@ -19,7 +19,7 @@ common:
   # Android 渠道默认版本号：渠道没配 version 时用这个
   androidVersion: &androidVersion "2.0.0"
   # iOS 渠道默认版本号：渠道没配 version 时用这个
-  iosVersion: &iosVersion "2.0.3"
+  iosVersion: &iosVersion "2.0.0"
   # 构建号，全渠道共用，打包时自动 +1
   buildNumber: 1
 
