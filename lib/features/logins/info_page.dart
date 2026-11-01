@@ -133,7 +133,7 @@ class _InfoPageState extends State<InfoPage> {
 
 enum InfoDataType {
   nick('昵称'),
-  uuid('用户号'),
+  uuid('用户ID'),
   phone('手机号'),
   wx('微信');
 
