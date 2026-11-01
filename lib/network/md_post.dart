@@ -211,6 +211,11 @@ class MDPost {
 
     final data = error.response?.data;
     if (data is String && data.isNotEmpty) return data;
+    final socketError = error.error;
+    if (socketError is SocketException &&
+        socketError.message.contains('No address associated')) {
+      return 'ERROR：网络域名解析失败，请检查网络或稍后重试';
+    }
     switch (error.type) {
       case .connectionTimeout:
       case .sendTimeout:

@@ -1,5 +1,6 @@
 import 'package:bjy_liveui_flutter/bjy_liveui_flutter.dart';
 import 'package:bjy_playbackui_flutter/bjy_playbackui_flutter.dart';
+
 import '../utils/utils.dart';
 
 class BjyServer {
@@ -28,7 +29,11 @@ class BjyServer {
     MDTotast.showLoading();
     late final MDResult result;
     try {
-      result = await MDPost.sendApiSession(cmd: MDCmd.live, params: params);
+      result = await MDPost.sendApiSession(cmd: .live, params: params);
+    } catch (error) {
+      Utils.log('BjyServer load live failed: $error');
+      MDTotast.error('直播加载失败，请稍后重试');
+      return false;
     } finally {
       MDTotast.hideLoading();
     }
@@ -54,7 +59,11 @@ class BjyServer {
     MDTotast.showLoading();
     late final MDResult result;
     try {
-      result = await MDPost.sendApiSession(cmd: MDCmd.playback, params: params);
+      result = await MDPost.sendApiSession(cmd: .playback, params: params);
+    } catch (error) {
+      Utils.log('BjyServer load playback failed: $error');
+      MDTotast.error('回放加载失败，请稍后重试');
+      return false;
     } finally {
       MDTotast.hideLoading();
     }
@@ -84,11 +93,25 @@ class BjyServer {
       return false;
     }
 
-    _playbackSdk.startPlayback(playback.room, playback.token, {
-      'userId': playback.number,
-      'userName': playback.name,
+    final config = <String, dynamic>{
+      'userId': playback.number.isNotEmpty
+          ? playback.number
+          : MDUser.defualt.uid ?? '',
+      'userName': playback.name.isNotEmpty
+          ? playback.name
+          : MDUser.defualt.nick ?? '',
+      'session_id': '0', //百家云 Android 原生层会把 session_id 解析为 Long,没有 session 时必须传 "0"，传 null 会导致启动闪退。
+      'supportLooping': true,
+      'supportBreakPointPlay': true,
       'supportBackgroundAudio': true,
-    });
+    };
+    try {
+      _playbackSdk.startPlayback(playback.room, playback.token, config);
+    } catch (error) {
+      Utils.log('BjyServer enter playback failed: $error');
+      MDTotast.error('回放打开失败，请稍后重试');
+      return false;
+    }
     return true;
   }
 
@@ -111,7 +134,7 @@ class BjyServer {
 
   static void _ensureInitialized() {
     if (!_initialized) {
-      throw StateError('Call BjyServer.initialize() before entering a room.');
+      initialize();
     }
   }
 }
