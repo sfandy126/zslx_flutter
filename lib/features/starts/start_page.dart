@@ -145,70 +145,80 @@ class _StartPageState extends State<StartPage> {
             textAlign: TextAlign.left,
           ),
           actions: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                  child: PlatformTextButton(
-                    onPressed: _denyPrivacy,
-                    color: AppColors.background,
-                    material: (context, platform) => MaterialTextButtonData(
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppColors.black,
-                        backgroundColor: AppColors.background,
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size.fromHeight(32),
-                        fixedSize: const Size.fromHeight(32),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: RoundedRectangleBorder(borderRadius: .zero),
-                      ),
-                    ),
-                    cupertino: (context, platform) => CupertinoTextButtonData(
+            SizedBox(
+              height: 40,
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Expanded(
+                    child: PlatformTextButton(
+                      onPressed: _denyPrivacy,
                       color: AppColors.background,
-                      foregroundColor: AppColors.black,
-                      borderRadius: BorderRadius.zero,
-                    ),
-                    child: const Text(
-                      '退出应用',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: PlatformElevatedButton(
-                    onPressed: _agreePrivacy,
-                    color: AppColors.theme,
-                    material: (context, platform) => MaterialElevatedButtonData(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.theme,
-                        foregroundColor: AppColors.white,
-                        elevation: 0,
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size.fromHeight(32),
-                        fixedSize: const Size.fromHeight(32),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: RoundedRectangleBorder(borderRadius: .zero),
-                      ),
-                    ),
-                    cupertino: (context, platform) =>
-                        CupertinoElevatedButtonData(
-                          color: AppColors.theme,
-                          borderRadius: BorderRadius.zero,
+                      material: (context, platform) => MaterialTextButtonData(
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.black,
+                          backgroundColor: AppColors.background,
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size.fromHeight(40),
+                          fixedSize: const Size.fromHeight(40),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          shape: RoundedRectangleBorder(borderRadius: .zero),
                         ),
-                    child: Text(
-                      '同意并继续',
-                      style: TextStyle(
-                        color: AppColors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                      ),
+                      cupertino: (context, platform) => CupertinoTextButtonData(
+                        color: AppColors.background,
+                        foregroundColor: AppColors.black,
+                        borderRadius: BorderRadius.zero,
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size.fromHeight(40),
+                      ),
+                      child: const Text(
+                        '退出应用',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: PlatformElevatedButton(
+                      onPressed: _agreePrivacy,
+                      color: AppColors.theme,
+                      material: (context, platform) =>
+                          MaterialElevatedButtonData(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.theme,
+                              foregroundColor: AppColors.white,
+                              elevation: 0,
+                              padding: EdgeInsets.zero,
+                              minimumSize: const Size.fromHeight(40),
+                              fixedSize: const Size.fromHeight(40),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: .zero,
+                              ),
+                            ),
+                          ),
+                      cupertino: (context, platform) =>
+                          CupertinoElevatedButtonData(
+                            color: AppColors.theme,
+                            borderRadius: BorderRadius.zero,
+                            padding: EdgeInsets.zero,
+                            minimumSize: const Size.fromHeight(40),
+                          ),
+                      child: Text(
+                        '同意并继续',
+                        style: TextStyle(
+                          color: AppColors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
