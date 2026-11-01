@@ -168,8 +168,8 @@ class _MineHeader extends StatelessWidget {
                 name,
                 style: TextStyle(
                   color: AppColors.title,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
                   decoration: TextDecoration.none,
                   decorationColor: AppColors.transparent,
                 ),
@@ -223,9 +223,11 @@ class _HeaderButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 100,
+      height: 36,
       child: Material(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: PlatformTextButton(
           onPressed: onTap,
           color: AppColors.title,
