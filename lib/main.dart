@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import '/utils/utils.dart';
 import 'features/pay/storekit.dart';
@@ -18,7 +19,7 @@ void main() async {
   await AppConfig.init();
   await MDUser.defualt.init();
   await HistoryServer.init();
-  await AppConfig.printInfo();  
+  await AppConfig.printInfo();
   if (Platform.isIOS) {
     MDStoreKit.configuration();
   }
@@ -33,6 +34,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       // 取原生显示名称（来自 flavorizr.yaml），Android 最近任务列表展示此标题
       title: AppConfig.appName,
+      locale: const Locale('zh', 'CN'),
+      supportedLocales: const [Locale('zh', 'CN')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       theme: ThemeData(
         // 设置app主题颜色，自动影响 Theme.of(context).primaryColor
         colorScheme: ColorScheme.fromSeed(seedColor: AppColors.theme),
