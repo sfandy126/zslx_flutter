@@ -139,29 +139,17 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             material: (_, _) => MaterialElevatedButtonData(
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    WidgetStateProperty.resolveWith((states) {
-                                      if (states.contains(
-                                        WidgetState.disabled,
-                                      )) {
-                                        return AppColors.theme.withValues(
-                                          alpha: 0.5,
-                                        );
-                                      }
-                                      return AppColors.theme;
-                                    }),
-                                foregroundColor: WidgetStatePropertyAll(
-                                  AppColors.white,
-                                ),
-                                elevation: const WidgetStatePropertyAll(0),
-                                minimumSize: const WidgetStatePropertyAll(
-                                  Size.fromHeight(48),
-                                ),
-                                shape: WidgetStatePropertyAll(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.theme,
+                                foregroundColor: AppColors.white,
+                                disabledBackgroundColor: AppColors.theme
+                                    .withValues(alpha: 0.5),
+                                disabledForegroundColor: AppColors.white,
+                                minimumSize: const Size.fromHeight(48),
+                                elevation: 0,
+                                shadowColor: AppColors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
                                 ),
                               ),
                             ),

@@ -85,7 +85,7 @@ class _ForgotPageState extends State<ForgotPage> {
                         style: TextStyle(
                           color: AppColors.title,
                           fontSize: 28,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w500,
                           decoration: .none,
                           decorationColor: AppColors.transparent,
                         ),
@@ -124,14 +124,18 @@ class _ForgotPageState extends State<ForgotPage> {
                           ),
                         ),
                         material: (_, _) => MaterialElevatedButtonData(
-                          style: ButtonStyle(
-                            minimumSize: const WidgetStatePropertyAll(
-                              Size.fromHeight(48),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.theme,
+                            foregroundColor: AppColors.white,
+                            disabledBackgroundColor: AppColors.theme.withValues(
+                              alpha: 0.5,
                             ),
-                            shape: WidgetStatePropertyAll(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
-                              ),
+                            disabledForegroundColor: AppColors.white,
+                            minimumSize: const Size.fromHeight(48),
+                            elevation: 0,
+                            shadowColor: AppColors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
                             ),
                           ),
                         ),
