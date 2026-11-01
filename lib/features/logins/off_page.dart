@@ -37,7 +37,7 @@ class _OffPageState extends State<OffPage> {
               child: SafeArea(
                 top: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 10, 24, 0),
+                  padding: const EdgeInsets.fromLTRB(24, 10, 24, 20),
                   child: Column(
                     children: [
                       const Expanded(child: _LogoffContent()),
