@@ -18,6 +18,9 @@ class MDVideoPlayer extends StatefulWidget {
     this.looping = false,
     this.aspectRatio,
     this.placeholder,
+    this.backgroundTitle,
+    this.backgroundAuthor,
+    this.backgroundImageUrl,
     this.onEvent,
     super.key,
   }) : _sourceType = _MDVideoSourceType.network;
@@ -29,6 +32,9 @@ class MDVideoPlayer extends StatefulWidget {
     this.looping = false,
     this.aspectRatio,
     this.placeholder,
+    this.backgroundTitle,
+    this.backgroundAuthor,
+    this.backgroundImageUrl,
     this.onEvent,
     super.key,
   }) : _sourceType = _MDVideoSourceType.file;
@@ -40,6 +46,9 @@ class MDVideoPlayer extends StatefulWidget {
   final bool looping;
   final double? aspectRatio;
   final Widget? placeholder;
+  final String? backgroundTitle;
+  final String? backgroundAuthor;
+  final String? backgroundImageUrl;
   final ValueChanged<BetterPlayerEvent>? onEvent;
 
   @override
@@ -149,11 +158,22 @@ class _MDVideoPlayerState extends State<MDVideoPlayer> {
   }
 
   BetterPlayerDataSource _createDataSource() {
+    final notification = BetterPlayerNotificationConfiguration(
+      showNotification: true,
+      title: widget.backgroundTitle ?? '视频播放',
+      author: widget.backgroundAuthor,
+      imageUrl: widget.backgroundImageUrl,
+      activityName: 'MainActivity',
+    );
     return switch (widget._sourceType) {
       _MDVideoSourceType.network => BetterPlayerDataSource.network(
         widget.source,
+        notificationConfiguration: notification,
       ),
-      _MDVideoSourceType.file => BetterPlayerDataSource.file(widget.source),
+      _MDVideoSourceType.file => BetterPlayerDataSource.file(
+        widget.source,
+        notificationConfiguration: notification,
+      ),
     };
   }
 
@@ -168,6 +188,7 @@ class _MDVideoPlayerState extends State<MDVideoPlayer> {
         placeholder: widget.placeholder,
         autoDispose: false,
         useRootNavigator: true,
+        handleLifecycle: false,
         // 全屏时横屏，退出全屏（含全屏中直接返回）后恢复为 App 全局方向
         deviceOrientationsOnFullScreen: const [
           DeviceOrientation.landscapeLeft,

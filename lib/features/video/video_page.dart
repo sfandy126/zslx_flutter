@@ -273,6 +273,9 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
       looping: false,
       aspectRatio: 16 / 9,
       placeholder: MDNetImage(imageUrl: widget.cover),
+      backgroundTitle: widget.title.isEmpty ? widget.courseTitle : widget.title,
+      backgroundAuthor: widget.courseTitle,
+      backgroundImageUrl: widget.cover,
       onEvent: _onPlayerEvent,
     );
   }
