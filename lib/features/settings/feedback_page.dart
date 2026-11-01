@@ -224,6 +224,7 @@ class _ContactField extends StatelessWidget {
       child: TextField(
         controller: controller,
         onChanged: onChanged,
+        onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
         cursorColor: AppColors.theme,
         style: TextStyle(
           color: AppColors.black,
@@ -286,6 +287,7 @@ class _ContentField extends StatelessWidget {
         onChanged: onChanged,
         maxLines: null,
         expands: true,
+        onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
         textAlignVertical: TextAlignVertical.top,
         cursorColor: AppColors.theme,
         style: TextStyle(
