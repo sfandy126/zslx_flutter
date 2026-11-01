@@ -15,7 +15,7 @@ common:
   android: &android
     applicationId: "com.zs.zslx"
   ios: &ios
-    bundleId: "com.xingchen.bkyd"
+    bundleId: "com.md.zslx.cn"
   # Android 渠道默认版本号：渠道没配 version 时用这个
   androidVersion: &androidVersion "2.0.0"
   # iOS 渠道默认版本号：渠道没配 version 时用这个

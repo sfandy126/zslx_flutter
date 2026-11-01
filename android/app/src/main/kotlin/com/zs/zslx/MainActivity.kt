@@ -1,4 +1,4 @@
-package com.example.zslx_flutter
+package com.zs.zslx
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
