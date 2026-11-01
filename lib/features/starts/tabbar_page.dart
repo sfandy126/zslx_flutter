@@ -52,7 +52,7 @@ class _TabbarPageState extends State<TabbarPage> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedColor = Theme.of(context).primaryColor;
+    final selectedColor = AppColors.theme;
     final unselectedColor = AppColors.title;
     final iconSize = 24.0;
 
@@ -67,9 +67,25 @@ class _TabbarPageState extends State<TabbarPage> {
         backgroundColor: AppColors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        type: BottomNavigationBarType.fixed,
+        fixedColor: selectedColor,
         selectedItemColor: selectedColor,
         unselectedItemColor: unselectedColor,
         showUnselectedLabels: true,
+        selectedLabelStyle: TextStyle(color: selectedColor, fontSize: 12),
+        unselectedLabelStyle: TextStyle(color: unselectedColor, fontSize: 12),
+      ),
+      material3Tabs: (context, platform) => MaterialNavigationBarData(
+        backgroundColor: AppColors.white,
+        elevation: 0,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return TextStyle(
+            color: selected ? selectedColor : unselectedColor,
+            fontSize: 12,
+          );
+        }),
       ),
       cupertino: (context, platform) => CupertinoTabScaffoldData(),
       cupertinoTabs: (context, platform) => CupertinoTabBarData(

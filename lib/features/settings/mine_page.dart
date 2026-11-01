@@ -54,10 +54,8 @@ class _MinePageState extends State<MinePage> {
                         name: _viewModel.displayName,
                         avatar: _viewModel.avatar,
                         onLogin: _handleHeaderTap,
-                        onOrders: () =>
-                            _openOrders(),
-                        onFavorites: () =>
-                            _openFavorites(),
+                        onOrders: () => _openOrders(),
+                        onFavorites: () => _openFavorites(),
                       ),
                       const SizedBox(height: 24),
                       if (Platform.isIOS)
@@ -344,6 +342,7 @@ class MineViewModel extends ChangeNotifier {
   }
 
   MDUser get user => MDUser.defualt;
+  bool _disposed = false;
 
   bool get isLoggedIn => user.islogined;
 
@@ -365,19 +364,24 @@ class MineViewModel extends ChangeNotifier {
   Future<void> refresh() async {
     if (_isRefreshing) return;
     _isRefreshing = true;
-    notifyListeners();
+    if (!_disposed) notifyListeners();
 
-    await user.updateData();
-    _isRefreshing = false;
-    notifyListeners();
+    try {
+      await user.updateData();
+    } finally {
+      _isRefreshing = false;
+      if (!_disposed) notifyListeners();
+    }
   }
 
   void _handleUserChanged() {
-    notifyListeners();
+    if (!_disposed) notifyListeners();
   }
 
   @override
   void dispose() {
+    _disposed = true;
+    _isRefreshing = false;
     MDUser.defualt.removeListener(_handleUserChanged);
     super.dispose();
   }

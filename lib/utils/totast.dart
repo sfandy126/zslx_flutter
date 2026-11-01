@@ -1,9 +1,14 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class MDTotast {
   MDTotast._();
 
+  static int _loadingCount = 0;
+  static int _dismissGeneration = 0;
+
   static void showLoading([String message = '加载中...']) {
+    _loadingCount++;
     EasyLoading.show(status: message);
   }
 
@@ -20,6 +25,15 @@ class MDTotast {
   }
 
   static void hideLoading() {
-    EasyLoading.dismiss();
+    if (_loadingCount > 0) {
+      _loadingCount--;
+    }
+    if (_loadingCount != 0) return;
+
+    final generation = ++_dismissGeneration;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (generation != _dismissGeneration || _loadingCount != 0) return;
+      EasyLoading.dismiss(animation: false);
+    });
   }
 }
