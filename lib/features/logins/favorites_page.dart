@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -55,6 +58,32 @@ class _FavoritesPageState extends State<FavoritesPage> {
     if (mounted) _listKey.currentState?.refresh();
   }
 
+  Future<void> _cancelFavorite(_FavoriteCourse course) async {
+    if (!MDUser.defualt.islogined) {
+      await _openLogin();
+      return;
+    }
+    MDTotast.showLoading();
+    try {
+      final result = await MDPost.sendApiSession(
+        cmd: .courseFavorite,
+        params: {'id': course.id, 'type': course.type},
+      );
+      if (!mounted) return;
+      if (!result.isSuccess) {
+        MDTotast.error(result.msg ?? '取消收藏失败，请重试');
+        return;
+      }
+      _listKey.currentState?.removeWhere((item) => item.id == course.id);
+      MDTotast.success(result.msg ?? '已取消收藏');
+    } catch (error) {
+      Utils.log('FavoritesPage cancel favorite failed: $error');
+      if (mounted) MDTotast.error('取消收藏失败，请重试');
+    } finally {
+      MDTotast.hideLoading();
+    }
+  }
+
   Future<void> _openLogin() async {
     await AppRouter.pushNamed<void>(context, RouterNames.login);
     if (mounted && MDUser.defualt.islogined) {
@@ -82,18 +111,21 @@ class _FavoritesPageState extends State<FavoritesPage> {
             Expanded(
               child: ColoredBox(
                 color: AppColors.background,
-                child: RefreshListView<_FavoriteCourse>(
-                  key: _listKey,
-                  onData: _loadPage,
-                  emptyText: '暂无收藏',
-                  failedText: '收藏加载失败，请重试',
-                  onLogin: _openLogin,
-                  padding: const EdgeInsets.only(bottom: 16),
-                  itemBuilder: (context, course, index) => Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                    child: _FavoriteTile(
-                      course: course,
-                      onTap: () => _open(course),
+                child: SlidableAutoCloseBehavior(
+                  child: RefreshListView<_FavoriteCourse>(
+                    key: _listKey,
+                    onData: _loadPage,
+                    emptyText: '暂无收藏',
+                    failedText: '收藏加载失败，请重试',
+                    onLogin: _openLogin,
+                    padding: const EdgeInsets.only(bottom: 16),
+                    itemBuilder: (context, course, index) => Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                      child: _FavoriteTile(
+                        course: course,
+                        onTap: () => _open(course),
+                        onCancel: () => unawaited(_cancelFavorite(course)),
+                      ),
                     ),
                   ),
                 ),
@@ -165,96 +197,115 @@ class _FavoriteCourse {
 }
 
 class _FavoriteTile extends StatelessWidget {
-  const _FavoriteTile({required this.course, required this.onTap});
+  const _FavoriteTile({
+    required this.course,
+    required this.onTap,
+    required this.onCancel,
+  });
 
   final _FavoriteCourse course;
   final VoidCallback onTap;
+  final VoidCallback onCancel;
 
   @override
   Widget build(BuildContext context) {
     const coverWidth = 140.0;
     const coverHeight = coverWidth * 0.65;
     final hasScan = course.scan.isNotEmpty;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(12),
+    final radius = BorderRadius.circular(12);
+    return ClipRRect(
+      borderRadius: radius,
+      child: Slidable(
+        key: ValueKey(course.id),
+        endActionPane: ActionPane(
+          motion: const DrawerMotion(),
+          extentRatio: 0.22,
+          children: [
+            SlidableAction(
+              onPressed: (_) => onCancel(),
+              backgroundColor: AppColors.theme,
+              foregroundColor: AppColors.white,
+              label: '取消收藏',
+            ),
+          ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: SizedBox(
-            height: coverHeight,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                MDNetImage(
-                  imageUrl: course.picture,
-                  width: coverWidth,
-                  height: coverHeight,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        course.name,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: AppColors.title,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onTap,
+          child: Container(
+            color: AppColors.white,
+            padding: const EdgeInsets.all(16),
+            child: SizedBox(
+              height: coverHeight,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  MDNetImage(
+                    imageUrl: course.picture,
+                    width: coverWidth,
+                    height: coverHeight,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          course.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: AppColors.title,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                      const Spacer(),
-                      Row(
-                        children: [
-                          if (hasScan) ...[
-                            SvgPicture.asset(
-                              'assets/images/public/scan.svg',
-                              width: 12,
-                              height: 12,
-                            ),
-                            const SizedBox(width: 2),
-                            Text(
-                              '${course.scan}人',
-                              maxLines: 1,
-                              style: TextStyle(
-                                color: AppColors.content,
-                                fontSize: 12,
+                        const Spacer(),
+                        Row(
+                          children: [
+                            if (hasScan) ...[
+                              SvgPicture.asset(
+                                'assets/images/public/scan.svg',
+                                width: 12,
+                                height: 12,
                               ),
-                            ),
-                            const SizedBox(width: 4),
-                          ],
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: FittedBox(
-                                fit: BoxFit.scaleDown,
+                              const SizedBox(width: 2),
+                              Text(
+                                '${course.scan}人',
+                                maxLines: 1,
+                                style: TextStyle(
+                                  color: AppColors.content,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                            ],
+                            Expanded(
+                              child: Align(
                                 alignment: Alignment.centerRight,
-                                child: Text(
-                                  course.money.mdToPrice(),
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                    color: AppColors.red,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    course.money.mdToPrice(),
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      color: AppColors.red,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
