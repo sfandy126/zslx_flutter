@@ -63,6 +63,11 @@ class _MDTextFieldState extends State<MDTextField> {
           borderSide: BorderSide.none,
         ),
         contentPadding: const EdgeInsets.fromLTRB(10, 14, 24, 14),
+        labelStyle: TextStyle(
+          color: AppColors.title,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
       ),
     );
   }

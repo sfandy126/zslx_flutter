@@ -90,10 +90,11 @@ class _LoginPageState extends State<LoginPage> {
                           alignment: Alignment.centerLeft,
                           child: Text(
                             '登录体验完整功能',
+                            textScaler: TextScaler.noScaling,
                             style: TextStyle(
                               color: AppColors.title,
                               fontSize: 28,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w500,
                               decoration: .none,
                               decorationColor: AppColors.transparent,
                             ),
@@ -139,6 +140,21 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             material: (_, _) => MaterialElevatedButtonData(
                               style: ButtonStyle(
+                                backgroundColor:
+                                    WidgetStateProperty.resolveWith((states) {
+                                      if (states.contains(
+                                        WidgetState.disabled,
+                                      )) {
+                                        return AppColors.theme.withValues(
+                                          alpha: 0.5,
+                                        );
+                                      }
+                                      return AppColors.theme;
+                                    }),
+                                foregroundColor: WidgetStatePropertyAll(
+                                  AppColors.white,
+                                ),
+                                elevation: const WidgetStatePropertyAll(0),
                                 minimumSize: const WidgetStatePropertyAll(
                                   Size.fromHeight(48),
                                 ),
