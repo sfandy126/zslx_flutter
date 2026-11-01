@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:better_player_plus/better_player_plus.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 import '../../config/app_orientation.dart';
+import '../../gen/assets.gen.dart';
+import '../../utils/app_colors.dart';
 
 enum _MDVideoSourceType { network, file }
 
@@ -165,6 +167,7 @@ class _MDVideoPlayerState extends State<MDVideoPlayer> {
         fit: BoxFit.contain,
         placeholder: widget.placeholder,
         autoDispose: false,
+        useRootNavigator: true,
         // 全屏时横屏，退出全屏（含全屏中直接返回）后恢复为 App 全局方向
         deviceOrientationsOnFullScreen: const [
           DeviceOrientation.landscapeLeft,
@@ -173,14 +176,78 @@ class _MDVideoPlayerState extends State<MDVideoPlayer> {
         deviceOrientationsAfterFullScreen: AppOrientation.orientations,
         translations: _chineseTranslations(),
         controlsConfiguration: BetterPlayerControlsConfiguration(
-          enablePlaybackSpeed: true, // 是否显示播放速度
+          enableOverflowMenu: true,
+          enablePlaybackSpeed: false,
           enableSubtitles: false, // 是否显示字幕
           enableQualities: false, // 是否显示画质
           enableAudioTracks: false, // 是否显示音频轨道
-          overflowMenuCustomItems: [],
+          overflowMenuCustomItems: [
+            BetterPlayerOverflowMenuItem(
+              Icons.speed_outlined,
+              '播放速度',
+              _showSpeedSheet,
+            ),
+          ],
           controlBarColor: const Color(0xFF000000).withValues(alpha: 0.5),
         ),
       ),
+    );
+  }
+
+  Future<void> _showSpeedSheet() async {
+    if (!mounted) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      useRootNavigator: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (sheetContext) {
+        final currentSpeed =
+            _controller.videoPlayerController?.value.speed ?? 1.0;
+        const speeds = [0.75, 1.0, 1.25, 1.5, 2.0];
+        return SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 16, bottom: 8),
+                child: Text(
+                  '播放倍数',
+                  style: TextStyle(
+                    color: AppColors.title,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              for (final speed in speeds)
+                ListTile(
+                  leading: currentSpeed == speed
+                      ? Assets.images.public.select.svg(width: 20, height: 20)
+                      : Assets.images.public.unselect.svg(
+                          width: 20,
+                          height: 20,
+                        ),
+                  title: Text(
+                    '${speed}x',
+                    style: TextStyle(
+                      color: currentSpeed == speed
+                          ? AppColors.theme
+                          : AppColors.content,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    _controller.setSpeed(speed);
+                  },
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 
