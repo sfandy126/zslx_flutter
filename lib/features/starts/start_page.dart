@@ -81,7 +81,7 @@ class _StartPageState extends State<StartPage> {
     BjyServer.initialize();
     await _showSystemBars();
     if (!mounted) return;
-    await UpdateServer.checkAndShow(context);
+    unawaited(UpdateServer.checkAndShow(context));
     if (!mounted) return;
     AppRouter.goNamed(context, RouterNames.main);
   }

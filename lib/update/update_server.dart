@@ -56,7 +56,10 @@ class UpdateServer {
       final String type = Theme.of(context).platform == TargetPlatform.android
           ? '1'
           : '2';
-      final result = await MDPost.sendApiSession(cmd: MDCmd.version, params: {'type': type});
+      final result = await MDPost.sendApiSession(
+        cmd: MDCmd.version,
+        params: {'type': type},
+      );
       if (!result.isSuccess) return;
       _checked = true;
       if (!context.mounted) return;
@@ -65,6 +68,9 @@ class UpdateServer {
       if (update != null) {
         await UpdateAlert.show(context, update: update);
       }
+    } catch (error, stackTrace) {
+      debugPrint('版本检查失败：$error');
+      debugPrint('$stackTrace');
     } finally {
       _checking = false;
     }
