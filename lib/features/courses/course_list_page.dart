@@ -318,7 +318,7 @@ class CourseCard extends StatelessWidget {
                           top: Radius.circular(12),
                         ),
                         child: AspectRatio(
-                          aspectRatio: 1 / 0.53,
+                          aspectRatio: 375 / 198,
                           child: MDNetImage(imageUrl: course.picture),
                         ),
                       ),
