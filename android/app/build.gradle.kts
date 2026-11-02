@@ -51,6 +51,20 @@ android {
     }
 
     buildTypes {
+        debug {
+            // 微信开放平台按“包名 + 签名证书”识别应用。
+            // Debug 也使用 key.properties 中的正式证书，避免 debug/release
+            // 安装包的应用签名不同而被微信拒绝。
+            signingConfig = if (keystorePropertiesFile.exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                logger.warn(
+                    "No android/key.properties found; signing debug APK with the debug key. " +
+                        "微信支付/微信登录可能因应用签名不一致而失败.",
+                )
+                signingConfigs.getByName("debug")
+            }
+        }
         release {
             signingConfig = if (keystorePropertiesFile.exists()) {
                 signingConfigs.getByName("release")
