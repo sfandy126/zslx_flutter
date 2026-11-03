@@ -77,6 +77,10 @@ android {
             }
             isMinifyEnabled = true // 开启代码混淆
             isShrinkResources = true // 开启资源压缩
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 
