@@ -1,14 +1,8 @@
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:native_file_preview/native_file_preview.dart';
-import 'package:path_provider/path_provider.dart';
-
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 import '../../widgets/refresh_list_view.dart';
+import '../../utils/file_preview.dart';
 
 /// 课程资料：指定目录下的全部资料
 class CourseFilesPage extends StatefulWidget {
@@ -68,71 +62,11 @@ class _CourseFilesPageState extends State<CourseFilesPage> {
   }
 
   Future<void> _open(_CourseFile file) async {
-    if (file.fileUrl.isEmpty) {
-      MDTotast.error('资料地址无效，请稍后重试');
-      return;
-    }
-
-    if (Platform.isAndroid) {
-      MDTotast.showLoading('正在准备文件预览...');
-      try {
-        final uri = Uri.tryParse(file.fileUrl);
-        if (uri == null ||
-            !uri.hasAuthority ||
-            !{'http', 'https'}.contains(uri.scheme)) {
-          MDTotast.error('资料地址无效，请稍后重试');
-          return;
-        }
-
-        final directory = await getTemporaryDirectory();
-        final name = _previewFileName(file);
-        final localFile = File(
-          '${directory.path}${Platform.pathSeparator}$name',
-        );
-        await Dio().download(
-          uri.toString(),
-          localFile.path,
-          deleteOnError: true,
-        );
-
-        await NativeFilePreview().previewFile(localFile.path);
-      } on PlatformException catch (error) {
-        MDTotast.error(error.message ?? '无法打开文件预览');
-      } catch (error) {
-        Utils.log('CourseFilesPage Android preview failed: $error');
-        MDTotast.error('文件预览失败，请稍后重试');
-      } finally {
-        MDTotast.hideLoading();
-      }
-      return;
-    }
-
-    AppRouter.pushNamed<void>(
-      context,
-      RouterNames.web,
-      queryParameters: {
-        'url': file.fileUrl,
-        'title': file.name,
-        'shareType': 'system',
-      },
+    await FilePreview.previewOnline(
+      context: context,
+      url: file.fileUrl,
+      fileName: file.name,
     );
-  }
-
-  String _previewFileName(_CourseFile file) {
-    final urlPath = Uri.tryParse(file.fileUrl)?.path ?? '';
-    final urlName = urlPath.split('/').last;
-    final sourceName = file.name.trim().isNotEmpty ? file.name.trim() : urlName;
-    final safeName = sourceName
-        .replaceAll(RegExp(r'[\\/:*?"<>|]'), '_')
-        .replaceAll(RegExp(r'\s+'), ' ');
-    final extension = urlName.contains('.')
-        ? urlName.substring(urlName.lastIndexOf('.'))
-        : '';
-    if (safeName.isEmpty) return 'course_file$extension';
-    if (extension.isEmpty) return safeName;
-    return safeName.toLowerCase().endsWith(extension.toLowerCase())
-        ? safeName
-        : '$safeName$extension';
   }
 
   @override

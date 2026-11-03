@@ -10,6 +10,7 @@ import '../../network/oss.dart';
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 import '../../widgets/image_grid.dart';
+import '../../utils/file_preview.dart';
 
 /// 作业提交页面
 class CourseTaskEditPage extends StatefulWidget {
@@ -570,15 +571,20 @@ class CourseTaskFileView extends StatelessWidget {
       MDTotast.error('文件地址无效，请稍后重试');
       return;
     }
-    AppRouter.pushNamed<void>(
-      context,
-      _video ? RouterNames.video : RouterNames.web,
-      queryParameters: {
-        'url': url,
-        'title': name,
-        if (!_video) 'shareType': 'system',
-      },
-    );
+    if (_video) {
+      AppRouter.pushNamed<void>(
+        context,
+        RouterNames.video,
+        queryParameters: {'url': url, 'title': name},
+      );
+      return;
+    }else {
+      FilePreview.previewOnline(
+        context: context,
+        url: url,
+        fileName: name,
+      );
+    }
   }
 
   @override
