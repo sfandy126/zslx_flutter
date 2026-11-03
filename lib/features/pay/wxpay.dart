@@ -10,7 +10,7 @@ class WxPay {
   /// 与 pubspec.yaml 中 fluwx 的 app_id 保持一致
   static const String _appId = 'wx4bddc0d3d10d3d0a';
 
-  // static const String _universalLink = 'https://www.zhuoshilx.com';
+  static const String _universalLink = 'https://www.zhuoshilx.com';
 
   static final Fluwx _fluwx = Fluwx();
 
@@ -30,6 +30,7 @@ class WxPay {
         _registered = await _fluwx.registerApi(
           appId: appId.isEmpty ? _appId : appId,
           doOnIOS: false,
+          universalLink: _universalLink,
         );
       }
       if (!_registered) return '微信支付初始化失败';

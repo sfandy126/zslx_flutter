@@ -9,6 +9,7 @@
 //   dart run tool/build.dart all                      Android 全渠道 + iOS
 //
 // 调试： dart run tool/build.dart run appstore -d 00008101-001524812260001E（设备id）
+// 打包：dart run tool/build.dart android xiaomi --obfuscate --split-debug-info=build/symbols
 // 版本号全部取自 flavorizr.yaml：渠道配置了 version 就用它，否则 Android 取 common.androidVersion、
 // iOS 取 common.iosVersion；构建号统一取 common.buildNumber。
 // 以 `-` 开头的参数原样透传给 flutter，如 `-d emulator-5554`、`--obfuscate --split-debug-info=build/symbols`。
