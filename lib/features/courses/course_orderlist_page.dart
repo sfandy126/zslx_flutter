@@ -26,7 +26,7 @@ class _CourseOrderListPageState extends State<CourseOrderListPage> {
         params: {'p': page, 'status': '1'},
       );
       if (result.isSuccess) {
-        final orders = _CourseOrder.listFrom(result.data?['list']);
+        final orders = _CourseOrder.listFrom(result.data?['data']);
         return RefreshResult.success(orders, noMore: orders.isEmpty);
       }
       if (result.state == .outed || !MDUser.defualt.islogined) {
@@ -260,7 +260,7 @@ class _OrderCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              order.money.mdToPrice(),
+                              order.money,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.right,
@@ -282,15 +282,19 @@ class _OrderCard extends StatelessWidget {
           const SizedBox(height: 12),
           Container(height: 0.5, color: AppColors.line),
           const SizedBox(height: 12),
-          _InfoRow(
-            name: '实际付款',
-            value: order.validate.mdToPrice(),
-            valueColor: AppColors.red,
-            valueBold: true,
-          ),
-          const SizedBox(height: 12),
-          _InfoRow(name: '订单编号', value: order.tradeNo),
-          const SizedBox(height: 12),
+          if (_paid) ...[
+              _InfoRow(
+                name: '实际付款',
+                value: order.realMoney,
+                valueColor: AppColors.red,
+                valueBold: true,
+              ),
+              const SizedBox(height: 12),
+              _InfoRow(name: '订单编号', value: order.tradeNo),
+              const SizedBox(height: 12),
+               _InfoRow(name: '支付方式', value: order.payType),
+              const SizedBox(height: 12),
+          ],
           _InfoRow(
             name: _paid ? '支付时间' : '下单时间',
             value: _paid ? order.payTime : order.addTime,
@@ -393,6 +397,7 @@ class _CourseOrder {
     required this.title,
     required this.money,
     required this.keshi,
+    required this.realMoney,
     required this.validate,
     required this.addTime,
     required this.paid,
@@ -406,6 +411,7 @@ class _CourseOrder {
   final String title;
   final String money;
   final String keshi;
+  final String realMoney;
   final String validate;
   final String addTime;
   final int paid;
@@ -428,6 +434,7 @@ class _CourseOrder {
       title: text(const ['title']),
       money: text(const ['money']),
       keshi: text(const ['keshi']),
+      realMoney: text(const ['real_money']),
       validate: text(const ['validate']),
       addTime: text(const ['add_time']),
       paid: int.tryParse(value(const ['paid'])?.toString() ?? '') ?? 0,
