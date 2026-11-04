@@ -48,6 +48,10 @@ class _LoginPageState extends State<LoginPage> {
     return AnimatedBuilder(
       animation: _viewModel,
       builder: (context, child) => PlatformScaffold(
+        material: (_, _) =>
+            MaterialScaffoldData(resizeToAvoidBottomInset: false),
+        cupertino: (_, _) =>
+            CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
         body: SafeArea(
           child: Stack(
             children: [
@@ -182,7 +186,7 @@ class _LoginPageState extends State<LoginPage> {
                 Positioned(
                   left: 0,
                   right: 0,
-                  bottom: 20,
+                  bottom: 48,
                   child: Center(
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
