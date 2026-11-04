@@ -469,7 +469,7 @@ class _CourseCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 15,
                         height: 1.25,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         color: AppColors.title,
                       ),
                     ),
@@ -500,7 +500,7 @@ class _CourseCard extends StatelessWidget {
                                   style: TextStyle(
                                     color: AppColors.price,
                                     fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
                                 if (course.oldMoney
