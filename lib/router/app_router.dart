@@ -81,9 +81,13 @@ class AppRouter {
     BuildContext context,
     RouterNames name, {
     Map<String, String> queryParameters = const {},
+    Object? extra,
   }) {
-    return GoRouter.of(context)
-        .pushNamed<T>(name.routeName, queryParameters: queryParameters);
+    return GoRouter.of(context).pushNamed<T>(
+      name.routeName,
+      queryParameters: queryParameters,
+      extra: extra,
+    );
   }
 
   static void pop<T>(BuildContext context, [T? result]) {
@@ -398,16 +402,35 @@ class AppRouter {
       GoRoute(
         path: '/web',
         name: RouterNames.web.routeName,
-        pageBuilder: (context, state) => _platformPage(
-          key: state.pageKey,
-          child: WebPage(
-            url: state.uri.queryParameters['url'],
-            title: state.uri.queryParameters['title'] ?? '',
-            disableFd: state.uri.queryParameters['disableFd'] == 'true',
-            shareType: WebShareType.values
-                .asNameMap()[state.uri.queryParameters['shareType']],
-          ),
-        ),
+        pageBuilder: (context, state) {
+          final extra = state.extra is Map
+              ? (state.extra as Map).map(
+                  (key, value) => MapEntry(key.toString(), value),
+                )
+              : const <String, dynamic>{};
+          final typeName = extra['type']?.toString();
+          return _platformPage(
+            key: state.pageKey,
+            child: WebPage(
+              url: extra['url']?.toString() ?? state.uri.queryParameters['url'],
+              title:
+                  extra['title']?.toString() ??
+                  state.uri.queryParameters['title'] ??
+                  '',
+              type: typeName == 'html' ? WebType.html : WebType.url,
+              isPaymentSuccessUrl:
+                  extra['isPaymentSuccessUrl'] is bool Function(Uri)
+                  ? extra['isPaymentSuccessUrl'] as bool Function(Uri)
+                  : null,
+              onPaymentSuccess: extra['onPaymentSuccess'] is ValueChanged<Uri>
+                  ? extra['onPaymentSuccess'] as ValueChanged<Uri>
+                  : null,
+              disableFd: state.uri.queryParameters['disableFd'] == 'true',
+              shareType: WebShareType.values
+                  .asNameMap()[state.uri.queryParameters['shareType']],
+            ),
+          );
+        },
       ),
     ],
   );

@@ -26,6 +26,8 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
   String? _loadError;
   bool _paying = false;
   int _request = 0;
+  bool _alipayWap = false;
+  bool _alipayH5Paid = false;
 
   /// 当前选中的支付方式
   _PayType _payType = _PayType.alipay;
@@ -101,10 +103,16 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
     MDTotast.showLoading();
     MDResult result;
     try {
-      result = await MDPost.sendApiSession(
-        cmd: .courseGetPay,
-        params: {'order_id': widget.orderId, 'pay_type': _payType.value},
-      );
+      final params = <String, dynamic>{
+        'order_id': widget.orderId,
+        'pay_type': _payType.value,
+      };
+      _alipayWap = false;
+      if (_payType == _PayType.alipay && !await Alipay.isInstalled()) {
+        params['type'] = 'wap';
+        _alipayWap = true;
+      }
+      result = await MDPost.sendApiSession(cmd: .courseGetPay, params: params);
     } catch (error) {
       Utils.log('CourseOrderPayPage get pay failed: $error');
       MDTotast.hideLoading();
@@ -133,9 +141,14 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
       return;
     }
 
-    final message = await _launchPay(result.data?['pay']);
+    final message = await _launchPay(context, result.data?['pay']);
     if (!mounted) return;
     setState(() => _paying = false);
+    if (_alipayH5Paid) {
+      _alipayH5Paid = false;
+      await _loadData();
+      return;
+    }
     if (message != null) {
       MDTotast.error(message);
       return;
@@ -146,9 +159,18 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
   }
 
   /// 拉起支付，返回 null 表示支付成功，否则返回需要提示的文案
-  Future<String?> _launchPay(Object? pay) async {
+  Future<String?> _launchPay(BuildContext context, Object? pay) async {
     if (_payType == _PayType.alipay) {
       final order = pay is String ? pay.trim() : '';
+      if (_alipayWap) {
+        try {
+          _alipayH5Paid = await Alipay.payWap(context, order);
+          return null;
+        } catch (error) {
+          Utils.log('CourseOrderPayPage alipay wap failed: $error');
+          return '支付失败，请稍后重试';
+        }
+      }
       if (order.isEmpty) return '支付信息返回数据错误';
       try {
         return await Alipay.pay(order);
@@ -554,7 +576,7 @@ class _PurchaseAgreement extends StatelessWidget {
     return ColoredBox(
       color: AppColors.white,
       child: Align(
-        alignment: Alignment.centerRight,
+        alignment: Alignment.centerLeft,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           child: Row(

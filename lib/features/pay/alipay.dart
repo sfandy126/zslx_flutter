@@ -3,6 +3,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:alipay_kit_new/alipay_kit.dart';
+import 'package:flutter/widgets.dart';
+
+import '../../router/app_router.dart';
 
 /// 支付宝支付
 /// 基于 alipay_kit_new + alipay_kit_android_new（原生支付宝 SDK）实现
@@ -10,6 +13,46 @@ class Alipay {
   Alipay._();
 
   static final AlipayKitPlatform _platform = AlipayKitPlatform.instance;
+
+  /// 检查设备是否已安装支付宝客户端
+  static Future<bool> isInstalled() async {
+    if (Platform.isIOS) return false;
+    try {
+      return await _platform.isInstalled();
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// 使用 WebView 加载支付宝 H5 支付 HTML
+  static Future<bool> payWap(BuildContext context, String html) async {
+    final paid = await AppRouter.pushNamed<bool>(
+      context,
+      RouterNames.web,
+      queryParameters: const {'title': '支付宝支付'},
+      extra: {
+        'url': html,
+        'title': '支付宝支付',
+        'type': 'html',
+        'isPaymentSuccessUrl': (Uri uri) {
+          final params = uri.queryParameters;
+          if (params['trade_status'] == 'TRADE_SUCCESS') return true;
+          if (params['trade_no']?.isNotEmpty == true &&
+              params['out_trade_no']?.isNotEmpty == true) {
+            return true;
+          }
+          final path = uri.path.toLowerCase();
+          return path.contains('/pay/success') ||
+              path.contains('/payment/success') ||
+              path.endsWith('/success');
+        },
+        'onPaymentSuccess': (Uri uri) {
+          AppRouter.pop(context, true);
+        },
+      },
+    );
+    return paid == true;
+  }
 
   /// 拉起支付宝支付
   static Future<String?> pay(String order) async {
