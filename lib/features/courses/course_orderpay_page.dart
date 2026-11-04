@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../router/app_router.dart';
@@ -8,10 +9,7 @@ import '../pay/wxpay.dart';
 
 /// 待支付订单页：展示订单信息并发起支付
 class CourseOrderPayPage extends StatefulWidget {
-  const CourseOrderPayPage({
-    this.orderId = '',
-    super.key,
-  });
+  const CourseOrderPayPage({this.orderId = '', super.key});
 
   /// 订单 id
   final String orderId;
@@ -241,7 +239,10 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
                   child: _buildBody(model),
                 ),
               ),
-              if (model != null) _BottomBar(model: model, onPay: _toPay),
+              if (model != null) ...[
+                const _PurchaseAgreement(),
+                _BottomBar(model: model, onPay: _toPay),
+              ],
             ],
           ),
         ),
@@ -379,12 +380,12 @@ class _PayMethodCard extends StatelessWidget {
             selected: payType == _PayType.alipay,
             onTap: () => onChanged(_PayType.alipay),
           ),
-           _PayMethodRow(
-              icon: Assets.images.public.wx,
-              label: _PayType.wechat.label,
-              selected: payType == _PayType.wechat,
-              onTap: () => onChanged(_PayType.wechat),
-            ),
+          _PayMethodRow(
+            icon: Assets.images.public.wx,
+            label: _PayType.wechat.label,
+            selected: payType == _PayType.wechat,
+            onTap: () => onChanged(_PayType.wechat),
+          ),
         ],
       ),
     );
@@ -545,6 +546,52 @@ class _OrderCard extends StatelessWidget {
   }
 }
 
+class _PurchaseAgreement extends StatelessWidget {
+  const _PurchaseAgreement();
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: AppColors.white,
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '购买前请仔细阅读',
+                style: TextStyle(
+                  color: AppColors.content,
+                  fontSize: 12,
+                  decoration: TextDecoration.none,
+                ),
+              ),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => AppRouter.pushNamed(
+                  context,
+                  .web,
+                  queryParameters: {'url': MDEnv.urlForUser, 'title': '用户协议'},
+                ),
+                child: Text(
+                  '《用户协议》',
+                  style: TextStyle(
+                    color: AppColors.theme,
+                    fontSize: 12,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// 底部支付栏
 class _BottomBar extends StatelessWidget {
   const _BottomBar({required this.model, required this.onPay});
@@ -635,7 +682,7 @@ class _PayOrder {
       keshi: text(const ['keshi']),
       money: text(const ['money']),
       realMoney: text(const ['real_money']),
-      tradeNo: text(const ['out_trade_no',]),
+      tradeNo: text(const ['out_trade_no']),
       surplusTime: text(const ['surplus_time']),
     );
   }
