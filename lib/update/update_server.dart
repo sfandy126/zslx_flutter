@@ -61,11 +61,11 @@ class UpdateServer {
         params: {'type': type},
       );
       if (!result.isSuccess) return;
-      _checked = true;
       if (!context.mounted) return;
 
       final update = AppUpdateInfo.fromResult(result);
       if (update != null) {
+        _checked = true;
         await UpdateAlert.show(context, update: update);
       }
     } catch (error, stackTrace) {

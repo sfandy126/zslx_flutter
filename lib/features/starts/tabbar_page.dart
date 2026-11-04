@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 import 'package:zslx_flutter/features/courses/course_learn_page.dart';
 import 'package:zslx_flutter/features/home/home_page.dart';
 import 'package:zslx_flutter/features/settings/mine_page.dart';
+import 'package:zslx_flutter/update/update_server.dart';
 
 class TabbarPage extends StatefulWidget {
   const TabbarPage({super.key});
@@ -42,6 +45,10 @@ class _TabbarPageState extends State<TabbarPage> {
   void initState() {
     super.initState();
     _tabController = PlatformTabController(initialIndex: 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(UpdateServer.checkAndShow(context));
+    });
   }
 
   @override

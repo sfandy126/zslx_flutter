@@ -9,7 +9,6 @@ import 'package:zslx_flutter/router/app_router.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 import 'package:zslx_flutter/services/bjy_server.dart';
 import 'package:zslx_flutter/services/um_server.dart';
-import 'package:zslx_flutter/update/update_server.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
@@ -80,8 +79,6 @@ class _StartPageState extends State<StartPage> {
     UmServer.bindUserId(MDUser.defualt.uid);
     BjyServer.initialize();
     await _showSystemBars();
-    if (!mounted) return;
-    unawaited(UpdateServer.checkAndShow(context));
     if (!mounted) return;
     AppRouter.goNamed(context, RouterNames.main);
   }
