@@ -34,29 +34,42 @@ android {
 
     signingConfigs {
         if (keystorePropertiesFile.exists()) {
-            create("release") {
-                keyAlias = keystoreProperties.getProperty("keyAlias")
-                    ?: error("android/key.properties 缺少 keyAlias")
-                keyPassword = keystoreProperties.getProperty("keyPassword")
-                    ?: keystoreProperties.getProperty("storePassword")
-                    ?: error("android/key.properties 缺少 keyPassword 和 storePassword")
-                storeFile = file(
-                    keystoreProperties.getProperty("storeFile")
-                        ?: error("android/key.properties 缺少 storeFile"),
+            val storeFileProperty = keystoreProperties.getProperty("storeFile")
+            val configuredStoreFile = if (storeFileProperty.isNullOrBlank()) {
+                null
+            } else {
+                rootProject.file(storeFileProperty)
+            }
+
+            if (configuredStoreFile?.isFile == true) {
+                create("release") {
+                    keyAlias = keystoreProperties.getProperty("keyAlias")
+                        ?: error("android/key.properties 缺少 keyAlias")
+                    keyPassword = keystoreProperties.getProperty("keyPassword")
+                        ?: keystoreProperties.getProperty("storePassword")
+                        ?: error("android/key.properties 缺少 keyPassword 和 storePassword")
+                    storeFile = configuredStoreFile
+                    storePassword = keystoreProperties.getProperty("storePassword")
+                        ?: error("android/key.properties 缺少 storePassword")
+                }
+            } else {
+                logger.warn(
+                    "Android keystore not found at ${configuredStoreFile?.absolutePath ?: "the configured storeFile"}; " +
+                        "release builds will use the debug signing key.",
                 )
-                storePassword = keystoreProperties.getProperty("storePassword")
-                    ?: error("android/key.properties 缺少 storePassword")
             }
         }
     }
+    
+    val releaseSigningConfig = signingConfigs.findByName("release")
 
     buildTypes {
         debug {
             // 微信开放平台按“包名 + 签名证书”识别应用。
             // Debug 也使用 key.properties 中的正式证书，避免 debug/release
             // 安装包的应用签名不同而被微信拒绝。
-            signingConfig = if (keystorePropertiesFile.exists()) {
-                signingConfigs.getByName("release")
+            signingConfig = if (releaseSigningConfig != null) {
+                releaseSigningConfig
             } else {
                 logger.warn(
                     "No android/key.properties found; signing debug APK with the debug key. " +
@@ -66,8 +79,8 @@ android {
             }
         }
         release {
-            signingConfig = if (keystorePropertiesFile.exists()) {
-                signingConfigs.getByName("release")
+            signingConfig = if (releaseSigningConfig != null) {
+                releaseSigningConfig
             } else {
                 logger.warn(
                     "No android/key.properties found; signing release APK with the debug key. " +
