@@ -16,9 +16,9 @@ common:
     applicationId: "com.zs.zslx"
   ios: &ios
     bundleId: "com.md.zslx.cn"
-  # Android 渠道默认版本号：渠道没配 version 时用这个
+  # Android 渠道默认版本号：渠道没配 version 时用这个【改了版本号一定要执行：dart run tool/build.dart sync】
   androidVersion: &androidVersion "2.0.0"
-  # iOS 渠道默认版本号：渠道没配 version 时用这个
+  # iOS 渠道默认版本号：渠道没配 version 时用这个， 【改了版本号一定要执行：dart run tool/build.dart sync】
   iosVersion: &iosVersion "2.0.0"
   # 构建号，全渠道共用，打包时自动 +1
   buildNumber: 1
