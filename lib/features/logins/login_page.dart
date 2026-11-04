@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                           value: _viewModel.agreed,
                           onChanged: _viewModel.setAgreed,
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 16),
                         SizedBox(
                           width: double.infinity,
                           height: 48,
