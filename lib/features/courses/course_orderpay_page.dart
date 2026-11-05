@@ -26,7 +26,6 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
   String? _loadError;
   bool _paying = false;
   int _request = 0;
-  bool _alipayWap = false;
 
   /// 当前选中的支付方式
   _PayType _payType = _PayType.alipay;
@@ -106,11 +105,6 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
         'order_id': widget.orderId,
         'pay_type': _payType.value,
       };
-      _alipayWap = false;
-      if (_payType == _PayType.alipay && !await Alipay.isInstalled()) {
-        params['type'] = 'wap';
-        _alipayWap = true;
-      }
       result = await MDPost.sendApiSession(cmd: .courseGetPay, params: params);
     } catch (error) {
       Utils.log('CourseOrderPayPage get pay failed: $error');
@@ -140,15 +134,11 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
       return;
     }
 
-    final message = await _launchPay(context, result.data?['pay']);
+    final message = await _launchPay(result.data?['pay']);
     if (!mounted) return;
     setState(() => _paying = false);
     if (message != null) {
       MDTotast.error(message);
-      return;
-    }
-    if (_alipayWap) {
-      await _loadData();
       return;
     }
     // 支付成功：进入订单列表，返回时由订单列表页过滤订单确认、待支付页面
@@ -157,19 +147,10 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
   }
 
   /// 拉起支付，返回 null 表示支付成功，否则返回需要提示的文案
-  Future<String?> _launchPay(BuildContext context, Object? pay) async {
+  Future<String?> _launchPay(Object? pay) async {
     if (_payType == _PayType.alipay) {
       final order = pay is String ? pay.trim() : '';
       if (order.isEmpty) return '支付信息返回数据错误';
-      if (_alipayWap) {
-        try {
-          await Alipay.payWap(context, order);
-          return null;
-        } catch (error) {
-          Utils.log('CourseOrderPayPage alipay wap failed: $error');
-          return '支付失败，请稍后重试';
-        }
-      }
       try {
         return await Alipay.pay(order);
       } catch (error) {

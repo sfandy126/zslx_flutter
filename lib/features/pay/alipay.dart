@@ -3,9 +3,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:alipay_kit_new/alipay_kit.dart';
-import 'package:flutter/widgets.dart';
-
-import '../../router/app_router.dart';
 
 /// 支付宝支付
 /// 基于 alipay_kit_new + alipay_kit_android_new（原生支付宝 SDK）实现
@@ -14,31 +11,9 @@ class Alipay {
 
   static final AlipayKitPlatform _platform = AlipayKitPlatform.instance;
 
-  /// 检查设备是否已安装支付宝客户端
-  static Future<bool> isInstalled() async {
-    if (Platform.isIOS) return false;
-    try {
-      return await _platform.isInstalled();
-    } catch (_) {
-      return false;
-    }
-  }
-
-  /// 使用 WebView 加载支付宝 H5 支付 HTML
-  static Future<bool> payWap(BuildContext context, String html) async {
-    final paid = await AppRouter.pushNamed<bool>(
-      context,
-      RouterNames.webPay,
-      extra: html,
-    );
-    return paid == true;
-  }
-
-  /// 拉起支付宝支付
+  /// 拉起支付宝 SDK 支付；未安装客户端时由 SDK 处理网页收银台。
   static Future<String?> pay(String order) async {
     if (Platform.isIOS) return 'iOS不支持支付宝支付';
-    if (!await _platform.isInstalled()) return '未安装支付宝，无法支付';
-
     final completer = Completer<String?>();
     final subscription = _platform.payResp().listen((resp) {
       if (completer.isCompleted) return;

@@ -37,7 +37,6 @@ import '../features/video/video_page.dart';
 import '../features/wallet/wallet_order.dart';
 import '../features/wallet/wallet_page.dart';
 import '../features/web/web_page.dart';
-import '../features/web/web_pay_page.dart';
 import 'not_found_page.dart';
 
 enum RouterNames {
@@ -69,7 +68,6 @@ enum RouterNames {
   video,
   feedback,
   web,
-  webPay,
   setup,
   wallet,
   walletOrder,
@@ -400,16 +398,6 @@ class AppRouter {
         name: RouterNames.about.routeName,
         pageBuilder: (context, state) =>
             _platformPage(key: state.pageKey, child: const AboutPage()),
-      ),
-      GoRoute(
-        path: '/web-pay',
-        name: RouterNames.webPay.routeName,
-        pageBuilder: (context, state) => _platformPage(
-          key: state.pageKey,
-          child: WebPayPage(
-            html: state.extra is String ? state.extra as String : '',
-          ),
-        ),
       ),
       GoRoute(
         path: '/web',
