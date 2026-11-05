@@ -1,6 +1,12 @@
 allprojects {
     repositories {
         google()
+        maven {
+            url = uri("https://maven.aliyun.com/repository/central")
+            content {
+                includeModule("org.apache.commons", "commons-imaging")
+            }
+        }
         mavenCentral()
     }
 }

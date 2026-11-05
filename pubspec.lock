@@ -678,7 +678,7 @@ packages:
     source: hosted
     version: "0.15.7"
   http:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: http
       sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
@@ -1398,10 +1398,10 @@ packages:
     dependency: "direct main"
     description:
       name: umeng_apm_sdk
-      sha256: c56780c6cf318da45dfdc37971234440c18d716ceace85bb80d9f95914b1dc3f
+      sha256: "37f61a30ad84c06d89bedbcf00ca4f09347468a2186975c4c121aee1db3a2083"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
+    version: "2.3.7"
   umeng_common_sdk:
     dependency: "direct main"
     description:
@@ -1627,7 +1627,7 @@ packages:
     source: hosted
     version: "4.14.1"
   webview_flutter_android:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: webview_flutter_android
       sha256: "4de8b3d1ff4ebe1bdb42e68a5e4f809194a3cb0117a8f495f590004f00da3964"

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:umeng_apm_sdk/umeng_apm_sdk.dart';
 import 'package:umeng_common_sdk/umeng_common_sdk.dart';
 
 import '../config/app_config.dart';
@@ -19,12 +18,16 @@ class UmServer {
 
   ///与AndroidManifest.xml必须保持一致
   static const String _androidAppKey = '6ae36ccb863270068caedee9';
+
   /// 与info.plist中CFBundleURLTypes必须保持一致
   static const String _iosAppKey = '6ae36ccb6545637cd628fabc';
 
   static bool _inited = false;
 
-  static const MethodChannel _nativeChannel = MethodChannel('com.zs.zslx/umeng');
+  static const MethodChannel _nativeChannel = MethodChannel(
+    'com.zs.zslx/umeng',
+  );
+  static const MethodChannel _apmChannel = MethodChannel('umeng_apm_sdk');
 
   /// Android 合规预初始化，应用启动即调用（隐私同意前）。
   /// 渠道从 [AppConfig.channelId] 动态传入原生侧，preInit 本身即为合规 API，
@@ -32,10 +35,9 @@ class UmServer {
   static Future<void> preInit() async {
     if (!Platform.isAndroid) return;
     try {
-      await _nativeChannel.invokeMethod<void>(
-        'preInit',
-        {'channel': AppConfig.channelId},
-      );
+      await _nativeChannel.invokeMethod<void>('preInit', {
+        'channel': AppConfig.channelId,
+      });
     } catch (error) {
       debugPrint('友盟预初始化失败：$error');
     }
@@ -62,15 +64,21 @@ class UmServer {
   static void _installErrorHandlers() {
     FlutterError.onError = (details) {
       final stack = details.stack?.toString() ?? '';
-      UmengApmSdk.postException(details.exception, stack);
+      _postApmException(details.exception, stack);
       UmengCommonSdk.reportError(details.exceptionAsString());
       FlutterError.presentError(details);
     };
     PlatformDispatcher.instance.onError = (error, stack) {
-      UmengApmSdk.postException(error, stack.toString());
+      _postApmException(error, stack.toString());
       UmengCommonSdk.reportError(error.toString());
       return true;
     };
+  }
+
+  static void _postApmException(Object error, String stack) {
+    // 2.x 仍支持原生 postException 通道，但不再提供旧版 Dart 静态方法。
+    // 原生实现不回调 result，因此与初始化调用一样只发起、不等待。
+    _apmChannel.invokeMethod<void>('postException', [error.toString(), stack]);
   }
 
   /// 统计账号绑定（登录成功后调用）
@@ -93,7 +101,10 @@ class UmServer {
   }
 
   /// 自定义事件上报
-  static void onEvent(String event, [Map<String, dynamic> properties = const {}]) {
+  static void onEvent(
+    String event, [
+    Map<String, dynamic> properties = const {},
+  ]) {
     try {
       UmengCommonSdk.onEvent(event, properties);
     } catch (error) {
