@@ -1,9 +1,9 @@
-import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 
 import '../gen/assets.gen.dart';
 import '../utils/app_colors.dart';
 import '../utils/totast.dart';
+import 'refresh_header.dart';
 
 /// 列表加载状态
 enum RefreshListStatus {
@@ -63,7 +63,7 @@ class RefreshResult<T> {
       RefreshResult(status: RefreshListStatus.notLoggedIn, message: message);
 }
 
-/// 基于 easy_refresh 封装的列表组件
+/// 支持下拉刷新和上拉加载的列表组件
 ///
 /// 支持：
 /// - 下拉刷新、上拉加载更多
@@ -141,10 +141,7 @@ class RefreshListView<T> extends StatefulWidget {
 }
 
 class RefreshListViewState<T> extends State<RefreshListView<T>> {
-  final EasyRefreshController _refreshController = EasyRefreshController(
-    controlFinishRefresh: true,
-    controlFinishLoad: true,
-  );
+  final RefreshController _refreshController = RefreshController();
 
   final List<T> _items = [];
   int _page = 1;
@@ -263,7 +260,7 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
             result.status == RefreshListStatus.success ||
             result.status == RefreshListStatus.empty;
         _refreshController.finishRefresh(
-          succeeded ? IndicatorResult.success : IndicatorResult.fail,
+          succeeded ? RefreshCompletion.success : RefreshCompletion.fail,
         );
       }
     } catch (error) {
@@ -273,7 +270,7 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
         _errorMessage = error.toString();
       });
       if (finishRefresh) {
-        _refreshController.finishRefresh(IndicatorResult.fail);
+        _refreshController.finishRefresh(RefreshCompletion.fail);
       }
     } finally {
       if (generation == _requestGeneration) {
@@ -285,15 +282,15 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
 
   Future<void> _onLoad() async {
     if (_noMore) {
-      _refreshController.finishLoad(IndicatorResult.noMore);
+      _refreshController.finishLoad(RefreshCompletion.noMore);
       return;
     }
     if (_items.isEmpty || _page <= 1) {
-      _refreshController.finishLoad(IndicatorResult.none);
+      _refreshController.finishLoad(RefreshCompletion.none);
       return;
     }
     if (_isRefreshing || _isLoadingMore) {
-      _refreshController.finishLoad(IndicatorResult.none);
+      _refreshController.finishLoad(RefreshCompletion.none);
       return;
     }
 
@@ -319,15 +316,15 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
 
       _refreshController.finishLoad(
         hasNoMore
-            ? IndicatorResult.noMore
+            ? RefreshCompletion.noMore
             : isSuccess
-            ? IndicatorResult.success
-            : IndicatorResult.fail,
+            ? RefreshCompletion.success
+            : RefreshCompletion.fail,
       );
     } catch (error) {
       if (!mounted || generation != _requestGeneration) return;
       setState(() => _errorMessage = error.toString());
-      _refreshController.finishLoad(IndicatorResult.fail);
+      _refreshController.finishLoad(RefreshCompletion.fail);
     } finally {
       if (generation == _requestGeneration) _isLoadingMore = false;
     }
@@ -351,18 +348,10 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
         (hasHeader ? 1 : 0) +
         (hasStateView ? 1 : _items.length + (hasNoMoreView ? 1 : 0));
 
-    return EasyRefresh(
+    return MDRefreshHeader(
       controller: _refreshController,
       onRefresh: _onRefresh,
       onLoad: _onLoad,
-      header: const CupertinoHeader(),
-      footer: BuilderFooter(
-        builder: (context, state) => const SizedBox.shrink(),
-        triggerOffset: 60,
-        clamping: false,
-        processedDuration: Duration.zero,
-        infiniteOffset: 60,
-      ),
       child: ListView.separated(
         padding: widget.padding ?? const EdgeInsets.only(top: 12, bottom: 16),
         physics: const AlwaysScrollableScrollPhysics(),
