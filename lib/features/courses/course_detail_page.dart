@@ -113,7 +113,9 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
       _histories
         ..clear()
         ..addEntries(
-          histories.map((item) => MapEntry(_historyKey(item.sType, item.sId), item)),
+          histories.map(
+            (item) => MapEntry(_historyKey(item.sType, item.sId), item),
+          ),
         );
       // 结果按更新时间倒序，第一条即为最近播放
       _lastPlayKey = histories.isEmpty
@@ -277,11 +279,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
     try {
       await MDShare.toShare(
         context,
-        MDShareData(
-          text: info?.title,
-          link: url,
-          url: info?.picture,
-        ),
+        MDShareData(text: info?.title, link: url, url: info?.picture),
       );
     } catch (error) {
       Utils.log('CourseDetailPage share failed: $error');
@@ -1172,7 +1170,7 @@ class _MainTabButton extends StatelessWidget {
   }
 }
 
-class _NodeGroup extends StatelessWidget {
+class _NodeGroup extends StatefulWidget {
   const _NodeGroup({
     required this.node,
     required this.live,
@@ -1191,37 +1189,64 @@ class _NodeGroup extends StatelessWidget {
   final Map<String, PlayHistory> histories;
   final String? lastPlayKey;
 
+  @override
+  State<_NodeGroup> createState() => _NodeGroupState();
+}
+
+class _NodeGroupState extends State<_NodeGroup> {
+  late bool _expanded;
+
+  @override
+  void initState() {
+    super.initState();
+    _expanded = widget.initiallyExpanded;
+  }
+
   Widget _buildCard(_CourseNode item) {
     final key = _CourseDetailPageState._historyKey(item.realType, item.id);
     return _NodeCard(
       node: item,
-      live: live,
-      progress: histories[key]?.progress ?? 0,
-      isLastPlay: key == lastPlayKey,
-      onTap: () => onTap(item),
+      live: widget.live,
+      progress: widget.histories[key]?.progress ?? 0,
+      isLastPlay: key == widget.lastPlayKey,
+      onTap: () => widget.onTap(item),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final children = node.children;
+    final children = widget.node.children;
     if (children.isEmpty) {
-      if (node.isTopLive) {
-        return _TopLiveNodeCard(node: node, onTap: () => onTap(node));
+      if (widget.node.isTopLive) {
+        return _TopLiveNodeCard(
+          node: widget.node,
+          onTap: () => widget.onTap(widget.node),
+        );
       }
-      return _buildCard(node);
+      return _buildCard(widget.node);
     }
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: AppColors.white,
         child: Theme(
-          data: Theme.of(context).copyWith(dividerColor: AppColors.transparent),
+          data: Theme.of(context).copyWith(
+            dividerColor: AppColors.transparent,
+            splashColor: AppColors.transparent,
+            highlightColor: AppColors.transparent,
+            splashFactory: NoSplash.splashFactory,
+          ),
           child: ExpansionTile(
             tilePadding: const EdgeInsets.fromLTRB(14, 0, 12, 0),
             childrenPadding: const EdgeInsets.only(bottom: 4),
-            initiallyExpanded: initiallyExpanded,
-            trailing: const Icon(Icons.expand_more, size: 16),
+            initiallyExpanded: widget.initiallyExpanded,
+            onExpansionChanged: (expanded) {
+              setState(() => _expanded = expanded);
+            },
+            trailing: Icon(
+              _expanded ? Icons.expand_more : Icons.chevron_right,
+              size: 16,
+            ),
             title: Row(
               children: [
                 Container(
@@ -1235,7 +1260,7 @@ class _NodeGroup extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    node.title,
+                    widget.node.title,
                     style: TextStyle(
                       color: AppColors.title,
                       fontSize: 14,
