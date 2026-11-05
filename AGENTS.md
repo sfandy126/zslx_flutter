@@ -1,6 +1,8 @@
 # 项目开发约束
 
-新增或修改代码时遵循以下约定：
+本文件适用于整个仓库。任何 AI 编码助手在新增、修改或修复代码前，应先阅读相关代码并遵循以下约束。保持改动范围与任务一致，沿用项目已有实现方式。
+
+## 组件与代码约定
 
 1. **跨平台 Widget**：优先使用 `flutter_adaptive_scaffold` 提供的平台自适应组件，避免在页面中硬编码仅适用于单一平台的 Material 或 Cupertino 交互组件；库未提供对应组件时，使用合适的 Flutter Widget。
 2. **状态管理**：使用 `provider` 管理和共享应用状态，优先沿用项目已有的 Provider 模式。
@@ -10,3 +12,14 @@
 6. **列表刷新和分页**：列表需要下拉刷新或上拉加载更多时，优先使用 `RefreshListView`（`lib/widgets/refresh_list_view.dart`）。
 7. **颜色**：优先使用 `AppColors`（`lib/utils/app_colors.dart`）中的项目颜色；确需新增颜色时，集中添加到 `AppColors`，避免散落硬编码。
 8. **自定义导航栏**：优先使用 `MDAppBar`（`lib/widgets/custom_appbar.dart`），保持项目导航栏样式和返回行为一致。
+
+## 渠道与构建
+
+- 渠道、包名、应用名称和版本配置以 `flavorizr.yaml` 为唯一入口。修改后运行 `dart run tool/build.dart sync` 同步配置。
+- 不要手动修改由同步命令生成的 `android/app/flavorizr.gradle.kts`、`ios/Flutter/AppInfo.xcconfig`、`lib/flavors.dart`，以及 `pubspec.yaml` 中的版本号。
+- 本地调试使用 `dart run tool/build.dart run <渠道>`；Android 打包使用 `dart run tool/build.dart android [渠道...]`；全部 Android 和 iOS 打包使用 `dart run tool/build.dart all`。打包会递增构建号，仅在任务需要打包时执行。
+
+## 验证与交付
+
+- 修改 Dart 代码后格式化改动文件，并运行适合改动范围的分析或测试；涉及构建配置时验证对应的构建任务。
+- 交付时说明实际改动、已运行的验证及结果；未验证的部分要明确说明。
