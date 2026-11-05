@@ -3,14 +3,11 @@ import 'package:flutter/material.dart';
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 import '../../widgets/dialog.dart';
+import '../../widgets/refresh_header.dart';
 
 /// iOS 课程下单支付页
 class CourseIosPayPage extends StatefulWidget {
-  const CourseIosPayPage({
-    this.type = '',
-    this.id = '',
-    super.key,
-  });
+  const CourseIosPayPage({this.type = '', this.id = '', super.key});
 
   final String type;
 
@@ -23,6 +20,7 @@ class CourseIosPayPage extends StatefulWidget {
 class _CourseIosPayPageState extends State<CourseIosPayPage> {
   static const _plainTextStyle = TextStyle(decoration: TextDecoration.none);
 
+  final RefreshController _refreshController = RefreshController();
   _PayCourse? _model;
   bool _loading = false;
   String? _loadError;
@@ -35,8 +33,14 @@ class _CourseIosPayPageState extends State<CourseIosPayPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
   }
 
-  Future<void> _loadData() async {
-    if (!mounted) return;
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+  }
+
+  Future<bool> _loadData() async {
+    if (!mounted) return false;
     final request = ++_request;
     setState(() {
       _loading = true;
@@ -48,30 +52,40 @@ class _CourseIosPayPageState extends State<CourseIosPayPage> {
         cmd: .courseConfirmIos,
         params: {'type': widget.type, 'c_id': widget.id},
       );
-      if (!mounted || request != _request) return;
+      if (!mounted || request != _request) return false;
       if (!result.isSuccess) {
         setState(() {
           _loading = false;
           _loadError = result.msg ?? '订单信息加载失败';
         });
         MDTotast.error(result.msg ?? '订单信息加载失败');
-        return;
+        return false;
       }
       setState(() {
         _model = _PayCourse.fromJson(result.data ?? const {});
         _loading = false;
       });
+      return true;
     } catch (error) {
       Utils.log('CourseIosPayPage load confirm failed: $error');
-      if (!mounted || request != _request) return;
+      if (!mounted || request != _request) return false;
       setState(() {
         _loading = false;
         _loadError = '订单信息加载失败，请稍后重试';
       });
       MDTotast.error('订单信息加载失败，请稍后重试');
+      return false;
     } finally {
       MDTotast.hideLoading();
     }
+  }
+
+  Future<void> _handleRefresh() async {
+    final succeeded = await _loadData();
+    if (!mounted) return;
+    _refreshController.finishRefresh(
+      succeeded ? RefreshCompletion.success : RefreshCompletion.fail,
+    );
   }
 
   Future<bool> _requireLogin() async {
@@ -93,10 +107,7 @@ class _CourseIosPayPageState extends State<CourseIosPayPage> {
     final pay = double.tryParse(model.payMoney) ?? 0;
     final iap = double.tryParse(model.iap) ?? 0;
     if (iap <= 0 || iap < pay) {
-      final toRecharge = await MDDialog.show(
-        context,
-        content: '余额不足，是否前往充值?',
-      );
+      final toRecharge = await MDDialog.show(context, content: '余额不足，是否前往充值?');
       if (toRecharge && mounted) _toRecharge();
       return;
     }
@@ -196,9 +207,9 @@ class _CourseIosPayPageState extends State<CourseIosPayPage> {
         ),
       );
     }
-    return RefreshIndicator(
-      onRefresh: _loadData,
-      color: AppColors.theme,
+    return MDRefreshHeader(
+      controller: _refreshController,
+      onRefresh: _handleRefresh,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),

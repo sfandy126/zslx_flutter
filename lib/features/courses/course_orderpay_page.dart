@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
+import '../../widgets/refresh_header.dart';
 import '../pay/alipay.dart';
 import '../pay/wxpay.dart';
 
@@ -21,6 +22,7 @@ class CourseOrderPayPage extends StatefulWidget {
 class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
   static const _plainTextStyle = TextStyle(decoration: TextDecoration.none);
 
+  final RefreshController _refreshController = RefreshController();
   _PayOrder? _model;
   bool _loading = false;
   String? _loadError;
@@ -42,11 +44,12 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
   @override
   void dispose() {
     _countdown?.cancel();
+    _refreshController.dispose();
     super.dispose();
   }
 
-  Future<void> _loadData() async {
-    if (!mounted) return;
+  Future<bool> _loadData() async {
+    if (!mounted) return false;
     final request = ++_request;
     setState(() {
       _loading = true;
@@ -58,14 +61,14 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
         cmd: .coursePayment,
         params: {'order_id': widget.orderId},
       );
-      if (!mounted || request != _request) return;
+      if (!mounted || request != _request) return false;
       if (!result.isSuccess) {
         setState(() {
           _loading = false;
           _loadError = result.msg ?? '订单信息加载失败';
         });
         MDTotast.error(result.msg ?? '订单信息加载失败');
-        return;
+        return false;
       }
       final model = _PayOrder.fromJson(result.data ?? const {});
       setState(() {
@@ -73,17 +76,27 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
         _loading = false;
       });
       _startCountdown(model.surplusTime);
+      return true;
     } catch (error) {
       Utils.log('CourseOrderPayPage load order failed: $error');
-      if (!mounted || request != _request) return;
+      if (!mounted || request != _request) return false;
       setState(() {
         _loading = false;
         _loadError = '订单信息加载失败，请稍后重试';
       });
       MDTotast.error('订单信息加载失败，请稍后重试');
+      return false;
     } finally {
       MDTotast.hideLoading();
     }
+  }
+
+  Future<void> _handleRefresh() async {
+    final succeeded = await _loadData();
+    if (!mounted) return;
+    _refreshController.finishRefresh(
+      succeeded ? RefreshCompletion.success : RefreshCompletion.fail,
+    );
   }
 
   Future<bool> _requireLogin() async {
@@ -270,9 +283,9 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
         ),
       );
     }
-    return RefreshIndicator(
-      onRefresh: _loadData,
-      color: AppColors.theme,
+    return MDRefreshHeader(
+      controller: _refreshController,
+      onRefresh: _handleRefresh,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),

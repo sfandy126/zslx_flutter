@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
+import '../../widgets/refresh_header.dart';
 import '../logins/guest_login_dialog.dart';
 import '../pay/storekit.dart';
 
@@ -17,6 +18,7 @@ class WalletPage extends StatefulWidget {
 }
 
 class _WalletPageState extends State<WalletPage> {
+  final RefreshController _refreshController = RefreshController();
   _WalletData? _model;
   int _selectedIndex = 0;
   StreamSubscription<void>? _storeKitSubscription;
@@ -37,23 +39,44 @@ class _WalletPageState extends State<WalletPage> {
   @override
   void dispose() {
     _storeKitSubscription?.cancel();
+    _refreshController.dispose();
     super.dispose();
   }
 
-  Future<void> _loadData({bool loading = false}) async {
+  Future<bool> _loadData({bool loading = false}) async {
     if (loading) MDTotast.showLoading();
-    final result = await MDPost.sendIapSession(cmd: .iapProducts);
-    if (loading) MDTotast.hideLoading();
-    if (!mounted) return;
-    if (!result.isSuccess) {
-      MDTotast.error(result.msg ?? 'ERROR：数据返回错误');
-      return;
+    try {
+      final result = await MDPost.sendIapSession(cmd: .iapProducts);
+      if (!mounted) return false;
+      if (!result.isSuccess) {
+        MDTotast.error(result.msg ?? 'ERROR：数据返回错误');
+        return false;
+      }
+      final model = _WalletData.fromJson(result.data);
+      setState(() {
+        _model = model;
+        if (_selectedIndex >= model.list.length) _selectedIndex = 0;
+      });
+      return true;
+    } finally {
+      if (loading) MDTotast.hideLoading();
     }
-    final model = _WalletData.fromJson(result.data);
-    setState(() {
-      _model = model;
-      if (_selectedIndex >= model.list.length) _selectedIndex = 0;
-    });
+  }
+
+  Future<void> _handleRefresh() async {
+    try {
+      final succeeded = await _loadData(loading: true);
+      if (mounted) {
+        _refreshController.finishRefresh(
+          succeeded ? RefreshCompletion.success : RefreshCompletion.fail,
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        _refreshController.finishRefresh(RefreshCompletion.fail);
+        MDTotast.error(error.toString());
+      }
+    }
   }
 
   @override
@@ -92,9 +115,9 @@ class _WalletPageState extends State<WalletPage> {
             Expanded(
               child: ColoredBox(
                 color: AppColors.background,
-                child: RefreshIndicator(
-                  onRefresh: _loadData,
-                  color: AppColors.theme,
+                child: MDRefreshHeader(
+                  controller: _refreshController,
+                  onRefresh: _handleRefresh,
                   child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),

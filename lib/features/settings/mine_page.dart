@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:zslx_flutter/router/app_router.dart';
 
 import '../../utils/utils.dart';
+import '../../widgets/refresh_header.dart';
 
 class MinePage extends StatefulWidget {
   const MinePage({super.key});
@@ -15,6 +16,7 @@ class MinePage extends StatefulWidget {
 
 class _MinePageState extends State<MinePage> {
   late final MineViewModel _viewModel;
+  final RefreshController _refreshController = RefreshController();
 
   @override
   void initState() {
@@ -24,8 +26,22 @@ class _MinePageState extends State<MinePage> {
 
   @override
   void dispose() {
+    _refreshController.dispose();
     _viewModel.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleRefresh() async {
+    MDTotast.showLoading();
+    try {
+      await _viewModel.refresh();
+      if (mounted) _refreshController.finishRefresh(RefreshCompletion.success);
+    } catch (error) {
+      if (mounted) _refreshController.finishRefresh(RefreshCompletion.fail);
+      MDTotast.error(error.toString());
+    } finally {
+      MDTotast.hideLoading();
+    }
   }
 
   @override
@@ -43,9 +59,9 @@ class _MinePageState extends State<MinePage> {
                 ),
               ),
               SafeArea(
-                child: RefreshIndicator(
-                  onRefresh: _viewModel.refresh,
-                  color: AppColors.theme,
+                child: MDRefreshHeader(
+                  controller: _refreshController,
+                  onRefresh: _handleRefresh,
                   child: ListView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.fromLTRB(16, 22, 16, 28),

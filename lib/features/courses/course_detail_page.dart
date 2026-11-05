@@ -8,6 +8,7 @@ import '../../router/app_router.dart';
 import '../../services/bjy_server.dart';
 import '../../services/history/history_server.dart';
 import '../../utils/utils.dart';
+import '../../widgets/refresh_header.dart';
 import '../../widgets/refresh_list_view.dart';
 import '../../features/share/share.dart';
 
@@ -34,6 +35,7 @@ class CourseDetailPage extends StatefulWidget {
 class _CourseDetailPageState extends State<CourseDetailPage> {
   static const _plainTextStyle = TextStyle(decoration: TextDecoration.none);
 
+  final RefreshController _refreshController = RefreshController();
   late final WebViewController _htmlController;
   late String _courseId;
   late String _courseType;
@@ -94,6 +96,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
   @override
   void dispose() {
     _historySubscription?.cancel();
+    _refreshController.dispose();
     super.dispose();
   }
 
@@ -141,8 +144,8 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     });
   }
 
-  Future<void> _loadDetail() async {
-    if (!mounted) return;
+  Future<bool> _loadDetail() async {
+    if (!mounted) return false;
     final request = ++_detailRequest;
     setState(() {
       _loading = true;
@@ -152,6 +155,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     _activeDetailLoads++;
     if (_activeDetailLoads == 1) MDTotast.showLoading();
     String? errorToShow;
+    var succeeded = false;
     try {
       final result = await MDPost.sendApiSession(
         cmd: .courseDetail,
@@ -161,7 +165,7 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
           'order_id': widget.orderId,
         },
       );
-      if (!mounted || request != _detailRequest) return;
+      if (!mounted || request != _detailRequest) return false;
       if (!result.isSuccess) {
         setState(() {
           _loading = false;
@@ -185,9 +189,10 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
         });
         unawaited(_loadHistories());
         await _loadDescription(detail.info.html);
+        succeeded = true;
       }
     } catch (error) {
-      if (!mounted || request != _detailRequest) return;
+      if (!mounted || request != _detailRequest) return false;
       Utils.log('CourseDetailPage load detail failed: $error');
       setState(() {
         _loading = false;
@@ -203,6 +208,15 @@ class _CourseDetailPageState extends State<CourseDetailPage> {
     if (errorToShow != null && mounted) {
       MDTotast.error(errorToShow);
     }
+    return succeeded;
+  }
+
+  Future<void> _handleRefresh() async {
+    final succeeded = await _loadDetail();
+    if (!mounted) return;
+    _refreshController.finishRefresh(
+      succeeded ? RefreshCompletion.success : RefreshCompletion.fail,
+    );
   }
 
   Future<void> _loadDescription(String html) async {
@@ -634,8 +648,9 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
 
     final info = detail.info;
     final showSkus = _shouldShowSkus(info);
-    return RefreshIndicator(
-      onRefresh: _loadDetail,
+    return MDRefreshHeader(
+      controller: _refreshController,
+      onRefresh: _handleRefresh,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.only(bottom: 12),

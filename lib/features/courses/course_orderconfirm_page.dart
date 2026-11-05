@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
+import '../../widgets/refresh_header.dart';
 
 /// 订单确认页：确认课程信息后生成订单，除iOS平台外的课程订单确认页
 class CourseOrderConfirmPage extends StatefulWidget {
-  const CourseOrderConfirmPage({
-    this.type = '',
-    this.id = '',
-    super.key,
-  });
+  const CourseOrderConfirmPage({this.type = '', this.id = '', super.key});
 
   final String type;
 
@@ -22,6 +19,7 @@ class CourseOrderConfirmPage extends StatefulWidget {
 class _CourseOrderConfirmPageState extends State<CourseOrderConfirmPage> {
   static const _plainTextStyle = TextStyle(decoration: TextDecoration.none);
 
+  final RefreshController _refreshController = RefreshController();
   _PayCourse? _model;
   bool _loading = false;
   String? _loadError;
@@ -34,8 +32,14 @@ class _CourseOrderConfirmPageState extends State<CourseOrderConfirmPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadData());
   }
 
-  Future<void> _loadData() async {
-    if (!mounted) return;
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+  }
+
+  Future<bool> _loadData() async {
+    if (!mounted) return false;
     final request = ++_request;
     setState(() {
       _loading = true;
@@ -47,30 +51,40 @@ class _CourseOrderConfirmPageState extends State<CourseOrderConfirmPage> {
         cmd: .courseOrderConfirm,
         params: {'type': widget.type, 'course_id': widget.id},
       );
-      if (!mounted || request != _request) return;
+      if (!mounted || request != _request) return false;
       if (!result.isSuccess) {
         setState(() {
           _loading = false;
           _loadError = result.msg ?? '订单信息加载失败';
         });
         MDTotast.error(result.msg ?? '订单信息加载失败');
-        return;
+        return false;
       }
       setState(() {
         _model = _PayCourse.fromJson(result.data ?? const {});
         _loading = false;
       });
+      return true;
     } catch (error) {
       Utils.log('CourseOrderConfirmPage load confirm failed: $error');
-      if (!mounted || request != _request) return;
+      if (!mounted || request != _request) return false;
       setState(() {
         _loading = false;
         _loadError = '订单信息加载失败，请稍后重试';
       });
       MDTotast.error('订单信息加载失败，请稍后重试');
+      return false;
     } finally {
       MDTotast.hideLoading();
     }
+  }
+
+  Future<void> _handleRefresh() async {
+    final succeeded = await _loadData();
+    if (!mounted) return;
+    _refreshController.finishRefresh(
+      succeeded ? RefreshCompletion.success : RefreshCompletion.fail,
+    );
   }
 
   Future<bool> _requireLogin() async {
@@ -174,9 +188,9 @@ class _CourseOrderConfirmPageState extends State<CourseOrderConfirmPage> {
         ),
       );
     }
-    return RefreshIndicator(
-      onRefresh: _loadData,
-      color: AppColors.theme,
+    return MDRefreshHeader(
+      controller: _refreshController,
+      onRefresh: _handleRefresh,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
