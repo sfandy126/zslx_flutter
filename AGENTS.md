@@ -10,8 +10,10 @@
 4. **提示和加载状态**：统一使用 `MDTotast`（`lib/utils/totast.dart`）显示提示、错误、成功状态和加载状态，不要直接调用其他 Toast 或 Loading API。页面加载进度使用 `MDTotast.showLoading()`，避免使用页面自带的进度组件（如 `CircularProgressIndicator`、`LinearProgressIndicator`）。
 5. **路由**：优先使用 `AppRouter`（`lib/router/app_router.dart`）及其路由名称进行页面跳转和返回，不要在页面中重复实现路由逻辑。
 6. **列表刷新和分页**：列表需要下拉刷新或上拉加载更多时，优先使用 `RefreshListView`（`lib/widgets/refresh_list_view.dart`）。
-7. **颜色**：优先使用 `AppColors`（`lib/utils/app_colors.dart`）中的项目颜色；确需新增颜色时，集中添加到 `AppColors`，避免散落硬编码。
-8. **自定义导航栏**：优先使用 `MDAppBar`（`lib/widgets/custom_appbar.dart`），保持项目导航栏样式和返回行为一致。
+7. **下拉刷新**：优先使用自定义 `MDRefreshHeader`，避免使用 `RefreshIndicator`，保持项目下拉刷新样式统一。
+8. **上拉刷新/加载更多**：优先使用自定义 `MDRefreshFooter`，避免使用 `RefreshIndicator`，保持项目下拉刷新样式统一。
+9. **颜色**：优先使用 `AppColors`（`lib/utils/app_colors.dart`）中的项目颜色；确需新增颜色时，集中添加到 `AppColors`，避免散落硬编码。
+10. **自定义导航栏**：优先使用 `MDAppBar`（`lib/widgets/custom_appbar.dart`），保持项目导航栏样式和返回行为一致。
 
 ## 渠道与构建
 
