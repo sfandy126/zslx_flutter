@@ -1,18 +1,23 @@
 // 构建 / 打包脚本：以 flavorizr.yaml 为唯一配置源，同步生成各平台配置 → 构建号 +1 → 按渠道构建。
 //
-// 用法（项目根目录执行）：
-//   dart run tool/build.dart                          列出所有渠道，终端手动选择后打包
+//  调试用法（项目根目录执行）：
+//   比如：dart run tool/build.dart run appstore -d 00008101-001524812260001E（设备id）
 //   dart run tool/build.dart run <渠道> [flutter 参数]  本地调试运行，版本号取该渠道
+//
+//  打包用法（项目根目录执行）：（结合flavorizr.yaml控制版本）
+//   dart run tool/build.dart                          列出所有渠道，终端手动选择后打包
 //   dart run tool/build.dart sync                     仅同步配置，不改构建号
 //   dart run tool/build.dart android [渠道...]        Android 打包，不传渠道则打全部渠道
 //   dart run tool/build.dart ios                      iOS（AppStore）打包 ipa
 //   dart run tool/build.dart all                      Android 全渠道 + iOS
+//   Android 打包默认只生成 release APK，build.gradle.kts 已开启 R8代码混淆，脚本中--obfuscate混淆 Dart 代码；
+//          --split-debug-info=build/symbols 将对应的符号信息保存到指定目录，以便日后用 flutter symbolize 还原崩溃堆栈。
+// 
 //
-// 调试： dart run tool/build.dart run appstore -d 00008101-001524812260001E（设备id）
-// 打包：dart run tool/build.dart android xiaomi --obfuscate --split-debug-info=build/symbols
+// 调试：
 // 版本号全部取自 flavorizr.yaml：渠道配置了 version 就用它，否则 Android 取 common.androidVersion、
 // iOS 取 common.iosVersion；构建号统一取 common.buildNumber。
-// 以 `-` 开头的参数原样透传给 flutter，如 `-d emulator-5554`、`--obfuscate --split-debug-info=build/symbols`。
+// 以 `-` 开头的参数透传给 flutter，如 `-d emulator-5554`。
 // `-d` 支持写模糊关键字：flutter 本身只认设备 id 或完整名称，脚本会在唯一匹配时替换成真实 id（如 `-d iPhone`）。
 // 每次打包构建号只 +1 一次，本次所有渠道共用；打包失败不回滚，避免已产出的包与下次撞号。
 import 'dart:convert';
@@ -43,6 +48,18 @@ Future<void> main(List<String> args) async {
   final names = args.isEmpty ? const <String>[] : args.sublist(1, flagStart);
   final flutterArgs = args.isEmpty ? const <String>[] : args.sublist(flagStart);
   var config = _FlavorConfig.load();
+
+  if (command != 'run' && command != 'sync') {
+    if (flutterArgs.contains('--debug') || flutterArgs.contains('--profile')) {
+      stderr.writeln('打包只支持 release 模式，请使用 run 命令进行调试。');
+      exit(64);
+    }
+    if (flutterArgs.contains('--no-obfuscate') &&
+        (command == 'android' || command == 'all' || command == 'menu')) {
+      stderr.writeln('Android 打包必须混淆 Dart 代码，不能使用 --no-obfuscate。');
+      exit(64);
+    }
+  }
 
   final List<String> selected;
   switch (command) {
@@ -86,14 +103,32 @@ Future<void> main(List<String> args) async {
       '${config.buildNumber}',
     ];
     if (config.isIos(channel)) {
-      await _run('flutter', ['build', 'ipa', ...versionArgs, ...flutterArgs]);
+      await _run('flutter', [
+        'build',
+        'ipa',
+        '--release',
+        ...versionArgs,
+        ...flutterArgs,
+      ]);
     } else {
+      final hasSplitDebugInfo = flutterArgs.any(
+        (arg) =>
+            arg == '--split-debug-info' ||
+            arg.startsWith('--split-debug-info='),
+      );
+      final obfuscationArgs = [
+        if (!flutterArgs.contains('--obfuscate')) '--obfuscate',
+        if (!hasSplitDebugInfo)
+          '--split-debug-info=build/symbols/${channel.name}/${config.buildNumber}',
+      ];
       await _run('flutter', [
         'build',
         'apk',
+        '--release',
         '--flavor',
         channel.name,
         ...versionArgs,
+        ...obfuscationArgs,
         ...flutterArgs,
       ]);
     }
@@ -104,7 +139,15 @@ Future<void> main(List<String> args) async {
     stdout.writeln(_channelLine(config, channel, config.buildNumber));
   }
   if (built.any((channel) => !config.isIos(channel))) {
-    stdout.writeln('Android：build/app/outputs/flutter-apk/app-<渠道>-release.apk');
+    stdout.writeln(
+      'Android：build/app/outputs/flutter-apk/app-<渠道>-release.apk',
+    );
+    if (!flutterArgs.any(
+      (arg) =>
+          arg == '--split-debug-info' || arg.startsWith('--split-debug-info='),
+    )) {
+      stdout.writeln('Dart 符号文件：build/symbols/<渠道>/${config.buildNumber}/');
+    }
   }
   if (built.any(config.isIos)) {
     stdout.writeln('iOS：build/ios/ipa');
@@ -133,7 +176,9 @@ Future<void> _runDebug(
   // 先解析设备：设备写错时直接退出，避免改了 pubspec 才失败
   final runArgs = await _resolveDeviceArgs(flutterArgs);
   await _sync(config, pubspecVersion: config.versionOf(channel));
-  stdout.writeln('调试构建 $_pubspecPath 版本：${config.versionOf(channel)}+${config.buildNumber}');
+  stdout.writeln(
+    '调试构建 $_pubspecPath 版本：${config.versionOf(channel)}+${config.buildNumber}',
+  );
   if (config.isIos(channel)) {
     await _run('flutter', ['run', ...runArgs]);
   } else {
@@ -201,11 +246,10 @@ Future<String> _resolveDevice(String keyword) async {
 
 /// 读 flutter devices --machine 的 JSON 输出，只保留可运行的设备
 Future<List<_Device>> _listDevices() async {
-  final result = await Process.run(
-    'flutter',
-    ['devices', '--machine'],
-    runInShell: Platform.isWindows,
-  );
+  final result = await Process.run('flutter', [
+    'devices',
+    '--machine',
+  ], runInShell: Platform.isWindows);
   final output = result.stdout as String;
   final start = output.indexOf('[');
   final end = output.lastIndexOf(']');
@@ -217,7 +261,8 @@ Future<List<_Device>> _listDevices() async {
   final list = jsonDecode(output.substring(start, end + 1)) as List<dynamic>;
   return [
     for (final item in list.cast<Map<String, dynamic>>())
-      if (item['isSupported'] != false) _Device(item['id'] as String, item['name'] as String),
+      if (item['isSupported'] != false)
+        _Device(item['id'] as String, item['name'] as String),
   ];
 }
 
@@ -235,7 +280,9 @@ List<String> _promptChannels(_FlavorConfig config) {
     stdout.writeln('\n${config.appName}  构建号 $nextBuildNumber（渠道 / 平台 / 版本号）');
     for (var i = 0; i < channels.length; i++) {
       final index = '${i + 1})'.padLeft(5);
-      stdout.writeln('$index${_channelLine(config, channels[i], nextBuildNumber)}');
+      stdout.writeln(
+        '$index${_channelLine(config, channels[i], nextBuildNumber)}',
+      );
     }
     stdout.writeln('      a)  全部 Android 渠道');
     stdout.writeln('      b)  全部渠道（Android + iOS）');
@@ -314,13 +361,18 @@ ${config.channelNames.map((name) => '  $name,').join('\n')}
   final version = pubspecVersion ?? config.defaultVersion;
   _writeIfChanged(
     _pubspecPath,
-    pubspec.replaceFirst(versionLine, 'version: $version+${config.buildNumber}'),
+    pubspec.replaceFirst(
+      versionLine,
+      'version: $version+${config.buildNumber}',
+    ),
   );
 
   stdout.writeln('配置已同步：${config.appName}  构建号 ${config.buildNumber}');
   final byVersion = <String, List<String>>{};
   for (final channel in config.channels) {
-    byVersion.putIfAbsent(config.versionOf(channel), () => []).add(channel.name);
+    byVersion
+        .putIfAbsent(config.versionOf(channel), () => [])
+        .add(channel.name);
   }
   for (final entry in byVersion.entries) {
     stdout.writeln('  ${entry.key}  ${entry.value.join(', ')}');
@@ -340,7 +392,11 @@ void _bumpBuildNumber() {
   }
   final match = matches.single;
   file.writeAsStringSync(
-    content.replaceRange(match.start, match.end, '${match[1]}${int.parse(match[2]!) + 1}'),
+    content.replaceRange(
+      match.start,
+      match.end,
+      '${match[1]}${int.parse(match[2]!) + 1}',
+    ),
   );
 }
 
@@ -419,7 +475,8 @@ class _FlavorConfig {
     required this.iosChannel,
   });
 
-  List<String> get channelNames => channels.map((channel) => channel.name).toList();
+  List<String> get channelNames =>
+      channels.map((channel) => channel.name).toList();
 
   /// 未指定渠道时同步到 pubspec 的版本号（Android 为主开发平台，取 androidVersion）
   String get defaultVersion => androidVersion;
@@ -445,10 +502,15 @@ class _FlavorConfig {
       _exitWithConfigError('缺少 common 或 flavors 节');
     }
     if (common.containsKey('version')) {
-      _exitWithConfigError('common.version 已拆分，请改用 common.androidVersion 与 common.iosVersion');
+      _exitWithConfigError(
+        'common.version 已拆分，请改用 common.androidVersion 与 common.iosVersion',
+      );
     }
 
-    final androidVersion = _parseVersion(common['androidVersion'], 'common.androidVersion');
+    final androidVersion = _parseVersion(
+      common['androidVersion'],
+      'common.androidVersion',
+    );
     final iosVersion = _parseVersion(common['iosVersion'], 'common.iosVersion');
     final buildNumber = common['buildNumber'];
     if (buildNumber is! int || buildNumber < 1) {
@@ -477,7 +539,9 @@ class _FlavorConfig {
       }
       final channel = _Channel(
         name,
-        flavor['version'] == null ? null : _parseVersion(flavor['version'], '$name.version'),
+        flavor['version'] == null
+            ? null
+            : _parseVersion(flavor['version'], '$name.version'),
       );
       channels.add(channel);
       if (flavor['android'] != null) androidChannels.add(channel);
