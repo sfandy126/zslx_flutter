@@ -7,7 +7,7 @@ import '../../utils/utils.dart';
 import '../pay/alipay.dart';
 import '../pay/wxpay.dart';
 
-/// 待支付订单页：展示订单信息并发起支付
+/// 待支付订单页：展示订单信息并发起支付，除iOS平台外的课程订单支付页
 class CourseOrderPayPage extends StatefulWidget {
   const CourseOrderPayPage({this.orderId = '', super.key});
 
@@ -27,7 +27,6 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
   bool _paying = false;
   int _request = 0;
   bool _alipayWap = false;
-  bool _alipayH5Paid = false;
 
   /// 当前选中的支付方式
   _PayType _payType = _PayType.alipay;
@@ -144,13 +143,12 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
     final message = await _launchPay(context, result.data?['pay']);
     if (!mounted) return;
     setState(() => _paying = false);
-    if (_alipayH5Paid) {
-      _alipayH5Paid = false;
-      await _loadData();
-      return;
-    }
     if (message != null) {
       MDTotast.error(message);
+      return;
+    }
+    if (_alipayWap) {
+      await _loadData();
       return;
     }
     // 支付成功：进入订单列表，返回时由订单列表页过滤订单确认、待支付页面
@@ -162,16 +160,16 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
   Future<String?> _launchPay(BuildContext context, Object? pay) async {
     if (_payType == _PayType.alipay) {
       final order = pay is String ? pay.trim() : '';
+      if (order.isEmpty) return '支付信息返回数据错误';
       if (_alipayWap) {
         try {
-          _alipayH5Paid = await Alipay.payWap(context, order);
+          await Alipay.payWap(context, order);
           return null;
         } catch (error) {
           Utils.log('CourseOrderPayPage alipay wap failed: $error');
           return '支付失败，请稍后重试';
         }
       }
-      if (order.isEmpty) return '支付信息返回数据错误';
       try {
         return await Alipay.pay(order);
       } catch (error) {

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 
-/// 订单确认页：确认课程信息后生成订单
+/// 订单确认页：确认课程信息后生成订单，除iOS平台外的课程订单确认页
 class CourseOrderConfirmPage extends StatefulWidget {
   const CourseOrderConfirmPage({
     this.type = '',

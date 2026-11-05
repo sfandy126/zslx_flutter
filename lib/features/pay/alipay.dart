@@ -28,28 +28,8 @@ class Alipay {
   static Future<bool> payWap(BuildContext context, String html) async {
     final paid = await AppRouter.pushNamed<bool>(
       context,
-      RouterNames.web,
-      queryParameters: const {'title': '支付宝支付'},
-      extra: {
-        'url': html,
-        'title': '支付宝支付',
-        'type': 'html',
-        'isPaymentSuccessUrl': (Uri uri) {
-          final params = uri.queryParameters;
-          if (params['trade_status'] == 'TRADE_SUCCESS') return true;
-          if (params['trade_no']?.isNotEmpty == true &&
-              params['out_trade_no']?.isNotEmpty == true) {
-            return true;
-          }
-          final path = uri.path.toLowerCase();
-          return path.contains('/pay/success') ||
-              path.contains('/payment/success') ||
-              path.endsWith('/success');
-        },
-        'onPaymentSuccess': (Uri uri) {
-          AppRouter.pop(context, true);
-        },
-      },
+      RouterNames.webPay,
+      extra: html,
     );
     return paid == true;
   }

@@ -1,12 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:zslx_flutter/features/share/system_share.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 import 'package:zslx_flutter/extensions/string_sign.dart';
@@ -25,9 +20,6 @@ class WebPage extends StatefulWidget {
     this.shareType,
     this.onOpenCourseDetail,
     this.onOpenAppLogin,
-    this.isPaymentSuccessUrl,
-    this.onPaymentSuccess,
-    this.isPaymentPage = false,
     required this.title,
   });
 
@@ -39,9 +31,6 @@ class WebPage extends StatefulWidget {
   final WebShareType? shareType;
   final ValueChanged<Map<String, dynamic>>? onOpenCourseDetail;
   final VoidCallback? onOpenAppLogin;
-  final bool Function(Uri uri)? isPaymentSuccessUrl;
-  final ValueChanged<Uri>? onPaymentSuccess;
-  final bool isPaymentPage;
 
   @override
   State<WebPage> createState() => _WebPageState();
@@ -53,7 +42,6 @@ class _WebPageState extends State<WebPage> {
   bool _canGoBack = false;
   bool _isSharing = false;
   bool _isPageReady = false;
-  bool _paymentHandled = false;
 
   @override
   void initState() {
@@ -75,18 +63,7 @@ class _WebPageState extends State<WebPage> {
             }.contains(uri.scheme.toLowerCase())) {
               return NavigationDecision.navigate;
             }
-            if (widget.isPaymentPage) {
-              _launchExternalPaymentScheme(uri);
-            }
             return NavigationDecision.prevent;
-          },
-          onPageStarted: (url) {
-            final uri = Uri.tryParse(url);
-            if (uri != null && widget.isPaymentSuccessUrl?.call(uri) == true) {
-              if (_paymentHandled) return;
-              _paymentHandled = true;
-              widget.onPaymentSuccess?.call(uri);
-            }
           },
           onProgress: (progress) {
             if (mounted) setState(() => _progress = progress / 100);
@@ -118,138 +95,7 @@ class _WebPageState extends State<WebPage> {
         onMessageReceived: (message) =>
             _receiveMessage('openAppLoginMethod', message.message),
       );
-    _prepareAndLoad();
-  }
-
-  Future<void> _prepareAndLoad() async {
-    if (widget.isPaymentPage && Platform.isAndroid) {
-      await _setAlipayMobileBrowserUserAgent();
-    }
-    if (mounted) await _loadData();
-  }
-
-  Future<void> _setAlipayMobileBrowserUserAgent() async {
-    var androidVersion = '13';
-    var deviceModel = 'Android Mobile';
-    try {
-      final info = await DeviceInfoPlugin().androidInfo;
-      androidVersion = info.version.release;
-      deviceModel = info.model.trim().isNotEmpty
-          ? info.model.trim()
-          : 'Android Mobile';
-    } catch (_) {}
-
-    final userAgent =
-        'Mozilla/5.0 (Linux; Android $androidVersion; $deviceModel) '
-        'AppleWebKit/537.36 (KHTML, like Gecko) '
-        'Chrome/131.0.0.0 Mobile Safari/537.36';
-    try {
-      final platformController =
-          _controller.platform as AndroidWebViewController;
-      await platformController.setMixedContentMode(
-        MixedContentMode.alwaysAllow,
-      );
-
-      final cookieManager = AndroidWebViewCookieManager(
-        const PlatformWebViewCookieManagerCreationParams(),
-      );
-      await cookieManager.setAcceptThirdPartyCookies(platformController, true);
-
-      await _controller.setUserAgent(userAgent);
-      final actualUserAgent = await platformController.getUserAgent();
-      Utils.log('Alipay WebView mobile UA requested: $userAgent');
-      Utils.log('Alipay WebView mobile UA actual: $actualUserAgent');
-    } catch (error) {
-      Utils.log('Alipay WebView set mobile UA failed: $error');
-    }
-  }
-
-  Future<void> _submitAlipayPaymentHtml(String html) async {
-    final normalizedHtml = html.replaceAll(r'\/', '/');
-    final formMatch = RegExp(
-      r"""<form\b[^>]*>[\s\S]*?</form>""",
-      caseSensitive: false,
-    ).firstMatch(normalizedHtml);
-    final formHtml = formMatch?.group(0) ?? normalizedHtml;
-
-    final actionMatch = RegExp(
-      r"""action\s*=\s*(["'])(.*?)\1""",
-      caseSensitive: false,
-      dotAll: true,
-    ).firstMatch(formHtml);
-    if (actionMatch == null) {
-      throw const FormatException('支付宝支付表单缺少 action');
-    }
-
-    var action = _decodeHtmlAttribute(actionMatch.group(2) ?? '').trim();
-    if (!action.contains('://')) {
-      action = 'https://openapi.alipay.com/$action';
-    }
-    final actionUri = Uri.tryParse(action);
-    if (actionUri == null || !actionUri.hasScheme) {
-      throw const FormatException('支付宝支付表单 action 无效');
-    }
-
-    final fields = <String, String>{};
-    final inputPattern = RegExp(
-      r"""<input\b[^>]*>""",
-      caseSensitive: false,
-      dotAll: true,
-    );
-    for (final inputMatch in inputPattern.allMatches(formHtml)) {
-      final input = inputMatch.group(0) ?? '';
-      final nameMatch = RegExp(
-        r"""name\s*=\s*(["'])(.*?)\1""",
-        caseSensitive: false,
-        dotAll: true,
-      ).firstMatch(input);
-      final valueMatch = RegExp(
-        r"""value\s*=\s*(["'])(.*?)\1""",
-        caseSensitive: false,
-        dotAll: true,
-      ).firstMatch(input);
-      if (nameMatch == null) continue;
-      final name = _decodeHtmlAttribute(nameMatch.group(2) ?? '').trim();
-      final value = _decodeHtmlAttribute(valueMatch?.group(2) ?? '');
-      if (name.isNotEmpty) fields[name] = value;
-    }
-    if (fields.isEmpty) {
-      throw const FormatException('支付宝支付表单缺少提交字段');
-    }
-
-    final body = fields.entries
-        .map(
-          (entry) =>
-              '${Uri.encodeQueryComponent(entry.key)}=${Uri.encodeQueryComponent(entry.value)}',
-        )
-        .join('&');
-    final origin = Uri(
-      scheme: actionUri.scheme,
-      host: actionUri.host,
-      port: actionUri.hasPort ? actionUri.port : null,
-    );
-
-    await _controller.loadRequest(
-      actionUri,
-      method: LoadRequestMethod.post,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept':
-            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-        'Referer': origin.toString(),
-      },
-      body: Uint8List.fromList(utf8.encode(body)),
-    );
-  }
-
-  String _decodeHtmlAttribute(String value) {
-    return value
-        .replaceAll('&amp;', '&')
-        .replaceAll('&quot;', '"')
-        .replaceAll('&#39;', "'")
-        .replaceAll('&lt;', '<')
-        .replaceAll('&gt;', '>');
+    _loadData();
   }
 
   Future<void> _loadData() async {
@@ -258,10 +104,6 @@ class _WebPageState extends State<WebPage> {
 
     if (widget.type == WebType.html) {
       try {
-        if (widget.isPaymentPage) {
-          await _submitAlipayPaymentHtml(value);
-          return;
-        }
         await _controller.loadHtmlString(value);
       } catch (error) {
         _showError('网页内容加载失败，请稍后重试');
@@ -291,20 +133,6 @@ class _WebPageState extends State<WebPage> {
     } catch (error) {
       _showError('网页加载失败，请稍后重试');
       Utils.log('WebPage URL load error: $error');
-    }
-  }
-
-  Future<void> _launchExternalPaymentScheme(Uri uri) async {
-    try {
-      final launched = await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
-      if (!launched) {
-        Utils.log('WebPage external payment scheme not handled: $uri');
-      }
-    } catch (error) {
-      Utils.log('WebPage external payment scheme launch failed: $error');
     }
   }
 

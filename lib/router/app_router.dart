@@ -37,6 +37,7 @@ import '../features/video/video_page.dart';
 import '../features/wallet/wallet_order.dart';
 import '../features/wallet/wallet_page.dart';
 import '../features/web/web_page.dart';
+import '../features/web/web_pay_page.dart';
 import 'not_found_page.dart';
 
 enum RouterNames {
@@ -68,6 +69,7 @@ enum RouterNames {
   video,
   feedback,
   web,
+  webPay,
   setup,
   wallet,
   walletOrder,
@@ -400,6 +402,16 @@ class AppRouter {
             _platformPage(key: state.pageKey, child: const AboutPage()),
       ),
       GoRoute(
+        path: '/web-pay',
+        name: RouterNames.webPay.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: WebPayPage(
+            html: state.extra is String ? state.extra as String : '',
+          ),
+        ),
+      ),
+      GoRoute(
         path: '/web',
         name: RouterNames.web.routeName,
         pageBuilder: (context, state) {
@@ -418,13 +430,6 @@ class AppRouter {
                   state.uri.queryParameters['title'] ??
                   '',
               type: typeName == 'html' ? WebType.html : WebType.url,
-              isPaymentSuccessUrl:
-                  extra['isPaymentSuccessUrl'] is bool Function(Uri)
-                  ? extra['isPaymentSuccessUrl'] as bool Function(Uri)
-                  : null,
-              onPaymentSuccess: extra['onPaymentSuccess'] is ValueChanged<Uri>
-                  ? extra['onPaymentSuccess'] as ValueChanged<Uri>
-                  : null,
               disableFd: state.uri.queryParameters['disableFd'] == 'true',
               shareType: WebShareType.values
                   .asNameMap()[state.uri.queryParameters['shareType']],

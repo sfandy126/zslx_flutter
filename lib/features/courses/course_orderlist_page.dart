@@ -5,7 +5,7 @@ import '../../utils/utils.dart';
 import '../../widgets/dialog.dart';
 import '../../widgets/refresh_list_view.dart';
 
-/// 课程订单页面
+/// 课程订单页面,除iOS平台外的课程订单列表
 class CourseOrderListPage extends StatefulWidget {
   const CourseOrderListPage({super.key});
 
