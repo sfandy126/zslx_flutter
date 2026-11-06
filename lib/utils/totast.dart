@@ -1,4 +1,5 @@
-import 'package:flutter/widgets.dart';
+import 'dart:async';
+
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class MDTotast {
@@ -10,7 +11,13 @@ class MDTotast {
 
   static void showLoading([String message = '加载中...']) {
     _loadingCount++;
-    EasyLoading.show(status: message);
+    // EasyLoading 会更新现有提示层；透明遮罩拦截页面操作。
+    EasyLoading.show(
+      status: message,
+      maskType: EasyLoadingMaskType.clear,
+      dismissOnTap: false,
+      options: const EasyLoadingOptions(userInteractions: false),
+    );
   }
 
   static void error(String message) {
@@ -49,12 +56,16 @@ class MDTotast {
     if (_pendingStatus != null) {
       final status = _pendingStatus;
       _pendingStatus = null;
-      WidgetsBinding.instance.addPostFrameCallback((_) => status?.call());
+      final generation = _dismissGeneration;
+      scheduleMicrotask(() {
+        if (generation != _dismissGeneration || _loadingCount != 0) return;
+        status?.call();
+      });
       return;
     }
 
     final generation = ++_dismissGeneration;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    scheduleMicrotask(() {
       if (generation != _dismissGeneration || _loadingCount != 0) return;
       EasyLoading.dismiss(animation: false);
     });
