@@ -96,7 +96,7 @@ class _StartPageState extends State<StartPage> {
           ),
           titlePadding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
           contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-          actionsPadding: EdgeInsets.zero,
+          actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
           buttonPadding: EdgeInsets.zero,
           title: const Text(
             '服务协议',
@@ -111,7 +111,7 @@ class _StartPageState extends State<StartPage> {
             TextSpan(
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.title,
+                color: AppColors.content,
                 height: 1.4,
               ),
               children: [
@@ -147,23 +147,32 @@ class _StartPageState extends State<StartPage> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
-                    child: MDAdaptiveTextButton(
-                      borderRadius: BorderRadius.zero,
-                      padding: EdgeInsets.zero,
-                      onPressed: _denyPrivacy,
-                      color: AppColors.background,
-                      child: const Text(
-                        '退出应用',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: ColoredBox(
+                        color: AppColors.background,
+                        child: MDAdaptiveTextButton(
+                          borderRadius: BorderRadius.circular(8),
+                          padding: EdgeInsets.zero,
+                          useNative: false,
+                          onPressed: _denyPrivacy,
+                          color: AppColors.background,
+                          child: Text(
+                            '退出应用',
+                            style: TextStyle(
+                              color: AppColors.title,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: MDAdaptiveElevatedButton(
-                      borderRadius: BorderRadius.zero,
+                      borderRadius: BorderRadius.circular(8),
                       padding: EdgeInsets.zero,
                       onPressed: _agreePrivacy,
                       color: AppColors.theme,

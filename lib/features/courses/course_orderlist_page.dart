@@ -24,7 +24,7 @@ class _CourseOrderListPageState extends State<CourseOrderListPage> {
     try {
       final result = await MDPost.sendApiSession(
         cmd: .courseOrders,
-        params: {'p': page, 'status': '1'},
+        params: {'page': page, 'status': '1'},
       );
       if (result.isSuccess) {
         final orders = _CourseOrder.listFrom(result.data?['data']);
