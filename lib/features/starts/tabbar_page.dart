@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 import 'package:zslx_flutter/features/courses/course_learn_page.dart';
 import 'package:zslx_flutter/features/home/home_page.dart';
@@ -54,43 +52,54 @@ class _TabbarPageState extends State<TabbarPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        navigationBarTheme: NavigationBarThemeData(
-          backgroundColor: AppColors.white,
+    return Scaffold(
+      backgroundColor: AppColors.white,
+      body: IndexedStack(index: _selectedIndex, children: _pages),
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashFactory: NoSplash.splashFactory,
+          splashColor: AppColors.transparent,
+          highlightColor: AppColors.transparent,
         ),
-      ),
-      child: CupertinoTheme(
-        data: CupertinoTheme.of(context)
-            .copyWith(barBackgroundColor: AppColors.white),
-        child: MDAdaptiveScaffold(
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
           backgroundColor: AppColors.white,
-          body: IndexedStack(index: _selectedIndex, children: _pages),
-          bottomNavigationBar: MDAdaptiveBottomNavigationBar(
-            // 当前标签图标为 SVG Widget，使用 Flutter 绘制的底部栏。
-            useNativeBottomBar: false,
-            selectedIndex: _selectedIndex,
-            onTap: (index) => setState(() => _selectedIndex = index),
-            selectedItemColor: AppColors.theme,
-            unselectedItemColor: AppColors.title,
-            items: _tabItems
-                .map(
-                  (item) => MDAdaptiveNavigationDestination(
-                    icon: SvgPicture.asset(
-                      item.normalIcon,
-                      width: 24,
-                      height: 24,
+          currentIndex: _selectedIndex,
+          onTap: (index) => setState(() => _selectedIndex = index),
+          selectedItemColor: AppColors.theme,
+          unselectedItemColor: AppColors.title,
+          items: _tabItems
+              .map(
+                (item) => BottomNavigationBarItem(
+                  icon: SizedBox(
+                    width: 56,
+                    height: 30,
+                    child: Center(
+                      child: SvgPicture.asset(
+                        item.normalIcon,
+                        width: 24,
+                        height: 24,
+                      ),
                     ),
-                    selectedIcon: SvgPicture.asset(
+                  ),
+                  activeIcon: Container(
+                    width: 56,
+                    height: 30,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.theme,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: SvgPicture.asset(
                       item.selectedIcon,
                       width: 24,
                       height: 24,
                     ),
-                    label: item.label,
                   ),
-                )
-                .toList(),
-          ),
+                  label: item.label,
+                ),
+              )
+              .toList(),
         ),
       ),
     );

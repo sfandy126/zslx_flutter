@@ -85,111 +85,121 @@ class _StartPageState extends State<StartPage> {
   }
 
   void _showPrivacyAlert() {
-    showMDAdaptiveDialog<void>(
+    showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (context) => PopScope(
         canPop: false,
-        child: MDAdaptiveAlertDialog(
+        child: AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           titlePadding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-          contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-          actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-          buttonPadding: EdgeInsets.zero,
-          title: const Text(
+          contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
+          title: Text(
             '服务协议',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF18181B),
+              color: AppColors.title,
             ),
           ),
-          content: Text.rich(
-            TextSpan(
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.content,
-                height: 1.4,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text.rich(
+                TextSpan(
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.content,
+                    height: 1.4,
+                  ),
+                  children: [
+                    const TextSpan(
+                      text:
+                          '    欢迎使用本应用！为了更好地保护您的个人信息和合法权益，请您在使用我们的产品前，认真阅读并了解',
+                    ),
+                    TextSpan(
+                      text: '《用户协议》',
+                      style: TextStyle(
+                        color: AppColors.theme,
+                        decoration: TextDecoration.none,
+                      ),
+                      recognizer: _userAgreementRecognizer,
+                    ),
+                    const TextSpan(text: '和'),
+                    TextSpan(
+                      text: '《隐私政策》',
+                      style: TextStyle(
+                        color: AppColors.theme,
+                        decoration: TextDecoration.none,
+                      ),
+                      recognizer: _privacyPolicyRecognizer,
+                    ),
+                    const TextSpan(text: '的全部内容。\n    本应用将在您同意后，收集必要信息以提供服务。'),
+                  ],
+                ),
+                textAlign: TextAlign.left,
               ),
-              children: [
-                const TextSpan(
-                  text: '    欢迎使用本应用！为了更好地保护您的个人信息和合法权益，请您在使用我们的产品前，认真阅读并了解',
-                ),
-                TextSpan(
-                  text: '《用户协议》',
-                  style: TextStyle(
-                    color: AppColors.theme,
-                    decoration: TextDecoration.none,
-                  ),
-                  recognizer: _userAgreementRecognizer,
-                ),
-                const TextSpan(text: '和'),
-                TextSpan(
-                  text: '《隐私政策》',
-                  style: TextStyle(
-                    color: AppColors.theme,
-                    decoration: TextDecoration.none,
-                  ),
-                  recognizer: _privacyPolicyRecognizer,
-                ),
-                const TextSpan(text: '的全部内容。\n    本应用将在您同意后，收集必要信息以提供服务。'),
-              ],
-            ),
-            textAlign: TextAlign.left,
-          ),
-          actions: [
-            SizedBox(
-              height: 40,
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: ColoredBox(
-                        color: AppColors.background,
-                        child: MDAdaptiveTextButton(
-                          borderRadius: BorderRadius.circular(8),
+              const SizedBox(height: 24),
+              SizedBox(
+                height: 38,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: _denyPrivacy,
+                        style: TextButton.styleFrom(
+                          backgroundColor: AppColors.background,
                           padding: EdgeInsets.zero,
-                          useNative: false,
-                          onPressed: _denyPrivacy,
-                          color: AppColors.background,
-                          child: Text(
-                            '退出应用',
-                            style: TextStyle(
-                              color: AppColors.title,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          '退出应用',
+                          style: TextStyle(
+                            color: AppColors.title,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: MDAdaptiveElevatedButton(
-                      borderRadius: BorderRadius.circular(8),
-                      padding: EdgeInsets.zero,
-                      onPressed: _agreePrivacy,
-                      color: AppColors.theme,
-                      child: Text(
-                        '同意并继续',
-                        style: TextStyle(
-                          color: AppColors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _agreePrivacy,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.theme,
+                          elevation: 0,
+                          padding: EdgeInsets.zero,
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          '同意并继续',
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

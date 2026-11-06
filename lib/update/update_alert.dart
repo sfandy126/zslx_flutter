@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 
 import '../router/app_router.dart';
@@ -15,7 +14,7 @@ class UpdateAlert {
     BuildContext context, {
     required AppUpdateInfo update,
   }) {
-    return showMDAdaptiveDialog<void>(
+    return showDialog<void>(
       context: context,
       barrierDismissible: !update.isCoerce,
       barrierLabel: '应用更新',
@@ -108,7 +107,7 @@ class _UpdateDialogState extends State<_UpdateDialog> {
           minHeight: 140,
           maxHeight: 320,
         ),
-        child: MDAdaptiveAlertDialog(
+        child: AlertDialog(
           backgroundColor: AppColors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -173,7 +172,7 @@ class _UpdateDialogState extends State<_UpdateDialog> {
                           ],
                           if (_phase == _UpdatePhase.installing) ...[
                             const SizedBox(height: 22),
-                            CircularProgressIndicator.adaptive(
+                            CircularProgressIndicator(
                               valueColor: AlwaysStoppedAnimation(
                                 AppColors.theme,
                               ),
@@ -251,11 +250,18 @@ class _UpdateDialogState extends State<_UpdateDialog> {
     final background = primary ? AppColors.theme : AppColors.background;
     return SizedBox(
       height: 36,
-      child: MDAdaptiveElevatedButton(
-        borderRadius: BorderRadius.circular(24),
-        size: MDAdaptiveButtonSize.small,
+      child: ElevatedButton(
         onPressed: onPressed,
-        color: background,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: background,
+          elevation: 0,
+          padding: EdgeInsets.zero,
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+        ),
         child: Text(
           label,
           style: TextStyle(
