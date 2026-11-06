@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zslx_flutter/router/app_router.dart';
@@ -231,7 +230,7 @@ class _StartPageState extends State<StartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MDAdaptiveScaffold(
+    return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [

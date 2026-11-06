@@ -4,7 +4,7 @@
 
 ## 组件与代码约定
 
-1. **跨平台 Widget**：优先使用Material交互组件。
+1. **跨平台 Widget**：优先使用Material交互组件，如为按钮则去掉自带的android风格的点击效果，确保各平台样式统一。
 2. **状态管理**：使用 `provider` 管理和共享应用状态，优先沿用项目已有的 Provider 模式。
 3. **网络图片**：统一使用 `MDNetImage`（`lib/widgets/network_image.dart`），不要直接使用 `Image.network` 或自行创建网络图片缓存逻辑。
 4. **提示和加载状态**：统一使用 `MDTotast`（`lib/utils/totast.dart`）显示提示、错误、成功状态和加载状态，不要直接调用其他 Toast 或 Loading API。页面加载进度使用 `MDTotast.showLoading()`，避免使用页面自带的进度组件（如 `CircularProgressIndicator`、`LinearProgressIndicator`）。

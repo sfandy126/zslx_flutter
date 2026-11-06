@@ -53,6 +53,10 @@ class _MDCodeFieldState extends State<MDCodeField> {
         hintText: '请输入验证码',
         suffixIcon: TextButton(
           onPressed: _canSendCode ? _sendCode : null,
+          style: TextButton.styleFrom(
+            overlayColor: AppColors.transparent,
+            splashFactory: NoSplash.splashFactory,
+          ),
           child: Text(
             buttonText,
             style: TextStyle(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -18,7 +17,7 @@ class _OffPageState extends State<OffPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MDAdaptiveScaffold(
+    return Scaffold(
       body: Column(
         children: [
           ColoredBox(
@@ -47,13 +46,17 @@ class _OffPageState extends State<OffPage> {
                       SizedBox(
                         width: double.infinity,
                         height: 48,
-                        child: MDAdaptiveElevatedButton(
-                          borderRadius: BorderRadius.circular(24),
-                          size: MDAdaptiveButtonSize.small,
+                        child: FilledButton(
                           onPressed: _isAgreed && !_isLoading ? _commit : null,
-                          color: _isAgreed
-                              ? AppColors.theme
-                              : HexColor.fromHex('#E8E8E8'),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: _isAgreed
+                                ? AppColors.theme
+                                : HexColor.fromHex('#E8E8E8'),
+                            disabledBackgroundColor: HexColor.fromHex(
+                              '#E8E8E8',
+                            ),
+                            shape: const StadiumBorder(),
+                          ),
                           child: Text(
                             _isLoading ? '提交中...' : '申请注销',
                             style: TextStyle(

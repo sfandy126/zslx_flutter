@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../adaptive/md_adaptive.dart';
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 import '../../widgets/agreement.dart';
@@ -48,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _viewModel,
-      builder: (context, child) => MDAdaptiveScaffold(
+      builder: (context, child) => Scaffold(
         resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Stack(
@@ -60,15 +58,18 @@ class _LoginPageState extends State<LoginPage> {
                     dimension: 40,
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: MDAdaptiveIconButton(
+                      child: IconButton(
                         onPressed: () => AppRouter.pop(context),
                         icon: Assets.images.public.back.svg(
                           width: 24,
                           height: 24,
                         ),
                         padding: EdgeInsets.zero,
-                        size: MDAdaptiveButtonSize.small,
-                        minSize: const Size(40, 40),
+                        alignment: Alignment.centerLeft,
+                        constraints: const BoxConstraints.tightFor(
+                          width: 40,
+                          height: 40,
+                        ),
                       ),
                     ),
                   ),
@@ -119,11 +120,12 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           width: double.infinity,
                           height: 48,
-                          child: MDAdaptiveElevatedButton(
-                            borderRadius: BorderRadius.circular(24),
-                            size: MDAdaptiveButtonSize.small,
+                          child: FilledButton(
                             onPressed: _viewModel.isLoading ? null : _login,
-                            color: AppColors.theme,
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppColors.theme,
+                              shape: const StadiumBorder(),
+                            ),
                             child: Text(
                               _viewModel.isLoading ? '登录中...' : '登录',
                               style: TextStyle(
@@ -174,10 +176,12 @@ class _LoginPageState extends State<LoginPage> {
 
   /// 去掉按钮默认内边距，让按钮间距由外部 SizedBox 精确控制
   Widget _textButton(String text, VoidCallback onPressed) {
-    return MDAdaptiveTextButton(
-      minSize: const Size(0, 40),
+    return TextButton(
       onPressed: onPressed,
-      padding: EdgeInsets.zero,
+      style: TextButton.styleFrom(
+        minimumSize: const Size(0, 40),
+        padding: EdgeInsets.zero,
+      ),
       child: Text(
         text,
         style: TextStyle(

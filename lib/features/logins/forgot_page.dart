@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../../adaptive/md_adaptive.dart';
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 import '../../widgets/code_field.dart';
@@ -45,7 +43,7 @@ class _ForgotPageState extends State<ForgotPage> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _viewModel,
-      builder: (context, child) => MDAdaptiveScaffold(
+      builder: (context, child) => Scaffold(
         body: SafeArea(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 32, 16, 24),
@@ -54,12 +52,15 @@ class _ForgotPageState extends State<ForgotPage> {
                 dimension: 40,
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: MDAdaptiveIconButton(
+                  child: IconButton(
                     onPressed: () => AppRouter.pop(context),
                     icon: Assets.images.public.back.svg(width: 24, height: 24),
                     padding: EdgeInsets.zero,
-                    size: MDAdaptiveButtonSize.small,
-                    minSize: const Size(40, 40),
+                    alignment: Alignment.centerLeft,
+                    constraints: const BoxConstraints.tightFor(
+                      width: 40,
+                      height: 40,
+                    ),
                   ),
                 ),
               ),
@@ -103,11 +104,12 @@ class _ForgotPageState extends State<ForgotPage> {
                     SizedBox(
                       width: double.infinity,
                       height: 48,
-                      child: MDAdaptiveElevatedButton(
-                        borderRadius: BorderRadius.circular(24),
-                        size: MDAdaptiveButtonSize.small,
+                      child: FilledButton(
                         onPressed: _viewModel.isLoading ? null : _submit,
-                        color: AppColors.theme,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.theme,
+                          shape: const StadiumBorder(),
+                        ),
                         child: Text(
                           _viewModel.isLoading ? '提交中...' : '确定',
                           style: TextStyle(

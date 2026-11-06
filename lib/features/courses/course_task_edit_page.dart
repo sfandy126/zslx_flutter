@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../network/oss.dart';
 import '../../router/app_router.dart';
@@ -226,7 +225,7 @@ class _CourseTaskEditPageState extends State<CourseTaskEditPage> {
     final keyboard = MediaQuery.viewInsetsOf(context).bottom;
     return PopScope(
       canPop: !_submitting,
-      child: MDAdaptiveScaffold(
+      child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: ColoredBox(
           color: AppColors.white,

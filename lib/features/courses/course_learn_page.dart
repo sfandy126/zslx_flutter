@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:zslx_flutter/services/bjy_server.dart';
 
@@ -262,7 +261,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
       screen.height,
     );
 
-    return MDAdaptiveScaffold(
+    return Scaffold(
       body: DefaultTextStyle(
         style: _plainTextStyle,
         child: SafeArea(

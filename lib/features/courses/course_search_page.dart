@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:zslx_flutter/widgets/refresh_list_view.dart';
 
 import '../../router/app_router.dart';
@@ -59,7 +58,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MDAdaptiveScaffold(
+    return Scaffold(
       body: DefaultTextStyle(
         style: const TextStyle(decoration: TextDecoration.none),
         child: Column(

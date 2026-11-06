@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -40,7 +39,7 @@ class _CoursePrebookPageState extends State<CoursePrebookPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MDAdaptiveScaffold(
+    return Scaffold(
       body: Column(
         children: [
           ColoredBox(
@@ -96,11 +95,12 @@ class _CoursePrebookPageState extends State<CoursePrebookPage> {
                       padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
                       child: SizedBox(
                         height: 48,
-                        child: MDAdaptiveElevatedButton(
-                          borderRadius: BorderRadius.circular(24),
-                          size: MDAdaptiveButtonSize.small,
+                        child: FilledButton(
                           onPressed: _submitting ? null : _check,
-                          color: AppColors.theme,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.theme,
+                            shape: const StadiumBorder(),
+                          ),
                           child: Text(
                             _submitting ? '预约中...' : '立即预约',
                             style: TextStyle(

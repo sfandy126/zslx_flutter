@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -81,7 +80,7 @@ class _WalletPageState extends State<WalletPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MDAdaptiveScaffold(
+    return Scaffold(
       body: DefaultTextStyle(
         style: const TextStyle(decoration: TextDecoration.none),
         child: Column(
@@ -95,9 +94,11 @@ class _WalletPageState extends State<WalletPage> {
                   child: MDAppBar(
                     title: '钱包',
                     actions: [
-                      MDAdaptiveTextButton(
+                      TextButton(
                         onPressed: _openOrders,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                        ),
                         child: Text(
                           '消费明细',
                           style: TextStyle(
@@ -450,11 +451,12 @@ class _BottomBar extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 height: 48,
-                child: MDAdaptiveElevatedButton(
-                  borderRadius: BorderRadius.circular(24),
-                  size: MDAdaptiveButtonSize.small,
+                child: FilledButton(
                   onPressed: onPay,
-                  color: AppColors.theme,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.theme,
+                    shape: const StadiumBorder(),
+                  ),
                   child: Text(
                     '⚡ 立即充值',
                     style: TextStyle(

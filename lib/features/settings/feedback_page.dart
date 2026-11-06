@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -36,7 +35,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _viewModel,
-      builder: (context, child) => MDAdaptiveScaffold(
+      builder: (context, child) => Scaffold(
         body: Column(
           children: [
             ColoredBox(
@@ -76,11 +75,12 @@ class _FeedbackPageState extends State<FeedbackPage> {
                       SizedBox(
                         width: double.infinity,
                         height: 48,
-                        child: MDAdaptiveElevatedButton(
-                          borderRadius: BorderRadius.circular(24),
-                          size: MDAdaptiveButtonSize.small,
+                        child: FilledButton(
                           onPressed: _viewModel.isLoading ? null : _submit,
-                          color: AppColors.theme,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.theme,
+                            shape: const StadiumBorder(),
+                          ),
                           child: Text(
                             _viewModel.isLoading ? '提交中...' : '保存',
                             style: TextStyle(

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../services/history/history_server.dart';
 import '../../utils/utils.dart';
@@ -284,7 +283,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final title = widget.title.isEmpty ? '视频播放' : widget.courseTitle;
-    return MDAdaptiveScaffold(
+    return Scaffold(
       body: DefaultTextStyle(
         style: const TextStyle(decoration: TextDecoration.none),
         child: Column(

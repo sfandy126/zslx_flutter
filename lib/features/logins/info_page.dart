@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -33,7 +32,7 @@ class _InfoPageState extends State<InfoPage> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _viewModel,
-      builder: (context, child) => MDAdaptiveScaffold(
+      builder: (context, child) => Scaffold(
         body: Column(
           children: [
             ColoredBox(

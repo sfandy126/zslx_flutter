@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../router/app_router.dart';
@@ -103,7 +102,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MDAdaptiveScaffold(
+    return Scaffold(
       body: DefaultTextStyle(
         style: const TextStyle(decoration: TextDecoration.none),
         child: DecoratedBox(

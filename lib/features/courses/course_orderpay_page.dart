@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -229,7 +228,7 @@ class _CourseOrderPayPageState extends State<CourseOrderPayPage> {
         if (didPop) return;
         _back();
       },
-      child: MDAdaptiveScaffold(
+      child: Scaffold(
         body: DefaultTextStyle(
           style: _plainTextStyle,
           child: Column(

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zslx_flutter/router/app_router.dart';
 
@@ -50,7 +49,7 @@ class _MinePageState extends State<MinePage> {
     return AnimatedBuilder(
       animation: _viewModel,
       builder: (context, child) {
-        return MDAdaptiveScaffold(
+        return Scaffold(
           body: Stack(
             children: [
               Positioned.fill(
@@ -245,10 +244,14 @@ class _HeaderButton extends StatelessWidget {
         color: AppColors.white,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: MDAdaptiveTextButton(
-          borderRadius: BorderRadius.circular(20),
+        child: TextButton(
           onPressed: onTap,
-          color: AppColors.title,
+          style: TextButton.styleFrom(
+            foregroundColor: AppColors.title,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
           child: Text(
             label,
             style: TextStyle(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -142,7 +141,7 @@ class _CourseOrderConfirmPageState extends State<CourseOrderConfirmPage> {
   @override
   Widget build(BuildContext context) {
     final model = _model;
-    return MDAdaptiveScaffold(
+    return Scaffold(
       body: DefaultTextStyle(
         style: _plainTextStyle,
         child: Column(

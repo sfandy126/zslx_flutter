@@ -35,8 +35,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # 自适应不同平台的系统组件(不支持鸿蒙系统)
-  adaptive_platform_ui: ^1.0.2
   #Cupertino apple 风格的图标
   cupertino_icons: ^1.0.9
   #获取当前设备信息 

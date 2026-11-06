@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../extensions/string_rsa.dart';
 import '../../router/app_router.dart';
@@ -37,7 +36,7 @@ class _PasswardPageState extends State<PasswardPage> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _viewModel,
-      builder: (context, child) => MDAdaptiveScaffold(
+      builder: (context, child) => Scaffold(
         body: Column(
           children: [
             ColoredBox(
@@ -73,11 +72,12 @@ class _PasswardPageState extends State<PasswardPage> {
                       SizedBox(
                         width: double.infinity,
                         height: 48,
-                        child: MDAdaptiveElevatedButton(
-                          borderRadius: BorderRadius.circular(24),
-                          size: MDAdaptiveButtonSize.small,
+                        child: FilledButton(
                           onPressed: _viewModel.isLoading ? null : _submit,
-                          color: AppColors.theme,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.theme,
+                            shape: const StadiumBorder(),
+                          ),
                           child: Text(
                             _viewModel.isLoading ? '提交中...' : '确定',
                             style: TextStyle(
