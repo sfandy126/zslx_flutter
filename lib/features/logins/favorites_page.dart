@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../../router/app_router.dart';
@@ -93,7 +94,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
+    return MDAdaptiveScaffold(
       body: DefaultTextStyle(
         style: _plainTextStyle,
         child: Column(

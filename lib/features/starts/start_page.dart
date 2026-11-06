@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zslx_flutter/router/app_router.dart';
@@ -84,21 +85,19 @@ class _StartPageState extends State<StartPage> {
   }
 
   void _showPrivacyAlert() {
-    showPlatformDialog<void>(
+    showMDAdaptiveDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (context) => PopScope(
         canPop: false,
-        child: PlatformAlertDialog(
-          material: (context, platform) => MaterialAlertDialogData(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            titlePadding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-            contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-            actionsPadding: EdgeInsets.zero,
-            buttonPadding: EdgeInsets.zero,
+        child: MDAdaptiveAlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
+          titlePadding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+          contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          actionsPadding: EdgeInsets.zero,
+          buttonPadding: EdgeInsets.zero,
           title: const Text(
             '服务协议',
             textAlign: TextAlign.center,
@@ -148,27 +147,11 @@ class _StartPageState extends State<StartPage> {
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Expanded(
-                    child: PlatformTextButton(
+                    child: MDAdaptiveTextButton(
+                      borderRadius: BorderRadius.zero,
+                      padding: EdgeInsets.zero,
                       onPressed: _denyPrivacy,
                       color: AppColors.background,
-                      material: (context, platform) => MaterialTextButtonData(
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.black,
-                          backgroundColor: AppColors.background,
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size.fromHeight(40),
-                          fixedSize: const Size.fromHeight(40),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          shape: RoundedRectangleBorder(borderRadius: .zero),
-                        ),
-                      ),
-                      cupertino: (context, platform) => CupertinoTextButtonData(
-                        color: AppColors.background,
-                        foregroundColor: AppColors.black,
-                        borderRadius: BorderRadius.zero,
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size.fromHeight(40),
-                      ),
                       child: const Text(
                         '退出应用',
                         style: TextStyle(
@@ -179,31 +162,11 @@ class _StartPageState extends State<StartPage> {
                     ),
                   ),
                   Expanded(
-                    child: PlatformElevatedButton(
+                    child: MDAdaptiveElevatedButton(
+                      borderRadius: BorderRadius.zero,
+                      padding: EdgeInsets.zero,
                       onPressed: _agreePrivacy,
                       color: AppColors.theme,
-                      material: (context, platform) =>
-                          MaterialElevatedButtonData(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.theme,
-                              foregroundColor: AppColors.white,
-                              elevation: 0,
-                              padding: EdgeInsets.zero,
-                              minimumSize: const Size.fromHeight(40),
-                              fixedSize: const Size.fromHeight(40),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: .zero,
-                              ),
-                            ),
-                          ),
-                      cupertino: (context, platform) =>
-                          CupertinoElevatedButtonData(
-                            color: AppColors.theme,
-                            borderRadius: BorderRadius.zero,
-                            padding: EdgeInsets.zero,
-                            minimumSize: const Size.fromHeight(40),
-                          ),
                       child: Text(
                         '同意并继续',
                         style: TextStyle(
@@ -249,7 +212,7 @@ class _StartPageState extends State<StartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
+    return MDAdaptiveScaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [

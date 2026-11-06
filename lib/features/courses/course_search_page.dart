@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:zslx_flutter/widgets/refresh_list_view.dart';
 
 import '../../router/app_router.dart';
@@ -58,7 +59,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
+    return MDAdaptiveScaffold(
       body: DefaultTextStyle(
         style: const TextStyle(decoration: TextDecoration.none),
         child: Column(
@@ -137,10 +138,8 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
         }
         return RefreshResult.failed(result.msg ?? '搜索失败');
       },
-      itemBuilder: (context, item, index) => CourseCard(
-        course: item,
-        onTap: () => _openCourse(item),
-      ),
+      itemBuilder: (context, item, index) =>
+          CourseCard(course: item, onTap: () => _openCourse(item)),
       emptyText: '未搜索到相关课程',
     );
   }

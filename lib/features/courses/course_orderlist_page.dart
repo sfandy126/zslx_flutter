@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -142,7 +143,7 @@ class _CourseOrderListPageState extends State<CourseOrderListPage> {
         if (didPop) return;
         _back();
       },
-      child: PlatformScaffold(
+      child: MDAdaptiveScaffold(
         body: DefaultTextStyle(
           style: _plainTextStyle,
           child: Column(
@@ -283,17 +284,17 @@ class _OrderCard extends StatelessWidget {
           Container(height: 0.5, color: AppColors.line),
           const SizedBox(height: 12),
           if (_paid) ...[
-              _InfoRow(
-                name: '实际付款',
-                value: order.realMoney,
-                valueColor: AppColors.red,
-                valueBold: true,
-              ),
-              const SizedBox(height: 12),
-              _InfoRow(name: '订单编号', value: order.tradeNo),
-              const SizedBox(height: 12),
-               _InfoRow(name: '支付方式', value: order.payType),
-              const SizedBox(height: 12),
+            _InfoRow(
+              name: '实际付款',
+              value: order.realMoney,
+              valueColor: AppColors.red,
+              valueBold: true,
+            ),
+            const SizedBox(height: 12),
+            _InfoRow(name: '订单编号', value: order.tradeNo),
+            const SizedBox(height: 12),
+            _InfoRow(name: '支付方式', value: order.payType),
+            const SizedBox(height: 12),
           ],
           _InfoRow(
             name: _paid ? '支付时间' : '下单时间',
@@ -367,10 +368,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          name,
-          style: TextStyle(color: AppColors.content, fontSize: 12),
-        ),
+        Text(name, style: TextStyle(color: AppColors.content, fontSize: 12)),
         const SizedBox(width: 12),
         Expanded(
           child: Text(

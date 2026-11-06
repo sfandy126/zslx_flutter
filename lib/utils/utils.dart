@@ -17,8 +17,6 @@ export 'package:zslx_flutter/config/app_config.dart';
 export 'package:zslx_flutter/utils/totast.dart';
 export 'package:zslx_flutter/widgets/custom_appbar.dart';
 export 'package:zslx_flutter/widgets/network_image.dart';
-export 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-
 
 class Utils {
   static void log(String message) {

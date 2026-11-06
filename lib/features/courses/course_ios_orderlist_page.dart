@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -56,7 +57,7 @@ class _CourseIosOrderListPageState extends State<CourseIosOrderListPage> {
         if (didPop) return;
         _back();
       },
-      child: PlatformScaffold(
+      child: MDAdaptiveScaffold(
         body: DefaultTextStyle(
           style: _plainTextStyle,
           child: Column(
@@ -218,10 +219,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          name,
-          style: TextStyle(color: AppColors.content, fontSize: 12),
-        ),
+        Text(name, style: TextStyle(color: AppColors.content, fontSize: 12)),
         const SizedBox(width: 12),
         Expanded(
           child: Text(

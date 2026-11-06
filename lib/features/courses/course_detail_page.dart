@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../router/app_router.dart';
@@ -556,7 +557,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
   @override
   Widget build(BuildContext context) {
     final detail = _detail;
-    return PlatformScaffold(
+    return MDAdaptiveScaffold(
       body: DefaultTextStyle(
         style: _plainTextStyle,
         child: Column(

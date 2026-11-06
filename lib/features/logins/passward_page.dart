@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../extensions/string_rsa.dart';
 import '../../router/app_router.dart';
@@ -37,7 +37,7 @@ class _PasswardPageState extends State<PasswardPage> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _viewModel,
-      builder: (context, child) => PlatformScaffold(
+      builder: (context, child) => MDAdaptiveScaffold(
         body: Column(
           children: [
             ColoredBox(
@@ -73,26 +73,11 @@ class _PasswardPageState extends State<PasswardPage> {
                       SizedBox(
                         width: double.infinity,
                         height: 48,
-                        child: PlatformElevatedButton(
+                        child: MDAdaptiveElevatedButton(
+                          borderRadius: BorderRadius.circular(24),
+                          size: MDAdaptiveButtonSize.small,
                           onPressed: _viewModel.isLoading ? null : _submit,
                           color: AppColors.theme,
-                          material: (_, _) => MaterialElevatedButtonData(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.theme,
-                              foregroundColor: AppColors.white,
-                              disabledBackgroundColor: AppColors.theme
-                                  .withValues(alpha: 0.5),
-                              disabledForegroundColor: AppColors.white,
-                              shape: const StadiumBorder(),
-                              elevation: 0,
-                              shadowColor: AppColors.transparent,
-                            ),
-                          ),
-                          cupertino: (_, _) => CupertinoElevatedButtonData(
-                            borderRadius: BorderRadius.circular(24),
-                            minimumSize: const Size(double.infinity, 48),
-                            sizeStyle: CupertinoButtonSize.small,
-                          ),
                           child: Text(
                             _viewModel.isLoading ? '提交中...' : '确定',
                             style: TextStyle(

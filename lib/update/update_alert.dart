@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart' show CupertinoButtonSize;
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 
 import '../router/app_router.dart';
@@ -15,13 +15,11 @@ class UpdateAlert {
     BuildContext context, {
     required AppUpdateInfo update,
   }) {
-    return showPlatformDialog<void>(
+    return showMDAdaptiveDialog<void>(
       context: context,
       barrierDismissible: !update.isCoerce,
       barrierLabel: '应用更新',
-      material: MaterialDialogData(
-        barrierColor: AppColors.black.withValues(alpha: 0.55),
-      ),
+      barrierColor: AppColors.black.withValues(alpha: 0.55),
       builder: (context) => _UpdateDialog(update: update),
     );
   }
@@ -110,19 +108,17 @@ class _UpdateDialogState extends State<_UpdateDialog> {
           minHeight: 140,
           maxHeight: 320,
         ),
-        child: PlatformAlertDialog(
-          material: (context, platform) => MaterialAlertDialogData(
-            backgroundColor: AppColors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            titlePadding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-            contentPadding: EdgeInsets.zero,
-            buttonPadding: EdgeInsets.zero,
-            actionsAlignment: MainAxisAlignment.center,
-            constraints: const BoxConstraints(minWidth: 290, maxWidth: 290),
-            clipBehavior: Clip.antiAlias,
+        child: MDAdaptiveAlertDialog(
+          backgroundColor: AppColors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
+          titlePadding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+          contentPadding: EdgeInsets.zero,
+          buttonPadding: EdgeInsets.zero,
+          actionsAlignment: MainAxisAlignment.center,
+          constraints: const BoxConstraints(minWidth: 290, maxWidth: 290),
+          clipBehavior: Clip.antiAlias,
           title: Text(
             update.title,
             textAlign: TextAlign.center,
@@ -157,40 +153,12 @@ class _UpdateDialogState extends State<_UpdateDialog> {
                             ),
                           if (_phase == _UpdatePhase.downloading) ...[
                             const SizedBox(height: 22),
-                            PlatformWidget(
-                              material: (context, platform) =>
-                                  LinearProgressIndicator(
-                                    value: _progress == 0 ? null : _progress,
-                                    color: AppColors.theme,
-                                    backgroundColor: AppColors.theme.withValues(
-                                      alpha: 0.15,
-                                    ),
-                                  ),
-                              cupertino: (context, platform) => _progress == 0
-                                  ? const PlatformCircularProgressIndicator()
-                                  : ClipRRect(
-                                      borderRadius: BorderRadius.circular(2),
-                                      child: SizedBox(
-                                        height: 4,
-                                        child: ColoredBox(
-                                          color: AppColors.theme.withValues(
-                                            alpha: 0.15,
-                                          ),
-                                          child: Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: FractionallySizedBox(
-                                              widthFactor: _progress.clamp(
-                                                0.0,
-                                                1.0,
-                                              ),
-                                              child: ColoredBox(
-                                                color: AppColors.theme,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                            LinearProgressIndicator(
+                              value: _progress == 0 ? null : _progress,
+                              color: AppColors.theme,
+                              backgroundColor: AppColors.theme.withValues(
+                                alpha: 0.15,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             Text(
@@ -205,15 +173,10 @@ class _UpdateDialogState extends State<_UpdateDialog> {
                           ],
                           if (_phase == _UpdatePhase.installing) ...[
                             const SizedBox(height: 22),
-                            PlatformCircularProgressIndicator(
-                              material: (context, platform) =>
-                                  MaterialProgressIndicatorData(
-                                    color: AppColors.theme,
-                                  ),
-                              cupertino: (context, platform) =>
-                                  CupertinoProgressIndicatorData(
-                                    color: AppColors.theme,
-                                  ),
+                            CircularProgressIndicator.adaptive(
+                              valueColor: AlwaysStoppedAnimation(
+                                AppColors.theme,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             Text(
@@ -240,15 +203,9 @@ class _UpdateDialogState extends State<_UpdateDialog> {
                       ),
                     ),
                   ),
-                  PlatformWidget(
-                    material: (context, platform) => Padding(
-                      padding: const EdgeInsets.only(top: 12, bottom: 10),
-                      child: _buildActionsRow(update, updateButton, context),
-                    ),
-                    cupertino: (context, platform) => Padding(
-                      padding: const EdgeInsets.only(top: 12, bottom: 10),
-                      child: _buildActionsRow(update, updateButton, context),
-                    ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 10),
+                    child: _buildActionsRow(update, updateButton, context),
                   ),
                 ],
               ),
@@ -294,27 +251,11 @@ class _UpdateDialogState extends State<_UpdateDialog> {
     final background = primary ? AppColors.theme : AppColors.background;
     return SizedBox(
       height: 36,
-      child: PlatformElevatedButton(
+      child: MDAdaptiveElevatedButton(
+        borderRadius: BorderRadius.circular(24),
+        size: MDAdaptiveButtonSize.small,
         onPressed: onPressed,
         color: background,
-        material: (context, platform) => MaterialElevatedButtonData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: background,
-            foregroundColor: primary ? AppColors.white : AppColors.black,
-            disabledBackgroundColor: background.withValues(alpha: 0.65),
-            disabledForegroundColor: primary
-                ? AppColors.white
-                : AppColors.black,
-            elevation: 0,
-            shape: const StadiumBorder(),
-          ),
-        ),
-        cupertino: (context, platform) => CupertinoElevatedButtonData(
-          color: background,
-          borderRadius: BorderRadius.circular(20),
-          minimumSize: const Size(double.infinity, 40),
-          sizeStyle: CupertinoButtonSize.small,
-        ),
         child: Text(
           label,
           style: TextStyle(

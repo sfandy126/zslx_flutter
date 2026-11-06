@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../adaptive/md_adaptive.dart';
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 import '../../widgets/agreement.dart';
@@ -47,11 +48,8 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _viewModel,
-      builder: (context, child) => PlatformScaffold(
-        material: (_, _) =>
-            MaterialScaffoldData(resizeToAvoidBottomInset: false),
-        cupertino: (_, _) =>
-            CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
+      builder: (context, child) => MDAdaptiveScaffold(
+        resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Stack(
             children: [
@@ -62,26 +60,15 @@ class _LoginPageState extends State<LoginPage> {
                     dimension: 40,
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: PlatformIconButton(
+                      child: MDAdaptiveIconButton(
                         onPressed: () => AppRouter.pop(context),
                         icon: Assets.images.public.back.svg(
                           width: 24,
                           height: 24,
                         ),
                         padding: EdgeInsets.zero,
-                        material: (_, _) => MaterialIconButtonData(
-                          constraints: const BoxConstraints.tightFor(
-                            width: 40,
-                            height: 40,
-                          ),
-                          padding: EdgeInsets.zero,
-                          iconSize: 24,
-                        ),
-                        cupertino: (_, _) => CupertinoIconButtonData(
-                          sizeStyle: CupertinoButtonSize.small,
-                          minimumSize: const Size(40, 40),
-                          padding: EdgeInsets.zero,
-                        ),
+                        size: MDAdaptiveButtonSize.small,
+                        minSize: const Size(40, 40),
                       ),
                     ),
                   ),
@@ -132,7 +119,9 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           width: double.infinity,
                           height: 48,
-                          child: PlatformElevatedButton(
+                          child: MDAdaptiveElevatedButton(
+                            borderRadius: BorderRadius.circular(24),
+                            size: MDAdaptiveButtonSize.small,
                             onPressed: _viewModel.isLoading ? null : _login,
                             color: AppColors.theme,
                             child: Text(
@@ -141,26 +130,6 @@ class _LoginPageState extends State<LoginPage> {
                                 fontSize: 16,
                                 fontWeight: .w500,
                               ),
-                            ),
-                            material: (_, _) => MaterialElevatedButtonData(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.theme,
-                                foregroundColor: AppColors.white,
-                                disabledBackgroundColor: AppColors.theme
-                                    .withValues(alpha: 0.5),
-                                disabledForegroundColor: AppColors.white,
-                                minimumSize: const Size.fromHeight(48),
-                                elevation: 0,
-                                shadowColor: AppColors.transparent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                              ),
-                            ),
-                            cupertino: (_, _) => CupertinoElevatedButtonData(
-                              borderRadius: BorderRadius.circular(24),
-                              sizeStyle: CupertinoButtonSize.small,
-                              minimumSize: const Size(double.infinity, 48),
                             ),
                           ),
                         ),
@@ -204,7 +173,8 @@ class _LoginPageState extends State<LoginPage> {
 
   /// 去掉按钮默认内边距，让按钮间距由外部 SizedBox 精确控制
   Widget _textButton(String text, VoidCallback onPressed) {
-    return PlatformTextButton(
+    return MDAdaptiveTextButton(
+      minSize: const Size(0, 40),
       onPressed: onPressed,
       padding: EdgeInsets.zero,
       child: Text(
@@ -214,17 +184,6 @@ class _LoginPageState extends State<LoginPage> {
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
-      ),
-      material: (_, _) => MaterialTextButtonData(
-        style: TextButton.styleFrom(
-          padding: EdgeInsets.zero,
-          minimumSize: const Size(0, 40),
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        ),
-      ),
-      cupertino: (_, _) => CupertinoTextButtonData(
-        padding: EdgeInsets.zero,
-        minimumSize: const Size(0, 40),
       ),
     );
   }

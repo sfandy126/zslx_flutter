@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 import 'package:zslx_flutter/features/courses/course_learn_page.dart';
 import 'package:zslx_flutter/features/home/home_page.dart';
@@ -15,7 +16,7 @@ class TabbarPage extends StatefulWidget {
 }
 
 class _TabbarPageState extends State<TabbarPage> {
-  late final PlatformTabController _tabController;
+  int _selectedIndex = 0;
 
   final List<Widget> _pages = [
     const HomePage(),
@@ -44,7 +45,6 @@ class _TabbarPageState extends State<TabbarPage> {
   @override
   void initState() {
     super.initState();
-    _tabController = PlatformTabController(initialIndex: 0);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       unawaited(UpdateServer.checkAndShow(context));
@@ -52,70 +52,31 @@ class _TabbarPageState extends State<TabbarPage> {
   }
 
   @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final selectedColor = AppColors.theme;
-    final unselectedColor = AppColors.title;
-    final iconSize = 24.0;
-
-    return PlatformTabScaffold(
-      tabController: _tabController,
-      pageBackgroundColor: AppColors.white,
-      tabsBackgroundColor: AppColors.white,
-      itemChanged: (index) {},
-      bodyBuilder: (context, index) => _pages[index],
-      material: (context, platform) => MaterialTabScaffoldData(),
-      materialTabs: (context, platform) => MaterialNavBarData(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        type: BottomNavigationBarType.fixed,
-        fixedColor: selectedColor,
-        selectedItemColor: selectedColor,
-        unselectedItemColor: unselectedColor,
-        showUnselectedLabels: true,
-        selectedLabelStyle: TextStyle(color: selectedColor, fontSize: 12),
-        unselectedLabelStyle: TextStyle(color: unselectedColor, fontSize: 12),
+    return MDAdaptiveScaffold(
+      backgroundColor: AppColors.white,
+      body: IndexedStack(index: _selectedIndex, children: _pages),
+      bottomNavigationBar: MDAdaptiveBottomNavigationBar(
+        // 当前标签图标为 SVG Widget，使用 Flutter 绘制的底部栏。
+        useNativeBottomBar: false,
+        selectedIndex: _selectedIndex,
+        onTap: (index) => setState(() => _selectedIndex = index),
+        selectedItemColor: AppColors.theme,
+        unselectedItemColor: AppColors.title,
+        items: _tabItems
+            .map(
+              (item) => MDAdaptiveNavigationDestination(
+                icon: SvgPicture.asset(item.normalIcon, width: 24, height: 24),
+                selectedIcon: SvgPicture.asset(
+                  item.selectedIcon,
+                  width: 24,
+                  height: 24,
+                ),
+                label: item.label,
+              ),
+            )
+            .toList(),
       ),
-      material3Tabs: (context, platform) => MaterialNavigationBarData(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          final selected = states.contains(WidgetState.selected);
-          return TextStyle(
-            color: selected ? selectedColor : unselectedColor,
-            fontSize: 12,
-          );
-        }),
-      ),
-      cupertino: (context, platform) => CupertinoTabScaffoldData(),
-      cupertinoTabs: (context, platform) => CupertinoTabBarData(
-        backgroundColor: AppColors.white,
-        activeColor: selectedColor,
-        inactiveColor: unselectedColor,
-        border: const Border(top: BorderSide.none),
-      ),
-      items: _tabItems.map((item) {
-        return BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            item.normalIcon,
-            width: iconSize,
-            height: iconSize,
-          ),
-          activeIcon: SvgPicture.asset(
-            item.selectedIcon,
-            width: iconSize,
-            height: iconSize,
-          ),
-          label: item.label,
-        );
-      }).toList(),
     );
   }
 }

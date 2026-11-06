@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../../router/app_router.dart';
@@ -54,9 +55,7 @@ class _CourseHistoryPageState extends State<CourseHistoryPage> {
       MDTotast.error('删除失败，请重试');
       return;
     }
-    _listKey.currentState?.removeWhere(
-      (item) => item.isSameRecord(history),
-    );
+    _listKey.currentState?.removeWhere((item) => item.isSameRecord(history));
   }
 
   Future<void> _open(PlayHistory history) async {
@@ -141,7 +140,7 @@ class _CourseHistoryPageState extends State<CourseHistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
+    return MDAdaptiveScaffold(
       body: DefaultTextStyle(
         style: _plainTextStyle,
         child: Column(
@@ -209,7 +208,9 @@ class _HistoryTile extends StatelessWidget {
   static String _progressText(PlayHistory history) {
     if (history.source == PlayHistorySource.playback) return '直播回放';
     if (history.total <= 0) return '播放进度：0%';
-    final percent = (history.time / history.total * 100).clamp(0, 100).toDouble();
+    final percent = (history.time / history.total * 100)
+        .clamp(0, 100)
+        .toDouble();
     if (percent >= 100) return '已看完';
     // 整数百分比不显示小数位，否则保留 1 位小数
     final text = percent == percent.truncateToDouble()

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -39,7 +40,7 @@ class _CoursePrebookPageState extends State<CoursePrebookPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
+    return MDAdaptiveScaffold(
       body: Column(
         children: [
           ColoredBox(
@@ -95,26 +96,11 @@ class _CoursePrebookPageState extends State<CoursePrebookPage> {
                       padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
                       child: SizedBox(
                         height: 48,
-                        child: PlatformElevatedButton(
+                        child: MDAdaptiveElevatedButton(
+                          borderRadius: BorderRadius.circular(24),
+                          size: MDAdaptiveButtonSize.small,
                           onPressed: _submitting ? null : _check,
                           color: AppColors.theme,
-                          material: (_, _) => MaterialElevatedButtonData(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.theme,
-                              foregroundColor: AppColors.white,
-                              disabledBackgroundColor: AppColors.theme
-                                  .withValues(alpha: 0.5),
-                              disabledForegroundColor: AppColors.white,
-                              shape: const StadiumBorder(),
-                              elevation: 0,
-                              shadowColor: AppColors.transparent,
-                            ),
-                          ),
-                          cupertino: (_, _) => CupertinoElevatedButtonData(
-                            borderRadius: BorderRadius.circular(24),
-                            minimumSize: const Size(double.infinity, 48),
-                            sizeStyle: CupertinoButtonSize.small,
-                          ),
                           child: Text(
                             _submitting ? '预约中...' : '立即预约',
                             style: TextStyle(

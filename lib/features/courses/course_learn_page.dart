@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:zslx_flutter/services/bjy_server.dart';
 
@@ -106,9 +107,9 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
         },
       );
       if (result.isSuccess) {
-        final courses = _listFrom(
-          result.data?['data'],
-        ).map(_LearnCourse.fromJson).toList();
+        final courses = _listFrom(result.data?['data'])
+            .map(_LearnCourse.fromJson)
+            .toList();
         return RefreshResult.success(
           courses,
           noMore: page > 1 && courses.isEmpty,
@@ -261,7 +262,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
       screen.height,
     );
 
-    return PlatformScaffold(
+    return MDAdaptiveScaffold(
       body: DefaultTextStyle(
         style: _plainTextStyle,
         child: SafeArea(

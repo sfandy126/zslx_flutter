@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zslx_flutter/router/app_router.dart';
 
@@ -49,7 +50,7 @@ class _MinePageState extends State<MinePage> {
     return AnimatedBuilder(
       animation: _viewModel,
       builder: (context, child) {
-        return PlatformScaffold(
+        return MDAdaptiveScaffold(
           body: Stack(
             children: [
               Positioned.fill(
@@ -244,27 +245,10 @@ class _HeaderButton extends StatelessWidget {
         color: AppColors.white,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: PlatformTextButton(
+        child: MDAdaptiveTextButton(
+          borderRadius: BorderRadius.circular(20),
           onPressed: onTap,
           color: AppColors.title,
-          material: (context, platform) => MaterialTextButtonData(
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.title,
-              backgroundColor: AppColors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              minimumSize: const Size(100, 0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-          ),
-          cupertino: (context, platform) => CupertinoTextButtonData(
-            color: AppColors.white,
-            foregroundColor: AppColors.title,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            borderRadius: BorderRadius.circular(20),
-            minimumSize: const Size(100, 0),
-          ),
           child: Text(
             label,
             style: TextStyle(

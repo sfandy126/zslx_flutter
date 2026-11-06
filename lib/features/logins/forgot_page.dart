@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../adaptive/md_adaptive.dart';
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 import '../../widgets/code_field.dart';
@@ -44,7 +45,7 @@ class _ForgotPageState extends State<ForgotPage> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _viewModel,
-      builder: (context, child) => PlatformScaffold(
+      builder: (context, child) => MDAdaptiveScaffold(
         body: SafeArea(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 32, 16, 24),
@@ -53,23 +54,12 @@ class _ForgotPageState extends State<ForgotPage> {
                 dimension: 40,
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: PlatformIconButton(
+                  child: MDAdaptiveIconButton(
                     onPressed: () => AppRouter.pop(context),
                     icon: Assets.images.public.back.svg(width: 24, height: 24),
                     padding: EdgeInsets.zero,
-                    material: (_, _) => MaterialIconButtonData(
-                      constraints: const BoxConstraints.tightFor(
-                        width: 40,
-                        height: 40,
-                      ),
-                      padding: EdgeInsets.zero,
-                      iconSize: 24,
-                    ),
-                    cupertino: (_, _) => CupertinoIconButtonData(
-                      sizeStyle: CupertinoButtonSize.small,
-                      minimumSize: const Size(40, 40),
-                      padding: EdgeInsets.zero,
-                    ),
+                    size: MDAdaptiveButtonSize.small,
+                    minSize: const Size(40, 40),
                   ),
                 ),
               ),
@@ -113,7 +103,9 @@ class _ForgotPageState extends State<ForgotPage> {
                     SizedBox(
                       width: double.infinity,
                       height: 48,
-                      child: PlatformElevatedButton(
+                      child: MDAdaptiveElevatedButton(
+                        borderRadius: BorderRadius.circular(24),
+                        size: MDAdaptiveButtonSize.small,
                         onPressed: _viewModel.isLoading ? null : _submit,
                         color: AppColors.theme,
                         child: Text(
@@ -122,27 +114,6 @@ class _ForgotPageState extends State<ForgotPage> {
                             fontSize: 16,
                             fontWeight: .w500,
                           ),
-                        ),
-                        material: (_, _) => MaterialElevatedButtonData(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.theme,
-                            foregroundColor: AppColors.white,
-                            disabledBackgroundColor: AppColors.theme.withValues(
-                              alpha: 0.5,
-                            ),
-                            disabledForegroundColor: AppColors.white,
-                            minimumSize: const Size.fromHeight(48),
-                            elevation: 0,
-                            shadowColor: AppColors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                          ),
-                        ),
-                        cupertino: (_, _) => CupertinoElevatedButtonData(
-                          borderRadius: BorderRadius.circular(24),
-                          sizeStyle: CupertinoButtonSize.small,
-                          minimumSize: const Size(double.infinity, 48),
                         ),
                       ),
                     ),

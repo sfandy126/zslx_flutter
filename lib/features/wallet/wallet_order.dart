@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -47,7 +48,7 @@ class _WalletOrderPageState extends State<WalletOrderPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
+    return MDAdaptiveScaffold(
       body: DefaultTextStyle(
         style: _plainTextStyle,
         child: Column(
@@ -132,7 +133,9 @@ class _OrderTile extends StatelessWidget {
                     order.money,
                     style: TextStyle(
                       // type == 1 为收入（充值），其余为消费
-                      color: order.type == 1 ? AppColors.green : AppColors.price,
+                      color: order.type == 1
+                          ? AppColors.green
+                          : AppColors.price,
                       fontSize: 15,
                       fontWeight: .w600,
                     ),

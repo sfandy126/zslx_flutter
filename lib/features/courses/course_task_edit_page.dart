@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../network/oss.dart';
 import '../../router/app_router.dart';
@@ -225,11 +226,8 @@ class _CourseTaskEditPageState extends State<CourseTaskEditPage> {
     final keyboard = MediaQuery.viewInsetsOf(context).bottom;
     return PopScope(
       canPop: !_submitting,
-      child: PlatformScaffold(
-        material: (_, _) =>
-            MaterialScaffoldData(resizeToAvoidBottomInset: false),
-        cupertino: (_, _) =>
-            CupertinoPageScaffoldData(resizeToAvoidBottomInset: false),
+      child: MDAdaptiveScaffold(
+        resizeToAvoidBottomInset: false,
         body: ColoredBox(
           color: AppColors.white,
           child: DefaultTextStyle(
@@ -578,12 +576,8 @@ class CourseTaskFileView extends StatelessWidget {
         queryParameters: {'url': url, 'title': name},
       );
       return;
-    }else {
-      FilePreview.previewOnline(
-        context: context,
-        url: url,
-        fileName: name,
-      );
+    } else {
+      FilePreview.previewOnline(context: context, url: url, fileName: name);
     }
   }
 

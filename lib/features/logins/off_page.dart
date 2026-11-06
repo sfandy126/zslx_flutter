@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:zslx_flutter/adaptive/md_adaptive.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
@@ -18,7 +18,7 @@ class _OffPageState extends State<OffPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PlatformScaffold(
+    return MDAdaptiveScaffold(
       body: Column(
         children: [
           ColoredBox(
@@ -47,35 +47,13 @@ class _OffPageState extends State<OffPage> {
                       SizedBox(
                         width: double.infinity,
                         height: 48,
-                        child: PlatformElevatedButton(
+                        child: MDAdaptiveElevatedButton(
+                          borderRadius: BorderRadius.circular(24),
+                          size: MDAdaptiveButtonSize.small,
                           onPressed: _isAgreed && !_isLoading ? _commit : null,
                           color: _isAgreed
                               ? AppColors.theme
                               : HexColor.fromHex('#E8E8E8'),
-                          material: (_, _) => MaterialElevatedButtonData(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: _isAgreed
-                                  ? AppColors.theme
-                                  : HexColor.fromHex('#E8E8E8'),
-                              disabledBackgroundColor: HexColor.fromHex(
-                                '#E8E8E8',
-                              ),
-                              foregroundColor: _isAgreed
-                                  ? AppColors.white
-                                  : HexColor.fromHex('#666666'),
-                              disabledForegroundColor: HexColor.fromHex(
-                                '#666666',
-                              ),
-                              shape: const StadiumBorder(),
-                              elevation: 0,
-                              shadowColor: AppColors.transparent,
-                            ),
-                          ),
-                          cupertino: (_, _) => CupertinoElevatedButtonData(
-                            borderRadius: BorderRadius.circular(24),
-                            minimumSize: const Size(double.infinity, 48),
-                            sizeStyle: CupertinoButtonSize.small,
-                          ),
                           child: Text(
                             _isLoading ? '提交中...' : '申请注销',
                             style: TextStyle(
