@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 import '../utils/app_colors.dart';
 import '../network/md_post.dart';
@@ -52,7 +51,7 @@ class _MDCodeFieldState extends State<MDCodeField> {
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
         hintText: '请输入验证码',
-        suffixIcon: PlatformTextButton(
+        suffixIcon: TextButton(
           onPressed: _canSendCode ? _sendCode : null,
           child: Text(
             buttonText,
