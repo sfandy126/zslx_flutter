@@ -110,7 +110,8 @@ class _ForgotPageState extends State<ForgotPage> {
                         color: AppColors.theme,
                         child: Text(
                           _viewModel.isLoading ? '提交中...' : '确定',
-                          style: const TextStyle(
+                          style: TextStyle(
+                            color: AppColors.white,
                             fontSize: 16,
                             fontWeight: .w500,
                           ),

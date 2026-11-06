@@ -86,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                               color: AppColors.title,
                               fontSize: 28,
                               fontWeight: FontWeight.w500,
-                              decoration: .none,
+                              decoration: TextDecoration.none,
                               decorationColor: AppColors.transparent,
                             ),
                           ),
@@ -126,9 +126,10 @@ class _LoginPageState extends State<LoginPage> {
                             color: AppColors.theme,
                             child: Text(
                               _viewModel.isLoading ? '登录中...' : '登录',
-                              style: const TextStyle(
+                              style: TextStyle(
+                                color: AppColors.white,
                                 fontSize: 16,
-                                fontWeight: .w500,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
