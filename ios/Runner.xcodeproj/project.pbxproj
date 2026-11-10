@@ -211,6 +211,7 @@
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				89DD306C7855E2CBB85088AA /* [CP] Embed Pods Frameworks */,
 				B3F15C48BEFEF8A75D43AADE /* [CP] Copy Pods Resources */,
+				FAAD69B130A37F0700FB7E81 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -335,7 +336,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
 		};
 		98F7ECA3ED0F50C8B1053061 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -397,6 +398,23 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		FAAD69B130A37F0700FB7E81 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nset -e\n\nFRAMEWORK=\"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/WechatOpenSDK.framework\"\n\nif [ -d \"$FRAMEWORK\" ]; then\n  /usr/libexec/PlistBuddy \\\n    -c \"Set :MinimumOSVersion 15.0\" \\\n    \"$FRAMEWORK/Info.plist\"\n\n  if [ \"${CODE_SIGNING_ALLOWED:-NO}\" = \"YES\" ] && \\\n     [ -n \"${EXPANDED_CODE_SIGN_IDENTITY:-}\" ]; then\n    /usr/bin/codesign --force \\\n      --sign \"$EXPANDED_CODE_SIGN_IDENTITY\" \\\n      --preserve-metadata=identifier,entitlements \\\n      \"$FRAMEWORK\"\n  fi\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
