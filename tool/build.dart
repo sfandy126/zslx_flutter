@@ -12,7 +12,7 @@
 //   dart run tool/build.dart all                      Android 全渠道 + iOS
 //   Android 打包默认只生成 release APK，build.gradle.kts 已开启 R8代码混淆，脚本中--obfuscate混淆 Dart 代码；
 //          --split-debug-info=build/symbols 将对应的符号信息保存到指定目录，以便日后用 flutter symbolize 还原崩溃堆栈。
-// 
+//
 //
 // 调试：
 // 版本号全部取自 flavorizr.yaml：渠道配置了 version 就用它，否则 Android 取 common.androidVersion、
@@ -129,7 +129,7 @@ Future<void> main(List<String> args) async {
         channel.name,
         ...versionArgs,
         ...obfuscationArgs,
-        ...flutterArgs,
+        ..._androidBuildArgs(channel.name, flutterArgs),
       ]);
     }
   }
@@ -152,6 +152,22 @@ Future<void> main(List<String> args) async {
   if (built.any(config.isIos)) {
     stdout.writeln('iOS：build/ios/ipa');
   }
+}
+
+/// 魅族仅打包 ARM 64 位，并覆盖透传的目标架构参数。
+List<String> _androidBuildArgs(String channel, List<String> flutterArgs) {
+  if (channel != 'meizu') return flutterArgs;
+
+  final args = <String>[];
+  for (var i = 0; i < flutterArgs.length; i++) {
+    final arg = flutterArgs[i];
+    if (arg == '--target-platform') {
+      i++;
+    } else if (!arg.startsWith('--target-platform=')) {
+      args.add(arg);
+    }
+  }
+  return [...args, '--target-platform=android-arm64'];
 }
 
 /// 本地调试构建：flutter run 不支持 --build-name，所以把该渠道的版本号写进 pubspec 再启动
