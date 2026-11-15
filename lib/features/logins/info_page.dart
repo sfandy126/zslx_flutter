@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 import '../../widgets/image_picker.dart';
+import '../../widgets/image_camera.dart';
 import 'wx_login.dart';
 
 class InfoPage extends StatefulWidget {
@@ -93,7 +94,52 @@ class _InfoPageState extends State<InfoPage> {
     if (!await _ensureLogin() || !mounted || _viewModel.isUploadingAvatar) {
       return;
     }
-    final path = await MDImagePicker.pickImage(context);
+    final source = await showModalBottomSheet<_AvatarSource>(
+      context: context,
+      backgroundColor: AppColors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final source in _AvatarSource.values)
+              TextButton(
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 56),
+                  foregroundColor: AppColors.title,
+                  splashFactory: NoSplash.splashFactory,
+                  overlayColor: AppColors.transparent,
+                ),
+                onPressed: () => AppRouter.pop(sheetContext, source),
+                child: Text(source == _AvatarSource.camera ? '拍照' : '相册'),
+              ),
+            TextButton(
+              style: TextButton.styleFrom(
+                minimumSize: const Size(double.infinity, 56),
+                foregroundColor: AppColors.content,
+                splashFactory: NoSplash.splashFactory,
+                overlayColor: AppColors.transparent,
+              ),
+              onPressed: () => AppRouter.pop(sheetContext),
+              child: const Text('取消'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || source == null) return;
+    String? path;
+    try {
+      path = source == _AvatarSource.camera
+          ? await MDImageCamera.takePhoto(context)
+          : await MDImagePicker.pickImage(context);
+    } catch (_) {
+      if (mounted) MDTotast.error('获取图片失败，请检查相关权限后重试');
+      return;
+    }
     if (!mounted || path == null) return;
 
     final error = await _viewModel.uploadAvatar(path);
@@ -130,6 +176,8 @@ class _InfoPageState extends State<InfoPage> {
     }
   }
 }
+
+enum _AvatarSource { camera, album }
 
 enum InfoDataType {
   nick('昵称'),
