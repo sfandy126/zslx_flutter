@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
 # 版本号统一在 flavorizr.yaml 配置（common.version + common.buildNumber），此行由 tool/build.dart 同步，勿手改
-version: 1.1.1+9
+version: 1.1.1+10
 
 environment:
   sdk: ^3.13.0
@@ -101,7 +101,6 @@ dependencies:
   fluwx: ^6.0.6
   alipay_kit_new: ^6.0.3  # 支付宝支付
   alipay_kit_android_new: ^6.0.1  # 支付宝支付(Android实现)
-  gal: ^2.3.3
 
   flutter_oss_aliyun: ^6.4.2
 
