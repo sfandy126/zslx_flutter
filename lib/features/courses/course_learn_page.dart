@@ -137,6 +137,10 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
   }
 
   Future<void> _openCalendar() async {
+    if (!MDUser.defualt.islogined) {
+      await _openLogin();
+      return;
+    }
     final selected = await showModalBottomSheet<DateTime>(
       context: context,
       useRootNavigator: true,
