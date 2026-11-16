@@ -302,6 +302,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
                       child: RefreshListView<_LearnCourse>(
                         key: _courseListKey,
                         onData: _loadCoursePage,
+                        onRefresh: _loadDateCourses,
                         itemBuilder: (context, course, index) =>
                             _LearnCourseTile(
                               course: course,

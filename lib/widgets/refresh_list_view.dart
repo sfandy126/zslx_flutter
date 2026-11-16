@@ -73,6 +73,7 @@ class RefreshListView<T> extends StatefulWidget {
   const RefreshListView({
     required this.onData,
     required this.itemBuilder,
+    this.onRefresh,
     this.onRetry,
     this.onLogin,
     this.loginText = '去登录',
@@ -94,6 +95,9 @@ class RefreshListView<T> extends StatefulWidget {
   /// - 刷新时 page 从 1 开始
   /// - 加载更多时 page 自动递增
   final Future<RefreshResult<T>> Function(int page) onData;
+
+  /// 用户手动下拉刷新时，与第一页数据请求并行执行的附加刷新回调。
+  final Future<void> Function()? onRefresh;
 
   /// 列表项构建器
   final Widget Function(BuildContext context, T item, int index) itemBuilder;
@@ -209,8 +213,11 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
     return _loadFirstPage(showLoading: true, finishRefresh: false);
   }
 
-  Future<void> _onRefresh() {
-    return _loadFirstPage(showLoading: false, finishRefresh: true);
+  Future<void> _onRefresh() async {
+    await Future.wait<void>([
+      _loadFirstPage(showLoading: false, finishRefresh: true),
+      if (widget.onRefresh != null) widget.onRefresh!(),
+    ]);
   }
 
   Future<void> _loadFirstPage({
