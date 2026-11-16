@@ -36,18 +36,8 @@
 }
 # 不整体保留 log4j：其桌面 UI/JMS/邮件模块依赖 Android 不提供的 Java API。
 
-# Retrofit 反射读取接口注解及 Observable<T> 泛型；R8 full mode 下同时保留端点类型。
--keepattributes Signature,InnerClasses,EnclosingMethod
--keepattributes RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault
--keep interface * {
-    @retrofit2.http.* <methods>;
-}
--keep class rx.Observable { *; }
--keep class io.reactivex.Observable { *; }
--keep class io.reactivex.Flowable { *; }
--keep class io.reactivex.Single { *; }
--keep class io.reactivex.Maybe { *; }
--keep class io.reactivex.Completable { *; }
+# Retrofit 2.11.0 / Gson 2.11.0 的通用规则由依赖 JAR 的
+# META-INF/proguard 自动合入，不在宿主重复维护。
 
 # 友盟 APM 通过反射调用的采集及上传组件。
 -keep class com.umeng.** { *; }

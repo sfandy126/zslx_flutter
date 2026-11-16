@@ -32,6 +32,10 @@ class MainActivity : FlutterActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 百家云 LPJsonUtils 捕获 TypeToken<T> 的类型变量。
+        // Gson 2.11 默认拒绝该旧用法；按官方兼容开关恢复旧行为，保留内置 consumer rules。
+        // 后续百家云修复 LPJsonUtils 后可移除此兼容设置。
+        System.setProperty("gson.allowCapturingTypeVariables", "true")
         super.onCreate(savedInstanceState)
     }
 
