@@ -1,7 +1,6 @@
 import 'package:fluwx/fluwx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:gal/gal.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 
 import 'share.dart';
@@ -25,8 +24,11 @@ Future<void> showCustomShare(
     return;
   }
 
-  final (platformItems, toolItems) =
-      await _buildItems(context, data, onComplete);
+  final (platformItems, toolItems) = await _buildItems(
+    context,
+    data,
+    onComplete,
+  );
   if (!context.mounted) return;
   if (platformItems.isEmpty && toolItems.isEmpty) {
     MDTotast.message('暂无可用的分享方式');
@@ -42,10 +44,7 @@ Future<void> showCustomShare(
     ),
     builder: (_) => SafeArea(
       top: false,
-      child: _SharePanel(
-        platforms: platformItems,
-        tools: toolItems,
-      ),
+      child: _SharePanel(platforms: platformItems, tools: toolItems),
     ),
   );
 }
@@ -62,45 +61,42 @@ Future<(List<_ShareItem>, List<_ShareItem>)> _buildItems(
     switch (channel) {
       case .wx:
         if (await WxShare.isInstalled()) {
-          platforms.add(_ShareItem(
-            Assets.images.public.wx,
-            '微信好友',
-            () => _executeWx(data, .session, onComplete),
-          ));
+          platforms.add(
+            _ShareItem(
+              Assets.images.public.wx,
+              '微信好友',
+              () => _executeWx(data, .session, onComplete),
+            ),
+          );
         }
       case .wxzone:
         if (await WxShare.isInstalled()) {
-          platforms.add(_ShareItem(
-            Assets.images.public.wxzone,
-            '微信朋友圈',
-            () => _executeWx(data, .timeline, onComplete),
-          ));
+          platforms.add(
+            _ShareItem(
+              Assets.images.public.wxzone,
+              '微信朋友圈',
+              () => _executeWx(data, .timeline, onComplete),
+            ),
+          );
         }
       case .system:
-        platforms.add(_ShareItem(
-          Icons.ios_share,
-          '更多',
-          () => MDShare.toSystem(data),
-        ));
+        platforms.add(
+          _ShareItem(Icons.ios_share, '更多', () => MDShare.toSystem(data)),
+        );
     }
   }
 
   for (final tool in data.tools) {
     switch (tool) {
-      case .saveImage:
-        if (data.method != .image) break;
-        tools.add(_ShareItem(
-          Icons.save_alt,
-          '保存图片',
-          () => _saveImage(data),
-        ));
       case .copyLink:
         if (data.method != .link) break;
-        tools.add(_ShareItem(
-          Icons.link,
-          '复制链接',
-          () => _ShareActions.copyLink(data.link!),
-        ));
+        tools.add(
+          _ShareItem(
+            Icons.link,
+            '复制链接',
+            () => _ShareActions.copyLink(data.link!),
+          ),
+        );
     }
   }
   return (platforms, tools);
@@ -166,17 +162,6 @@ Future<bool> _sendToWx(MDShareData data, WeChatScene scene) async {
   }
 }
 
-Future<void> _saveImage(MDShareData data) async {
-  MDTotast.showLoading();
-  final bytes = await downloadBytes(data.url!);
-  MDTotast.hideLoading();
-  if (bytes == null) {
-    MDTotast.message('图片获取失败，无法保存');
-    return;
-  }
-  await _ShareActions.saveImage(bytes, data.title);
-}
-
 class _SharePanel extends StatelessWidget {
   const _SharePanel({required this.platforms, required this.tools});
 
@@ -206,9 +191,10 @@ class _SharePanel extends StatelessWidget {
             style: TextButton.styleFrom(
               foregroundColor: AppColors.title,
               textStyle: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.title),
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: AppColors.title,
+              ),
             ),
             child: const Text('取消'),
           ),
@@ -267,10 +253,7 @@ class _ShareCell extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               item.label,
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.content,
-              ),
+              style: TextStyle(fontSize: 12, color: AppColors.content),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -281,29 +264,8 @@ class _ShareCell extends StatelessWidget {
   }
 }
 
-
 class _ShareActions {
   _ShareActions._();
-
-  static Future<void> saveImage(Uint8List bytes, String? name) async {
-    try {
-      if (!await Gal.hasAccess()) {
-        final granted = await Gal.requestAccess();
-        if (!granted) {
-          MDTotast.message('未获得相册权限，无法保存');
-          return;
-        }
-      }
-      await Gal.putImageBytes(
-        bytes,
-        name: '${name ?? DateTime.now().millisecondsSinceEpoch}.png',
-      );
-      MDTotast.success('已保存到相册');
-    } catch (error) {
-      MDTotast.message('保存失败，请稍后重试');
-      Utils.log('MDShare saveImage error: $error');
-    }
-  }
 
   static Future<void> copyLink(String link) async {
     await Clipboard.setData(ClipboardData(text: link));

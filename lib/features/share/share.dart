@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
+
 import 'custom_share.dart';
 import 'system_share.dart';
 
-enum MDShareChannel {
-  wx,
-  wxzone,
-  system,
-}
+enum MDShareChannel { wx, wxzone, system }
 
 enum MDShareMethod {
   /// 分享链接
   link,
+
   /// 分享图片
   image,
+
   /// 分享文件
   file,
 }
 
 enum MDShareTool {
-  /// 保存图片到相册（仅图片内容可保存）
-  saveImage,
   /// 复制链接（仅链接内容可复制）
   copyLink,
 }
@@ -39,7 +36,7 @@ class MDShareData {
   /// 分享内容类型
   final MDShareMethod method;
 
-  /// 标题（链接分享时展示，图片/文件保存时的文件名）
+  /// 标题（链接分享时展示，图片/文件分享时的文件名）
   final String? title;
 
   /// 文字内容（链接分享时作为描述）
