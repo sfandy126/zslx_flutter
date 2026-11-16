@@ -1335,7 +1335,10 @@ List<Map<String, dynamic>> _listFrom(Object? source) {
       .toList();
 }
 
-String _dateText(DateTime date) => '${date.year}-${date.month}-${date.day}';
+String _dateText(DateTime date) {
+  final shanghaiDate = date.toUtc().add(const Duration(hours: 8));
+  return '${shanghaiDate.year}-${shanghaiDate.month}-${shanghaiDate.day}';
+}
 
 DateTime? _parseDate(Object? raw) {
   final value = raw?.toString();
