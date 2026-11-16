@@ -18,6 +18,11 @@ android {
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion // 对应 android studio sdk manger 中sdk tools ndk version
 
+    // 百家云直播 UI 使用 Data Binding，宿主需生成聚合 DataBinderMapperImpl。
+    buildFeatures {
+        dataBinding = true
+    }
+
     // 友盟 Native 崩溃采集需要将 .so 解压到安装目录。
     packaging {
         jniLibs.useLegacyPackaging = true
@@ -111,6 +116,13 @@ kotlin {
 }
 
 dependencies {
+    // 百家云传递依赖的 Retrofit 2.6.0 缺少 R8 full mode 规则。
+    // 对齐 core/converter/adapter，使用随 JAR 发布的官方 consumer rules。
+    val retrofitVersion = "2.11.0"
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
+    implementation("com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion")
+    implementation("com.google.code.gson:gson:2.11.0")
     // OSS 图片降采样后修正 EXIF 方向，不保留 GPS 等原图元数据。
     implementation("androidx.exifinterface:exifinterface:1.4.2")
 }
