@@ -18,6 +18,11 @@ android {
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion // 对应 android studio sdk manger 中sdk tools ndk version
 
+    // 友盟 Native 崩溃采集需要将 .so 解压到安装目录。
+    packaging {
+        jniLibs.useLegacyPackaging = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
