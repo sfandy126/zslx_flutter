@@ -126,10 +126,13 @@ class _CoursePrebookPageState extends State<CoursePrebookPage> {
 
   static String _two(int value) => value.toString().padLeft(2, '0');
 
-  /// 与接口约定的时间格式 yyyy-MM-dd HH:mm
-  static String _format(DateTime date) =>
-      '${date.year}-${_two(date.month)}-${_two(date.day)} '
-      '${_two(date.hour)}:${_two(date.minute)}';
+  /// 转为上海时区后，按接口约定格式 yyyy-MM-dd HH:mm 输出。
+  static String _format(DateTime date) {
+    final shanghaiTime = date.toUtc().add(const Duration(hours: 8));
+    return '${shanghaiTime.year}-${_two(shanghaiTime.month)}-'
+        '${_two(shanghaiTime.day)} ${_two(shanghaiTime.hour)}:'
+        '${_two(shanghaiTime.minute)}';
+  }
 
   Future<void> _selectDate({required bool isEnd}) async {
     final date = await _DateTimePickerSheet.show(
