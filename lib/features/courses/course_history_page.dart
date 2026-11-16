@@ -150,7 +150,7 @@ class _CourseHistoryPageState extends State<CourseHistoryPage> {
                 bottom: false,
                 child: SizedBox(
                   height: kToolbarHeight,
-                  child: MDAppBar(title: '学习历史', centerTitle: true),
+                  child: MDAppBar(title: '听课记录', centerTitle: true),
                 ),
               ),
             ),
@@ -161,7 +161,7 @@ class _CourseHistoryPageState extends State<CourseHistoryPage> {
                   child: RefreshListView<PlayHistory>(
                     key: _listKey,
                     onData: _loadPage,
-                    emptyText: '暂无学习记录',
+                    emptyText: '暂无听课记录',
                     failedText: '加载失败，请重试',
                     onLogin: _openLogin,
                     padding: const EdgeInsets.only(bottom: 16),

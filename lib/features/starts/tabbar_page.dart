@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import '../article/article_page.dart';
+
 import 'package:flutter/material.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 import 'package:zslx_flutter/features/courses/course_learn_page.dart';
@@ -17,28 +19,25 @@ class TabbarPage extends StatefulWidget {
 class _TabbarPageState extends State<TabbarPage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
+  late final List<Widget> _pages = [
     const HomePage(),
+    const ArticlePage(),
     const CourseLearnPage(),
-    const MinePage(),
+    MinePage(onOpenCourses: () => setState(() => _selectedIndex = 2)),
   ];
 
   final List<_TabItem> _tabItems = [
-    _TabItem(
-      label: '首页',
-      normalIcon: Assets.images.tabbar.tabbarNormal1.path,
-      selectedIcon: Assets.images.tabbar.tabbarHight1.path,
-    ),
-    _TabItem(
-      label: '学习',
-      normalIcon: Assets.images.tabbar.tabbarNormal2.path,
-      selectedIcon: Assets.images.tabbar.tabbarHight2.path,
-    ),
-    _TabItem(
-      label: '我的',
-      normalIcon: Assets.images.tabbar.tabbarNormal3.path,
-      selectedIcon: Assets.images.tabbar.tabbarHight3.path,
-    ),
+    for (final item in [
+      ('首页', 'home'),
+      ('资讯', 'news'),
+      ('听课', 'study'),
+      ('我的', 'my'),
+    ])
+      _TabItem(
+        label: item.$1,
+        normalIcon: 'assets/images/tabbar/zs_nav_${item.$2}_inactive.svg',
+        selectedIcon: 'assets/images/tabbar/zs_nav_${item.$2}_active.svg',
+      ),
   ];
 
   @override
@@ -87,7 +86,7 @@ class _TabbarPageState extends State<TabbarPage> {
                     height: 30,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: AppColors.theme,
+                      color: AppColors.lightTheme,
                       borderRadius: BorderRadius.circular(15),
                     ),
                     child: SvgPicture.asset(

@@ -182,40 +182,65 @@ class $AssetsImagesMineGen {
   SvgGenImage get defaultProfile =>
       const SvgGenImage('assets/images/mine/defaultProfile.svg');
 
-  /// File path: assets/images/mine/mineBg@3x.png
-  AssetGenImage get mineBg3x =>
-      const AssetGenImage('assets/images/mine/mineBg@3x.png');
+  /// File path: assets/images/mine/zs_fn_appointments.svg
+  SvgGenImage get zsFnAppointments =>
+      const SvgGenImage('assets/images/mine/zs_fn_appointments.svg');
 
-  /// File path: assets/images/mine/mineDonwloads.svg
-  SvgGenImage get mineDonwloads =>
-      const SvgGenImage('assets/images/mine/mineDonwloads.svg');
+  /// File path: assets/images/mine/zs_fn_favorites.svg
+  SvgGenImage get zsFnFavorites =>
+      const SvgGenImage('assets/images/mine/zs_fn_favorites.svg');
 
-  /// File path: assets/images/mine/mineFeedback.svg
-  SvgGenImage get mineFeedback =>
-      const SvgGenImage('assets/images/mine/mineFeedback.svg');
+  /// File path: assets/images/mine/zs_fn_feedback.svg
+  SvgGenImage get zsFnFeedback =>
+      const SvgGenImage('assets/images/mine/zs_fn_feedback.svg');
 
-  /// File path: assets/images/mine/mineOnline.svg
-  SvgGenImage get mineOnline =>
-      const SvgGenImage('assets/images/mine/mineOnline.svg');
+  /// File path: assets/images/mine/zs_fn_history.svg
+  SvgGenImage get zsFnHistory =>
+      const SvgGenImage('assets/images/mine/zs_fn_history.svg');
 
-  /// File path: assets/images/mine/mineSetting.svg
-  SvgGenImage get mineSetting =>
-      const SvgGenImage('assets/images/mine/mineSetting.svg');
+  /// File path: assets/images/mine/zs_fn_materials.svg
+  SvgGenImage get zsFnMaterials =>
+      const SvgGenImage('assets/images/mine/zs_fn_materials.svg');
 
-  /// File path: assets/images/mine/mineWallet.svg
-  SvgGenImage get mineWallet =>
-      const SvgGenImage('assets/images/mine/mineWallet.svg');
+  /// File path: assets/images/mine/zs_fn_orders.svg
+  SvgGenImage get zsFnOrders =>
+      const SvgGenImage('assets/images/mine/zs_fn_orders.svg');
+
+  /// File path: assets/images/mine/zs_fn_reservation.svg
+  SvgGenImage get zsFnReservation =>
+      const SvgGenImage('assets/images/mine/zs_fn_reservation.svg');
+
+  /// File path: assets/images/mine/zs_fn_settings.svg
+  SvgGenImage get zsFnSettings =>
+      const SvgGenImage('assets/images/mine/zs_fn_settings.svg');
+
+  /// File path: assets/images/mine/zs_fn_support.svg
+  SvgGenImage get zsFnSupport =>
+      const SvgGenImage('assets/images/mine/zs_fn_support.svg');
+
+  /// File path: assets/images/mine/zs_fn_wallet.svg
+  SvgGenImage get zsFnWallet =>
+      const SvgGenImage('assets/images/mine/zs_fn_wallet.svg');
+
+  /// File path: assets/images/mine/zs_my_learning_orbit.svg
+  SvgGenImage get zsMyLearningOrbit =>
+      const SvgGenImage('assets/images/mine/zs_my_learning_orbit.svg');
 
   /// List of all assets
-  List<dynamic> get values => [
+  List<SvgGenImage> get values => [
     carama,
     defaultProfile,
-    mineBg3x,
-    mineDonwloads,
-    mineFeedback,
-    mineOnline,
-    mineSetting,
-    mineWallet,
+    zsFnAppointments,
+    zsFnFavorites,
+    zsFnFeedback,
+    zsFnHistory,
+    zsFnMaterials,
+    zsFnOrders,
+    zsFnReservation,
+    zsFnSettings,
+    zsFnSupport,
+    zsFnWallet,
+    zsMyLearningOrbit,
   ];
 }
 
@@ -285,38 +310,48 @@ class $AssetsImagesPublicGen {
 class $AssetsImagesTabbarGen {
   const $AssetsImagesTabbarGen();
 
-  /// File path: assets/images/tabbar/tabbar_hight_1.svg
-  SvgGenImage get tabbarHight1 =>
-      const SvgGenImage('assets/images/tabbar/tabbar_hight_1.svg');
+  /// File path: assets/images/tabbar/zs_nav_home_active.svg
+  SvgGenImage get zsNavHomeActive =>
+      const SvgGenImage('assets/images/tabbar/zs_nav_home_active.svg');
 
-  /// File path: assets/images/tabbar/tabbar_hight_2.svg
-  SvgGenImage get tabbarHight2 =>
-      const SvgGenImage('assets/images/tabbar/tabbar_hight_2.svg');
+  /// File path: assets/images/tabbar/zs_nav_home_inactive.svg
+  SvgGenImage get zsNavHomeInactive =>
+      const SvgGenImage('assets/images/tabbar/zs_nav_home_inactive.svg');
 
-  /// File path: assets/images/tabbar/tabbar_hight_3.svg
-  SvgGenImage get tabbarHight3 =>
-      const SvgGenImage('assets/images/tabbar/tabbar_hight_3.svg');
+  /// File path: assets/images/tabbar/zs_nav_my_active.svg
+  SvgGenImage get zsNavMyActive =>
+      const SvgGenImage('assets/images/tabbar/zs_nav_my_active.svg');
 
-  /// File path: assets/images/tabbar/tabbar_normal_1.svg
-  SvgGenImage get tabbarNormal1 =>
-      const SvgGenImage('assets/images/tabbar/tabbar_normal_1.svg');
+  /// File path: assets/images/tabbar/zs_nav_my_inactive.svg
+  SvgGenImage get zsNavMyInactive =>
+      const SvgGenImage('assets/images/tabbar/zs_nav_my_inactive.svg');
 
-  /// File path: assets/images/tabbar/tabbar_normal_2.svg
-  SvgGenImage get tabbarNormal2 =>
-      const SvgGenImage('assets/images/tabbar/tabbar_normal_2.svg');
+  /// File path: assets/images/tabbar/zs_nav_news_active.svg
+  SvgGenImage get zsNavNewsActive =>
+      const SvgGenImage('assets/images/tabbar/zs_nav_news_active.svg');
 
-  /// File path: assets/images/tabbar/tabbar_normal_3.svg
-  SvgGenImage get tabbarNormal3 =>
-      const SvgGenImage('assets/images/tabbar/tabbar_normal_3.svg');
+  /// File path: assets/images/tabbar/zs_nav_news_inactive.svg
+  SvgGenImage get zsNavNewsInactive =>
+      const SvgGenImage('assets/images/tabbar/zs_nav_news_inactive.svg');
+
+  /// File path: assets/images/tabbar/zs_nav_study_active.svg
+  SvgGenImage get zsNavStudyActive =>
+      const SvgGenImage('assets/images/tabbar/zs_nav_study_active.svg');
+
+  /// File path: assets/images/tabbar/zs_nav_study_inactive.svg
+  SvgGenImage get zsNavStudyInactive =>
+      const SvgGenImage('assets/images/tabbar/zs_nav_study_inactive.svg');
 
   /// List of all assets
   List<SvgGenImage> get values => [
-    tabbarHight1,
-    tabbarHight2,
-    tabbarHight3,
-    tabbarNormal1,
-    tabbarNormal2,
-    tabbarNormal3,
+    zsNavHomeActive,
+    zsNavHomeInactive,
+    zsNavMyActive,
+    zsNavMyInactive,
+    zsNavNewsActive,
+    zsNavNewsInactive,
+    zsNavStudyActive,
+    zsNavStudyInactive,
   ];
 }
 
