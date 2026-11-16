@@ -7,6 +7,48 @@
 -dontwarn com.hpplay.ble.DiscoveryAdvertiseManager
 -dontwarn dalvik.system.VMStack
 
+# 百家云官方直播/点播/回放共用规则：包含反射及 JNI 调用的类型。
+-dontwarn com.baijiahulian.**
+-dontwarn com.bjhl.**
+-keep class com.baijiahulian.** { *; }
+-keep class com.bjhl.** { *; }
+-keep class com.baijia.** { *; }
+-keep class com.baijiayun.** { *; }
+-keep class org.webrtc.** { *; }
+-keep class com.tencent.** { *; }
+-keep class org.boom.** { *; }
+-keep class org.brtc.** { *; }
+-keep class tv.danmaku.ijk.** { *; }
+-keepclassmembers class * {
+    @org.brtc.webrtc.CalledByNative <fields>;
+    @org.brtc.webrtc.CalledByNative <methods>;
+}
+-dontwarn sun.misc.**
+-keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
+    long producerIndex;
+    long consumerIndex;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode producerNode;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode consumerNode;
+}
+# 不整体保留 log4j：其桌面 UI/JMS/邮件模块依赖 Android 不提供的 Java API。
+
+# Retrofit 反射读取接口注解及 Observable<T> 泛型；R8 full mode 下同时保留端点类型。
+-keepattributes Signature,InnerClasses,EnclosingMethod
+-keepattributes RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault
+-keep interface * {
+    @retrofit2.http.* <methods>;
+}
+-keep class rx.Observable { *; }
+-keep class io.reactivex.Observable { *; }
+-keep class io.reactivex.Flowable { *; }
+-keep class io.reactivex.Single { *; }
+-keep class io.reactivex.Maybe { *; }
+-keep class io.reactivex.Completable { *; }
+
 # 友盟 APM 通过反射调用的采集及上传组件。
 -keep class com.umeng.** { *; }
 -keep class com.uc.** { *; }
