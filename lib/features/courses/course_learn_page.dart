@@ -373,17 +373,27 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
           SizedBox(
             height: 50,
             width: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '今日课程(${_dateText(_selectedDate)})',
-                  style: TextStyle(
-                    color: AppColors.title,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+            child: GestureDetector(
+              onTap: _openCalendar,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Row(
+                  children: [
+                    Text(
+                      '今日课程(${_dateText(_selectedDate)})',
+                      style: TextStyle(
+                        color: AppColors.title,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Assets.images.public.arrowRight.svg(
+                      width: 16,
+                      height: 16,
+                      color: AppColors.theme,
+                    ),
+                  ],
                 ),
               ),
             ),
