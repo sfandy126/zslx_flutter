@@ -154,9 +154,9 @@ Future<void> main(List<String> args) async {
   }
 }
 
-/// 魅族仅打包 ARM 64 位，并覆盖透传的目标架构参数。
+/// 除腾讯应用宝外，Android 渠道仅打包 ARM 64 位，并覆盖透传的目标架构参数。
 List<String> _androidBuildArgs(String channel, List<String> flutterArgs) {
-  if (channel != 'meizu') return flutterArgs;
+  if (channel == 'tengxun') return flutterArgs;
 
   final args = <String>[];
   for (var i = 0; i < flutterArgs.length; i++) {
