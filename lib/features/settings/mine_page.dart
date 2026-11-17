@@ -370,6 +370,17 @@ class _MinePageState extends State<MinePage> {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 26),
+                      Text(
+                        '卓仕遴选  ·  专注遴选，陪伴成长',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors.content,
+                          fontSize: 10,
+                          letterSpacing: 2,
+                          height: 1.5,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -466,7 +477,7 @@ class _MinePageState extends State<MinePage> {
                 style: TextStyle(
                   color: _MineColors.ink,
                   fontSize: 14,
-                  fontWeight: grouped ? FontWeight.w400 : FontWeight.w600,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
               if (subtitle != null) ...[
