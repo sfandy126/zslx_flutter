@@ -53,6 +53,7 @@ enum MDCmd {
   courseList('zs_course_list', 'course_list_new'),
   dateCourses('zs_date_courses', 'my_appointment'),
   cancelYdy('zs_cancel_ydy', 'cancel_appointment'),
+  coursePrebookRecords('zs_ydy_records', 'zs_ydy_records'),
   coursePrebookList('kc_list', 'kc_list'),
   prebokYdy('zs_prebok_ydy', 'ydy_appointment'),
   monthDate('zs_month_date', 'my_appointment_date'),

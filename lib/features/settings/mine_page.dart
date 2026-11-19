@@ -327,7 +327,10 @@ class _MinePageState extends State<MinePage> {
                             child: _entry(
                               '约课记录',
                               'appointments',
-                              () => _pending('约课记录'),
+                              () => AppRouter.pushNamed<void>(
+                                context,
+                                RouterNames.coursePrebookRecords,
+                              ),
                             ),
                           ),
                         ],
