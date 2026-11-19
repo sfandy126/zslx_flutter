@@ -192,6 +192,7 @@ class _CoursePrebookPageState extends State<CoursePrebookPage> {
         'course_id': widget.id,
         'start_time': startText,
         'end_time': endText,
+        'appointment_mode': 1,
       },
     );
     MDTotast.hideLoading();
