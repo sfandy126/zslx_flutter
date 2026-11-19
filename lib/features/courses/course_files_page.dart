@@ -5,7 +5,7 @@ import '../../utils/utils.dart';
 import '../../widgets/refresh_list_view.dart';
 import '../../utils/file_preview.dart';
 
-/// 课程资料：指定目录下的全部资料
+/// 讲义页面：指定目录下的全部资料
 class CourseFilesPage extends StatefulWidget {
   const CourseFilesPage({
     required this.folderId,
@@ -48,10 +48,10 @@ class _CourseFilesPageState extends State<CourseFilesPage> {
       if (result.state == .outed || !MDUser.defualt.islogined) {
         return RefreshResult.notLoggedIn(result.msg);
       }
-      return RefreshResult.failed(result.msg ?? '课程资料加载失败');
+      return RefreshResult.failed(result.msg ?? '讲义加载失败');
     } catch (error) {
       Utils.log('CourseFilesPage load failed: $error');
-      return RefreshResult.failed('课程资料加载失败，请下拉刷新重试');
+      return RefreshResult.failed('讲义加载失败，请下拉刷新重试');
     }
   }
 
@@ -93,8 +93,8 @@ class _CourseFilesPageState extends State<CourseFilesPage> {
                 child: RefreshListView<_CourseFile>(
                   key: _listKey,
                   onData: _loadPage,
-                  emptyText: '暂无课程资料',
-                  failedText: '课程资料加载失败',
+                  emptyText: '暂无讲义',
+                  failedText: '讲义加载失败',
                   onLogin: _openLogin,
                   padding: const EdgeInsets.only(top: 12, bottom: 8),
                   itemBuilder: (context, file, index) => Padding(
