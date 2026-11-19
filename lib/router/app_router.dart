@@ -14,6 +14,7 @@ import '../features/courses/course_list_page.dart';
 import '../features/courses/course_orderconfirm_page.dart';
 import '../features/courses/course_orderlist_page.dart';
 import '../features/courses/course_orderpay_page.dart';
+import '../features/courses/course_prebook_list_page.dart';
 import '../features/courses/course_prebook_page.dart';
 import '../features/courses/course_task_list_page.dart';
 import '../features/courses/course_task_edit_page.dart';
@@ -57,6 +58,7 @@ enum RouterNames {
   courseFiles,
   courseTaskList,
   courseTaskEdit,
+  coursePrebookList,
   coursePrebook,
   courseIosPay,
   courseOrderConfirm,
@@ -281,6 +283,14 @@ class AppRouter {
             fileName: state.uri.queryParameters['fileName'] ?? '',
             fileUrl: state.uri.queryParameters['fileUrl'] ?? '',
           ),
+        ),
+      ),
+      GoRoute(
+        path: '/course-prebook-list',
+        name: RouterNames.coursePrebookList.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: const CoursePrebookListPage(),
         ),
       ),
       GoRoute(

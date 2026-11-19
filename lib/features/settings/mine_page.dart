@@ -316,7 +316,10 @@ class _MinePageState extends State<MinePage> {
                             child: _entry(
                               '一对一约课',
                               'reservation',
-                              () => _pending('一对一约课'),
+                              () => AppRouter.pushNamed<void>(
+                                context,
+                                RouterNames.coursePrebookList,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 10),
