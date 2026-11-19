@@ -715,7 +715,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
                           size: 16,
                         ),
                         label: Text(
-                          '课程资料',
+                          '讲义',
                           style: TextStyle(
                             color: AppColors.theme,
                             fontSize: 12,

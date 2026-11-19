@@ -4,7 +4,7 @@ import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 import '../../widgets/refresh_list_view.dart';
 
-/// 课程资料：资料文件目录
+/// 讲义目录：资料文件目录
 class CourseFolderPage extends StatefulWidget {
   const CourseFolderPage({
     required this.courseId,
@@ -42,10 +42,10 @@ class _CourseFolderPageState extends State<CourseFolderPage> {
       if (result.state == .outed || !MDUser.defualt.islogined) {
         return RefreshResult.notLoggedIn(result.msg);
       }
-      return RefreshResult.failed(result.msg ?? '课程资料加载失败');
+      return RefreshResult.failed(result.msg ?? '讲义目录加载失败');
     } catch (error) {
       Utils.log('CourseFolderPage load failed: $error');
-      return RefreshResult.failed('课程资料加载失败，请下拉刷新重试');
+      return RefreshResult.failed('讲义目录加载失败，请下拉刷新重试');
     }
   }
 
@@ -82,7 +82,7 @@ class _CourseFolderPageState extends State<CourseFolderPage> {
                 bottom: false,
                 child: SizedBox(
                   height: kToolbarHeight,
-                  child: MDAppBar(title: '课程资料', centerTitle: false),
+                  child: MDAppBar(title: '讲义目录', centerTitle: false),
                 ),
               ),
             ),
@@ -92,8 +92,8 @@ class _CourseFolderPageState extends State<CourseFolderPage> {
                 child: RefreshListView<_CourseFolder>(
                   key: _listKey,
                   onData: _loadPage,
-                  emptyText: '暂无课程资料',
-                  failedText: '课程资料加载失败',
+                  emptyText: '暂无讲义目录',
+                  failedText: '讲义目录加载失败',
                   onLogin: _openLogin,
                   padding: const EdgeInsets.only(bottom: 16),
                   itemBuilder: (context, folder, index) => Padding(
