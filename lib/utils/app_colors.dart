@@ -6,7 +6,7 @@ class AppColors {
   AppColors._();
 
   /// 主色系 等同于 Theme.of(context).primaryColor
-  static final Color theme = HexColor.fromHex('#1AAEE5');
+  static final Color theme = HexColor.fromHex('#287AF1');
 
   /// 浅主色系
   static final Color lightTheme = HexColor.fromHex('#EFF9FE');
