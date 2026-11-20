@@ -33,12 +33,14 @@ class MDAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool centerTitle;
 
   @override
-  Size get preferredSize => Size.fromHeight(
-    kToolbarHeight + (bottom?.preferredSize.height ?? 0),
-  );
+  Size get preferredSize =>
+      Size.fromHeight(kToolbarHeight + (bottom?.preferredSize.height ?? 0));
 
   @override
   Widget build(BuildContext context) {
+    const leadingWidth = 56.0;
+    const backIconSize = 24.0;
+    const backTitleGap = 10.0;
     final navColor = backgroundColor ?? AppColors.white;
     return AppBar(
       backgroundColor: navColor,
@@ -48,6 +50,10 @@ class MDAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: centerTitle,
+      leadingWidth: showBackButton ? leadingWidth : null,
+      titleSpacing: showBackButton && !centerTitle
+          ? backTitleGap - (leadingWidth - backIconSize) / 2
+          : null,
       systemOverlayStyle: SystemUiOverlayStyle.dark,
       title: Text(
         title,
@@ -62,7 +68,10 @@ class MDAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: showBackButton
           ? IconButton(
               onPressed: onBackPressed ?? () => AppRouter.pop(context),
-              icon: Assets.images.public.back.svg(width: 24, height: 24),
+              icon: Assets.images.public.back.svg(
+                width: backIconSize,
+                height: backIconSize,
+              ),
             )
           : null,
       automaticallyImplyLeading: showBackButton,

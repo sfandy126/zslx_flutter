@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 import '../../widgets/dialog.dart';
+import '../../widgets/page_background.dart';
 import '../../widgets/refresh_list_view.dart';
 
 /// 课程订单页面,除iOS平台外的课程订单列表
@@ -143,45 +144,41 @@ class _CourseOrderListPageState extends State<CourseOrderListPage> {
         _back();
       },
       child: Scaffold(
-        body: DefaultTextStyle(
-          style: _plainTextStyle,
-          child: Column(
-            children: [
-              ColoredBox(
-                color: AppColors.white,
-                child: SafeArea(
-                  bottom: false,
-                  child: SizedBox(
+        body: MDPageBackground(
+          child: DefaultTextStyle(
+            style: _plainTextStyle,
+            child: SafeArea(
+              child: Column(
+                children: [
+                  SizedBox(
                     height: kToolbarHeight,
                     child: MDAppBar(
                       title: '课程订单',
                       centerTitle: false,
+                      backgroundColor: AppColors.transparent,
                       onBackPressed: _back,
                     ),
                   ),
-                ),
-              ),
-              Expanded(
-                child: ColoredBox(
-                  color: AppColors.background,
-                  child: RefreshListView<_CourseOrder>(
-                    key: _listKey,
-                    onData: _loadPage,
-                    emptyText: '暂无课程订单',
-                    failedText: '课程订单加载失败',
-                    onLogin: _openLogin,
-                    itemBuilder: (context, order, index) => Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                      child: _OrderCard(
-                        order: order,
-                        onPay: () => _payOrder(order),
-                        onCancel: () => _cancelOrder(order),
+                  Expanded(
+                    child: RefreshListView<_CourseOrder>(
+                      key: _listKey,
+                      onData: _loadPage,
+                      emptyText: '暂无课程订单',
+                      failedText: '课程订单加载失败',
+                      onLogin: _openLogin,
+                      itemBuilder: (context, order, index) => Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                        child: _OrderCard(
+                          order: order,
+                          onPay: () => _payOrder(order),
+                          onCancel: () => _cancelOrder(order),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

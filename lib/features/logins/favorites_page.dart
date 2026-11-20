@@ -5,6 +5,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
+import '../../widgets/page_background.dart';
 import '../../widgets/refresh_list_view.dart';
 
 /// 我的收藏
@@ -94,44 +95,43 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DefaultTextStyle(
-        style: _plainTextStyle,
-        child: Column(
-          children: [
-            ColoredBox(
-              color: AppColors.white,
-              child: SafeArea(
-                bottom: false,
-                child: SizedBox(
+      body: MDPageBackground(
+        child: DefaultTextStyle(
+          style: _plainTextStyle,
+          child: SafeArea(
+            child: Column(
+              children: [
+                SizedBox(
                   height: kToolbarHeight,
-                  child: MDAppBar(title: '我的收藏', centerTitle: false),
+                  child: MDAppBar(
+                    title: '我的收藏',
+                    centerTitle: false,
+                    backgroundColor: AppColors.transparent,
+                  ),
                 ),
-              ),
-            ),
-            Expanded(
-              child: ColoredBox(
-                color: AppColors.background,
-                child: SlidableAutoCloseBehavior(
-                  child: RefreshListView<_FavoriteCourse>(
-                    key: _listKey,
-                    onData: _loadPage,
-                    emptyText: '暂无收藏',
-                    failedText: '收藏加载失败，请重试',
-                    onLogin: _openLogin,
-                    padding: const EdgeInsets.only(bottom: 16),
-                    itemBuilder: (context, course, index) => Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                      child: _FavoriteTile(
-                        course: course,
-                        onTap: () => _open(course),
-                        onCancel: () => unawaited(_cancelFavorite(course)),
+                Expanded(
+                  child: SlidableAutoCloseBehavior(
+                    child: RefreshListView<_FavoriteCourse>(
+                      key: _listKey,
+                      onData: _loadPage,
+                      emptyText: '暂无收藏',
+                      failedText: '收藏加载失败，请重试',
+                      onLogin: _openLogin,
+                      padding: const EdgeInsets.only(bottom: 16),
+                      itemBuilder: (context, course, index) => Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                        child: _FavoriteTile(
+                          course: course,
+                          onTap: () => _open(course),
+                          onCancel: () => unawaited(_cancelFavorite(course)),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

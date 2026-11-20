@@ -7,6 +7,7 @@ import '../../router/app_router.dart';
 import '../../services/bjy_server.dart';
 import '../../services/history/history_server.dart';
 import '../../utils/utils.dart';
+import '../../widgets/page_background.dart';
 import '../../widgets/refresh_list_view.dart';
 
 /// 学习历史：展示本地保存的录播/直播回放播放记录
@@ -140,44 +141,43 @@ class _CourseHistoryPageState extends State<CourseHistoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DefaultTextStyle(
-        style: _plainTextStyle,
-        child: Column(
-          children: [
-            ColoredBox(
-              color: AppColors.white,
-              child: SafeArea(
-                bottom: false,
-                child: SizedBox(
+      body: MDPageBackground(
+        child: DefaultTextStyle(
+          style: _plainTextStyle,
+          child: SafeArea(
+            child: Column(
+              children: [
+                SizedBox(
                   height: kToolbarHeight,
-                  child: MDAppBar(title: '听课记录', centerTitle: true),
+                  child: MDAppBar(
+                    title: '听课记录',
+                    centerTitle: false,
+                    backgroundColor: AppColors.transparent,
+                  ),
                 ),
-              ),
-            ),
-            Expanded(
-              child: ColoredBox(
-                color: AppColors.background,
-                child: SlidableAutoCloseBehavior(
-                  child: RefreshListView<PlayHistory>(
-                    key: _listKey,
-                    onData: _loadPage,
-                    emptyText: '暂无听课记录',
-                    failedText: '加载失败，请重试',
-                    onLogin: _openLogin,
-                    padding: const EdgeInsets.only(bottom: 16),
-                    itemBuilder: (context, history, index) => Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                      child: _HistoryTile(
-                        history: history,
-                        onTap: () => _open(history),
-                        onDelete: () => unawaited(_delete(history)),
+                Expanded(
+                  child: SlidableAutoCloseBehavior(
+                    child: RefreshListView<PlayHistory>(
+                      key: _listKey,
+                      onData: _loadPage,
+                      emptyText: '暂无听课记录',
+                      failedText: '加载失败，请重试',
+                      onLogin: _openLogin,
+                      padding: const EdgeInsets.only(bottom: 16),
+                      itemBuilder: (context, history, index) => Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                        child: _HistoryTile(
+                          history: history,
+                          onTap: () => _open(history),
+                          onDelete: () => unawaited(_delete(history)),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
