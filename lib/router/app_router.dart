@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/courses/course_detail_page.dart';
 import '../features/courses/course_files_page.dart';
+import '../features/courses/course_filesets_page.dart';
 import '../features/courses/course_folder_page.dart';
 import '../features/courses/course_ios_orderlist_page.dart';
 import '../features/courses/course_ios_orderpay_page.dart';
@@ -57,6 +58,7 @@ enum RouterNames {
   courseDetail,
   courseFolder,
   courseFiles,
+  courseFilesets,
   courseTaskList,
   courseTaskEdit,
   coursePrebookList,
@@ -256,6 +258,14 @@ class AppRouter {
             courseId: state.uri.queryParameters['courseId'] ?? '',
             courseType: state.uri.queryParameters['courseType'] ?? '',
           ),
+        ),
+      ),
+      GoRoute(
+        path: '/course-filesets',
+        name: RouterNames.courseFilesets.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: const CourseFilesetsPage(),
         ),
       ),
       GoRoute(

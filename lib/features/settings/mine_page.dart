@@ -304,7 +304,10 @@ class _MinePageState extends State<MinePage> {
                             child: _entry(
                               '讲义汇总',
                               'materials',
-                              () => _pending('讲义汇总'),
+                              () => AppRouter.pushNamed<void>(
+                                context,
+                                RouterNames.courseFilesets,
+                              ),
                             ),
                           ),
                         ],
@@ -403,11 +406,6 @@ class _MinePageState extends State<MinePage> {
     return phone.length == 11
         ? '${phone.substring(0, 3)}****${phone.substring(7)}'
         : '';
-  }
-
-  void _pending(String feature) {
-    // #TODO: 接入新增功能的页面跳转。
-    MDTotast.message('$feature，敬请期待');
   }
 
   Widget _card({
