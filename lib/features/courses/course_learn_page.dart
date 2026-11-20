@@ -6,6 +6,7 @@ import 'package:zslx_flutter/services/bjy_server.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
+import '../../widgets/page_background.dart';
 import '../../widgets/refresh_list_view.dart';
 
 class CourseLearnPage extends StatefulWidget {
@@ -266,43 +267,47 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
     );
 
     return Scaffold(
-      body: DefaultTextStyle(
-        style: _plainTextStyle,
-        child: SafeArea(
-          bottom: false,
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  SizedBox(
-                    height: kToolbarHeight,
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 16),
-                        Text(
-                          '学习',
-                          style: TextStyle(
-                            color: AppColors.title,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
+      body: MDPageBackground(
+        child: DefaultTextStyle(
+          style: _plainTextStyle,
+          child: SafeArea(
+            bottom: false,
+            child: Stack(
+              children: [
+                Column(
+                  children: [
+                    SizedBox(
+                      height: kToolbarHeight,
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 16),
+                          Text(
+                            '听课',
+                            style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.bigTitle,
+                            ),
                           ),
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          tooltip: '学习记录',
-                          onPressed: _openHistory,
-                          icon: Assets.images.course.history.svg(
-                            width: 24,
-                            height: 24,
+                          const Spacer(),
+                          IconButton(
+                            tooltip: '听课记录',
+                            style: IconButton.styleFrom(
+                              backgroundColor: AppColors.white,
+                              shape: const CircleBorder(),
+                              splashFactory: NoSplash.splashFactory,
+                            ),
+                            onPressed: _openHistory,
+                            icon: Assets.images.mine.zsFnHistory.svg(
+                              width: 20,
+                              height: 20,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                      ],
+                          const SizedBox(width: 8),
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: ColoredBox(
-                      color: AppColors.background,
+                    Expanded(
                       child: RefreshListView<_LearnCourse>(
                         key: _courseListKey,
                         onData: _loadCoursePage,
@@ -312,9 +317,8 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
                               course: course,
                               onTap: () => _openCourse(course),
                             ),
-                        emptyBuilder: (context) => Container(
+                        emptyBuilder: (context) => SizedBox(
                           width: double.infinity,
-                          color: AppColors.white,
                           child: _EmptyCourses(
                             isLoggedIn: MDUser.defualt.islogined,
                             onLogin: _openLogin,
@@ -331,35 +335,35 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
                         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              Positioned(
-                right: _calendarOffset.dx,
-                bottom: _calendarOffset.dy.clamp(12, maxTop),
-                child: GestureDetector(
-                  onTap: _openCalendar,
-                  onPanUpdate: (details) {
-                    setState(() {
-                      _calendarOffset = Offset(
-                        (_calendarOffset.dx - details.delta.dx).clamp(
-                          12,
-                          screen.width - floatingSize - 12,
-                        ),
-                        (_calendarOffset.dy - details.delta.dy).clamp(
-                          12,
-                          maxTop,
-                        ),
-                      );
-                    });
-                  },
-                  child: Assets.images.course.learnCatli.svg(
-                    width: floatingSize,
-                    height: floatingSize,
+                  ],
+                ),
+                Positioned(
+                  right: _calendarOffset.dx,
+                  bottom: _calendarOffset.dy.clamp(12, maxTop),
+                  child: GestureDetector(
+                    onTap: _openCalendar,
+                    onPanUpdate: (details) {
+                      setState(() {
+                        _calendarOffset = Offset(
+                          (_calendarOffset.dx - details.delta.dx).clamp(
+                            12,
+                            screen.width - floatingSize - 12,
+                          ),
+                          (_calendarOffset.dy - details.delta.dy).clamp(
+                            12,
+                            maxTop,
+                          ),
+                        );
+                      });
+                    },
+                    child: Assets.images.course.learnCatli.svg(
+                      width: floatingSize,
+                      height: floatingSize,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -395,7 +399,7 @@ class _CourseLearnPageState extends State<CourseLearnPage> {
                     Assets.images.public.arrowRight.svg(
                       width: 16,
                       height: 16,
-                      color: AppColors.theme,
+                      color: AppColors.content,
                     ),
                   ],
                 ),
