@@ -11,6 +11,9 @@ class AppColors {
   /// 浅主色系
   static final Color lightTheme = HexColor.fromHex('#EFF9FE');
 
+  /// 导航栏颜色、分类颜色、大标题颜色
+  static const Color bigTitle = Color(0xFF102D50);
+
   /// 标题色
   static final Color title = HexColor.fromHex('#18181B');
 

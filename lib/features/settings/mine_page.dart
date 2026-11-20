@@ -72,7 +72,7 @@ class _MinePageState extends State<MinePage> {
                               style: TextStyle(
                                 fontSize: 30,
                                 fontWeight: FontWeight.w800,
-                                color: _MineColors.ink,
+                                color: AppColors.bigTitle,
                               ),
                             ),
                           ),
@@ -161,7 +161,7 @@ class _MinePageState extends State<MinePage> {
                                   Text(
                                     model.displayName,
                                     style: TextStyle(
-                                      color: _MineColors.ink,
+                                      color: AppColors.bigTitle,
                                       fontSize: 24,
                                       fontWeight: FontWeight.w800,
                                     ),
@@ -271,7 +271,7 @@ class _MinePageState extends State<MinePage> {
                             child: Text(
                               '备考工具箱',
                               style: TextStyle(
-                                color: _MineColors.ink,
+                                color: AppColors.bigTitle,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -479,7 +479,7 @@ class _MinePageState extends State<MinePage> {
               Text(
                 title,
                 style: TextStyle(
-                  color: _MineColors.ink,
+                  color: AppColors.bigTitle,
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                 ),
@@ -582,7 +582,7 @@ class _Avatar extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: _MineColors.ink.withValues(alpha: 0.08),
+            color: AppColors.bigTitle.withValues(alpha: 0.08),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -743,7 +743,6 @@ class _MineColors {
   static const toolPurple = Color(0xFFF0E9FF);
   static const divider = Color(0xFFD5E6FA);
   static const spark = Color(0xFFED9209);
-  static const ink = Color(0xFF102D50);
   static const learningStart = Color(0xFF287FF0);
   static const learningEnd = Color(0xFF43ADF0);
   static const learningButtonText = Color(0xFF60450F);
