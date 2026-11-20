@@ -32,7 +32,7 @@
 		</foreignObject>
 	</g>
 	<g id="fab_calendar_btn" filter="url(#filter_3)" customFrame="url(#clipPath_6)">
-		<rect id="fab_calendar_btn" width="52.000000" height="52.000000" x="0.000000" y="0.000000" rx="26.000000" fill="rgb(26,174,229)" />
+		<rect id="fab_calendar_btn" width="52.000000" height="52.000000" x="0.000000" y="0.000000" rx="26.000000" fill="#287AF1" />
 		<g id="calendar-days" customFrame="url(#clipPath_7)">
 			<rect id="calendar-days" width="24.000000" height="24.000000" x="14.000000" y="14.000000" />
 			<path id="矢量 97" d="M22 16L22 20" stroke="rgb(255,255,255)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.000000" />
