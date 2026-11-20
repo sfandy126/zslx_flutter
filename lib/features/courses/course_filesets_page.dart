@@ -5,6 +5,7 @@ import '../../utils/utils.dart';
 import '../../widgets/page_background.dart';
 import '../../widgets/refresh_list_view.dart';
 
+/// 讲义汇总页面
 class CourseFilesetsPage extends StatefulWidget {
   const CourseFilesetsPage({super.key});
 
