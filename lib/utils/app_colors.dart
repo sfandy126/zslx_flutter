@@ -8,6 +8,9 @@ class AppColors {
   /// 主色系 等同于 Theme.of(context).primaryColor
   static final Color theme = HexColor.fromHex('#287AF1');
 
+  /// 资讯一级分类选中指示线
+  static const Color articleCategoryIndicator = Color(0xFF239ED9);
+
   /// 浅主色系
   static final Color lightTheme = HexColor.fromHex('#EFF9FE');
 

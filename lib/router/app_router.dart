@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/article/article_filters_page.dart';
 import '../features/courses/course_detail_page.dart';
 import '../features/courses/course_files_page.dart';
 import '../features/courses/course_filesets_page.dart';
@@ -71,6 +72,7 @@ enum RouterNames {
   courseIosOrderList,
   learnHistory,
   favorites,
+  articleFilters,
   video,
   feedback,
   web,
@@ -396,8 +398,31 @@ class AppRouter {
       GoRoute(
         path: '/favorites',
         name: RouterNames.favorites.routeName,
-        pageBuilder: (context, state) =>
-            _platformPage(key: state.pageKey, child: const FavoritesPage()),
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: FavoritesPage(
+            initialCategory: state.uri.queryParameters['cate_id'] == '1'
+                ? 1
+                : 2,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/article-filters',
+        name: RouterNames.articleFilters.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: ArticleFiltersPage(
+            mode: switch (state.uri.queryParameters['mode']) {
+              'province' => .province,
+              'year' => .year,
+              _ => .all,
+            },
+            initial: state.extra is ArticleFilters
+                ? state.extra as ArticleFilters
+                : const ArticleFilters(),
+          ),
+        ),
       ),
       GoRoute(
         path: '/feedback',

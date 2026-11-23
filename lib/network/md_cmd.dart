@@ -3,6 +3,10 @@ import 'md_env.dart';
 enum MDCmd {
   // v3
   articleFavorite('add_news_collection', 'add_news_collection'),
+  articleNewsCate('news_cate', 'news_cate'),
+  articleNewsList('news_list', 'news_list'),
+  articleFilters('zs_news_filters', 'zs_news_filters'),
+
 
   // v2
   thirdLogin('zs_third_login', 'third_login'),

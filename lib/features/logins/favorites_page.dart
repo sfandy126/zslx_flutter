@@ -7,10 +7,13 @@ import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 import '../../widgets/page_background.dart';
 import '../../widgets/refresh_list_view.dart';
+import '../article/article_card.dart';
 
 /// 我的收藏
 class FavoritesPage extends StatefulWidget {
-  const FavoritesPage({super.key});
+  const FavoritesPage({this.initialCategory = 2, super.key});
+
+  final int initialCategory;
 
   @override
   State<FavoritesPage> createState() => _FavoritesPageState();
@@ -20,8 +23,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
   static const _plainTextStyle = TextStyle(decoration: TextDecoration.none);
 
   final _courseKey = GlobalKey<RefreshListViewState<_FavoriteCourse>>();
-  final _articleKey = GlobalKey<RefreshListViewState<_FavoriteArticle>>();
-  int _category = 2;
+  final _articleKey = GlobalKey<RefreshListViewState<ArticleSummary>>();
+  late int _category = widget.initialCategory;
 
   Future<RefreshResult<T>> _loadPage<T>(
     int page,
@@ -200,9 +203,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   Widget _buildArticles() {
-    return RefreshListView<_FavoriteArticle>(
+    return RefreshListView<ArticleSummary>(
       key: _articleKey,
-      onData: (page) => _loadPage(page, 1, _FavoriteArticle.new),
+      onData: (page) => _loadPage(page, 1, ArticleSummary.new),
       emptyText: '暂无收藏',
       failedText: '收藏加载失败，请重试',
       onLogin: _openLogin,
@@ -391,37 +394,15 @@ class _FavoriteTile extends StatelessWidget {
   }
 }
 
-class _FavoriteArticle {
-  _FavoriteArticle(Map<String, Object?> json)
-    : id = (json['article_id'] ?? json['news_id'] ?? json['id']).mdToString(),
-      special = json['special'].mdToString(),
-      title = (json['title'] ?? json['name']).mdToString(),
-      category = (json['cate_name'] ?? json['category_name']).mdToString(),
-      date = (json['date'] ?? json['add_time'] ?? json['publish_time'])
-          .mdToString(),
-      views = (json['view'] ?? json['scan'] ?? json['views']).mdToString(),
-      recommended =
-          castTo<bool>(json['is_recommend'] ?? json['recommend']) ?? false;
-
-  final String id;
-  final String special;
-  final String title;
-  final String category;
-  final String date;
-  final String views;
-  final bool recommended;
-}
-
 class _FavoriteArticleTile extends StatelessWidget {
   const _FavoriteArticleTile({required this.article, required this.onCancel});
 
-  final _FavoriteArticle article;
+  final ArticleSummary article;
   final VoidCallback onCancel;
 
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(14);
-    final metadata = TextStyle(color: AppColors.content, fontSize: 12);
     return ClipRRect(
       borderRadius: radius,
       child: Slidable(
@@ -438,85 +419,7 @@ class _FavoriteArticleTile extends StatelessWidget {
             ),
           ],
         ),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            border: Border.all(color: AppColors.border),
-            borderRadius: radius,
-          ),
-          child: Column(
-            crossAxisAlignment: .start,
-            children: [
-              if (article.category.isNotEmpty || article.recommended) ...[
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    if (article.category.isNotEmpty)
-                      _badge(
-                        article.category,
-                        AppColors.theme,
-                        AppColors.lightTheme,
-                      ),
-                    if (article.recommended)
-                      _badge(
-                        '♨ 推荐',
-                        AppColors.warningTitle,
-                        AppColors.warningBackground,
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-              ],
-              Text(
-                article.title,
-                style: TextStyle(
-                  color: AppColors.bigTitle,
-                  fontSize: 16,
-                  fontWeight: .w700,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  if (article.date.isNotEmpty) ...[
-                    Icon(
-                      Icons.event_available_outlined,
-                      size: 14,
-                      color: AppColors.content,
-                    ),
-                    const SizedBox(width: 5),
-                  ],
-                  Expanded(child: Text(article.date, style: metadata)),
-                  if (article.views.isNotEmpty) ...[
-                    Icon(
-                      Icons.article_outlined,
-                      size: 14,
-                      color: AppColors.content,
-                    ),
-                    const SizedBox(width: 5),
-                    Text('${article.views} 浏览', style: metadata),
-                  ],
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _badge(String label, Color foreground, Color background) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Text(label, style: TextStyle(color: foreground, fontSize: 12)),
+        child: ArticleCard(article: article),
       ),
     );
   }
