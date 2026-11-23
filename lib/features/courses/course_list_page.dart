@@ -82,7 +82,7 @@ class _CourseListPageState extends State<CourseListPage> {
                 child: SizedBox(
                   height: kToolbarHeight,
                   child: MDAppBar(
-                    title: '课程列表',
+                    title: '课程中心',
                     centerTitle: false,
                     showBackButton: widget.showBackButton,
                     actions: [
@@ -223,7 +223,7 @@ class _CoursePagedList extends StatelessWidget {
             noMore: page > 1 && courses.isEmpty,
           );
         }
-        return RefreshResult.failed(result.msg ?? '课程列表加载失败');
+        return RefreshResult.failed(result.msg ?? '课程中心加载失败');
       },
       itemBuilder: (context, item, index) =>
           CourseCard(course: item, isBig: true, onTap: () => onTap(item)),
