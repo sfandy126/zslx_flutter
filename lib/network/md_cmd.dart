@@ -1,6 +1,9 @@
 import 'md_env.dart';
 
 enum MDCmd {
+  // v3
+  articleFavorite('add_news_collection', 'add_news_collection'),
+
   // v2
   thirdLogin('zs_third_login', 'third_login'),
   bindThird('zs_bind_third', 'new_bind_third'),

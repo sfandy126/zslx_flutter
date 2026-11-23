@@ -19,20 +19,35 @@ class FavoritesPage extends StatefulWidget {
 class _FavoritesPageState extends State<FavoritesPage> {
   static const _plainTextStyle = TextStyle(decoration: TextDecoration.none);
 
-  final _listKey = GlobalKey<RefreshListViewState<_FavoriteCourse>>();
+  final _courseKey = GlobalKey<RefreshListViewState<_FavoriteCourse>>();
+  final _articleKey = GlobalKey<RefreshListViewState<_FavoriteArticle>>();
+  int _category = 2;
 
-  Future<RefreshResult<_FavoriteCourse>> _loadPage(int page) async {
+  Future<RefreshResult<T>> _loadPage<T>(
+    int page,
+    int category,
+    T Function(Map<String, Object?>) parse,
+  ) async {
     if (!MDUser.defualt.islogined) return RefreshResult.notLoggedIn();
     try {
       final result = await MDPost.sendApiSession(
         cmd: .collects,
-        params: {'cate_id': 2, 'p': page},
+        params: {'cate_id': category, 'p': page},
       );
       if (result.isSuccess) {
-        final courses = _FavoriteCourse.listFrom(result.data?['data']);
+        final rows = result.data?['data'] ?? result.data?['list'];
+        final items = rows is List
+            ? rows.whereType<Map>().map((item) {
+                return parse(
+                  item.map((key, value) => MapEntry(key.toString(), value)),
+                );
+              }).toList()
+            : <T>[];
+        final pageInfo = result.data?.mdAs<Map<String, dynamic>>('page_info');
+        final hasMore = pageInfo?.mdBool('has_more');
         return RefreshResult.success(
-          courses,
-          noMore: page > 1 && courses.isEmpty,
+          items,
+          noMore: items.isEmpty || hasMore == false,
         );
       }
       if (result.state == .outed || !MDUser.defualt.islogined) {
@@ -56,26 +71,27 @@ class _FavoritesPageState extends State<FavoritesPage> {
       queryParameters: {'id': course.id, 'type': course.type},
     );
     // 详情页可能取消收藏，返回后刷新
-    if (mounted) _listKey.currentState?.refresh();
+    if (mounted) _courseKey.currentState?.refresh();
   }
 
-  Future<void> _cancelFavorite(_FavoriteCourse course) async {
+  Future<void> _cancelFavorite(
+    MDCmd command,
+    Map<String, String> params,
+    VoidCallback remove,
+  ) async {
     if (!MDUser.defualt.islogined) {
       await _openLogin();
       return;
     }
     MDTotast.showLoading();
     try {
-      final result = await MDPost.sendApiSession(
-        cmd: .courseFavorite,
-        params: {'id': course.id, 'type': course.type},
-      );
+      final result = await MDPost.sendApiSession(cmd: command, params: params);
       if (!mounted) return;
       if (!result.isSuccess) {
         MDTotast.error(result.msg ?? '取消收藏失败，请重试');
         return;
       }
-      _listKey.currentState?.removeWhere((item) => item.id == course.id);
+      remove();
       MDTotast.success(result.msg ?? '已取消收藏');
     } catch (error) {
       Utils.log('FavoritesPage cancel favorite failed: $error');
@@ -88,7 +104,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
   Future<void> _openLogin() async {
     await AppRouter.pushNamed<void>(context, RouterNames.login);
     if (mounted && MDUser.defualt.islogined) {
-      _listKey.currentState?.refresh();
+      _courseKey.currentState?.refresh();
+      _articleKey.currentState?.refresh();
     }
   }
 
@@ -109,27 +126,99 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     backgroundColor: AppColors.transparent,
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      _categoryButton(2, '课程'),
+                      const SizedBox(width: 24),
+                      _categoryButton(1, '资讯'),
+                    ],
+                  ),
+                ),
                 Expanded(
                   child: SlidableAutoCloseBehavior(
-                    child: RefreshListView<_FavoriteCourse>(
-                      key: _listKey,
-                      onData: _loadPage,
-                      emptyText: '暂无收藏',
-                      failedText: '收藏加载失败，请重试',
-                      onLogin: _openLogin,
-                      padding: const EdgeInsets.only(bottom: 16),
-                      itemBuilder: (context, course, index) => Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                        child: _FavoriteTile(
-                          course: course,
-                          onTap: () => _open(course),
-                          onCancel: () => unawaited(_cancelFavorite(course)),
-                        ),
-                      ),
-                    ),
+                    child: _category == 2 ? _buildCourses() : _buildArticles(),
                   ),
                 ),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _categoryButton(int category, String label) {
+    final selected = _category == category;
+    return Semantics(
+      selected: selected,
+      child: OutlinedButton(
+        onPressed: () {
+          if (!selected) setState(() => _category = category);
+        },
+        style: OutlinedButton.styleFrom(
+          foregroundColor: selected ? AppColors.theme : AppColors.bigTitle,
+          backgroundColor: selected ? AppColors.lightTheme : AppColors.white,
+          side: BorderSide(
+            color: selected ? AppColors.theme : AppColors.border,
+          ),
+          shape: const StadiumBorder(),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          splashFactory: NoSplash.splashFactory,
+        ),
+        child: Text(label),
+      ),
+    );
+  }
+
+  Widget _buildCourses() {
+    return RefreshListView<_FavoriteCourse>(
+      key: _courseKey,
+      onData: (page) => _loadPage(page, 2, _FavoriteCourse.fromJson),
+      emptyText: '暂无收藏',
+      failedText: '收藏加载失败，请重试',
+      onLogin: _openLogin,
+      padding: const EdgeInsets.only(bottom: 16),
+      itemBuilder: (_, course, _) => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        child: _FavoriteTile(
+          course: course,
+          onTap: () => _open(course),
+          onCancel: () => unawaited(
+            _cancelFavorite(
+              .courseFavorite,
+              {'id': course.id, 'type': course.type},
+              () => _courseKey.currentState?.removeWhere(
+                (item) => item.id == course.id && item.type == course.type,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildArticles() {
+    return RefreshListView<_FavoriteArticle>(
+      key: _articleKey,
+      onData: (page) => _loadPage(page, 1, _FavoriteArticle.new),
+      emptyText: '暂无收藏',
+      failedText: '收藏加载失败，请重试',
+      onLogin: _openLogin,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      itemBuilder: (_, article, _) => Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: _FavoriteArticleTile(
+          article: article,
+          onCancel: () => unawaited(
+            _cancelFavorite(
+              .articleFavorite,
+              {'special': article.special, 'id': article.id},
+              () => _articleKey.currentState?.removeWhere(
+                (item) =>
+                    item.id == article.id && item.special == article.special,
+              ),
             ),
           ),
         ),
@@ -181,18 +270,6 @@ class _FavoriteCourse {
       isHide: json['is_hide'].mdToInt(),
       open: json['open'].mdToInt(),
     );
-  }
-
-  static List<_FavoriteCourse> listFrom(Object? source) {
-    if (source is! List) return const [];
-    return source
-        .whereType<Map>()
-        .map(
-          (item) => _FavoriteCourse.fromJson(
-            item.map((key, value) => MapEntry(key.toString(), value)),
-          ),
-        )
-        .toList();
   }
 }
 
@@ -309,6 +386,137 @@ class _FavoriteTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _FavoriteArticle {
+  _FavoriteArticle(Map<String, Object?> json)
+    : id = (json['article_id'] ?? json['news_id'] ?? json['id']).mdToString(),
+      special = json['special'].mdToString(),
+      title = (json['title'] ?? json['name']).mdToString(),
+      category = (json['cate_name'] ?? json['category_name']).mdToString(),
+      date = (json['date'] ?? json['add_time'] ?? json['publish_time'])
+          .mdToString(),
+      views = (json['view'] ?? json['scan'] ?? json['views']).mdToString(),
+      recommended =
+          castTo<bool>(json['is_recommend'] ?? json['recommend']) ?? false;
+
+  final String id;
+  final String special;
+  final String title;
+  final String category;
+  final String date;
+  final String views;
+  final bool recommended;
+}
+
+class _FavoriteArticleTile extends StatelessWidget {
+  const _FavoriteArticleTile({required this.article, required this.onCancel});
+
+  final _FavoriteArticle article;
+  final VoidCallback onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(14);
+    final metadata = TextStyle(color: AppColors.content, fontSize: 12);
+    return ClipRRect(
+      borderRadius: radius,
+      child: Slidable(
+        key: ValueKey((article.special, article.id)),
+        endActionPane: ActionPane(
+          motion: const DrawerMotion(),
+          extentRatio: .24,
+          children: [
+            SlidableAction(
+              onPressed: (_) => onCancel(),
+              backgroundColor: AppColors.theme,
+              foregroundColor: AppColors.white,
+              label: '取消收藏',
+            ),
+          ],
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            border: Border.all(color: AppColors.border),
+            borderRadius: radius,
+          ),
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              if (article.category.isNotEmpty || article.recommended) ...[
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    if (article.category.isNotEmpty)
+                      _badge(
+                        article.category,
+                        AppColors.theme,
+                        AppColors.lightTheme,
+                      ),
+                    if (article.recommended)
+                      _badge(
+                        '♨ 推荐',
+                        AppColors.warningTitle,
+                        AppColors.warningBackground,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
+              Text(
+                article.title,
+                style: TextStyle(
+                  color: AppColors.bigTitle,
+                  fontSize: 16,
+                  fontWeight: .w700,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  if (article.date.isNotEmpty) ...[
+                    Icon(
+                      Icons.event_available_outlined,
+                      size: 14,
+                      color: AppColors.content,
+                    ),
+                    const SizedBox(width: 5),
+                  ],
+                  Expanded(child: Text(article.date, style: metadata)),
+                  if (article.views.isNotEmpty) ...[
+                    Icon(
+                      Icons.article_outlined,
+                      size: 14,
+                      color: AppColors.content,
+                    ),
+                    const SizedBox(width: 5),
+                    Text('${article.views} 浏览', style: metadata),
+                  ],
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _badge(String label, Color foreground, Color background) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Text(label, style: TextStyle(color: foreground, fontSize: 12)),
       ),
     );
   }
