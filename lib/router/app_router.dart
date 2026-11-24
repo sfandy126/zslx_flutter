@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/article/article_detail_page.dart';
 import '../features/article/article_filters_page.dart';
 import '../features/courses/course_detail_page.dart';
 import '../features/courses/course_files_page.dart';
@@ -73,6 +74,7 @@ enum RouterNames {
   learnHistory,
   favorites,
   articleFilters,
+  articleDetail,
   video,
   feedback,
   web,
@@ -405,6 +407,14 @@ class AppRouter {
                 ? 1
                 : 2,
           ),
+        ),
+      ),
+      GoRoute(
+        path: '/article-detail',
+        name: RouterNames.articleDetail.routeName,
+        pageBuilder: (context, state) => _platformPage(
+          key: state.pageKey,
+          child: ArticleDetailPage(url: state.uri.queryParameters['url'] ?? ''),
         ),
       ),
       GoRoute(

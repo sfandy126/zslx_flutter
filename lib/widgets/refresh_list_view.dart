@@ -84,6 +84,7 @@ class RefreshListView<T> extends StatefulWidget {
     this.header,
     this.emptyBuilder,
     this.showDividers = false,
+    this.enableLoadMore = true,
     this.dividerColor,
     this.dividerIndent = 16.0,
     super.key,
@@ -130,6 +131,9 @@ class RefreshListView<T> extends StatefulWidget {
 
   /// 空数据或未登录时的自定义内容。
   final Widget Function(BuildContext context)? emptyBuilder;
+
+  /// 是否启用上拉加载和末页提示。
+  final bool enableLoadMore;
 
   /// 是否显示列表项分割线，默认 false
   final bool showDividers;
@@ -350,7 +354,8 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
     final stateView = _buildCurrentStateView(context);
     final hasHeader = widget.header != null;
     final hasStateView = stateView != null;
-    final hasNoMoreView = _noMore && _items.isNotEmpty && !hasStateView;
+    final hasNoMoreView =
+        widget.enableLoadMore && _noMore && _items.isNotEmpty && !hasStateView;
     final itemCount =
         (hasHeader ? 1 : 0) +
         (hasStateView ? 1 : _items.length + (hasNoMoreView ? 1 : 0));
@@ -358,7 +363,7 @@ class RefreshListViewState<T> extends State<RefreshListView<T>> {
     return MDRefreshHeader(
       controller: _refreshController,
       onRefresh: _onRefresh,
-      onLoad: _onLoad,
+      onLoad: widget.enableLoadMore ? _onLoad : null,
       child: ListView.separated(
         padding: widget.padding ?? const EdgeInsets.only(top: 12, bottom: 16),
         physics: const AlwaysScrollableScrollPhysics(),

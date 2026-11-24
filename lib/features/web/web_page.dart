@@ -15,6 +15,7 @@ class WebPage extends StatefulWidget {
     super.key,
     this.url,
     this.disableFd = false,
+    this.includeAppQuery = true,
     this.type = WebType.url,
     this.exts,
     this.shareType,
@@ -26,6 +27,7 @@ class WebPage extends StatefulWidget {
   final String? url;
   final String title;
   final bool disableFd;
+  final bool includeAppQuery;
   final WebType type;
   final Map<String, String>? exts;
   final WebShareType? shareType;
@@ -120,21 +122,27 @@ class _WebPageState extends State<WebPage> {
 
     final query = <String, String>{
       ...?widget.exts,
-      'user_id': MDUser.defualt.uid ?? '',
-      'sign': StringSign.mdSign({
-        'user_id': MDUser.defualt.uid ?? '',
-      }, MDUser.defualt.token ?? ''),
-      'current_version': AppConfig.appVersion,
+      if (widget.includeAppQuery) ..._appQuery(),
     };
     try {
       await _controller.loadRequest(
-        uri.replace(queryParameters: {...uri.queryParameters, ...query}),
+        query.isEmpty
+            ? uri
+            : uri.replace(queryParameters: {...uri.queryParameters, ...query}),
       );
     } catch (error) {
       _showError('网页加载失败，请稍后重试');
       Utils.log('WebPage URL load error: $error');
     }
   }
+
+  Map<String, String> _appQuery() => {
+    'user_id': MDUser.defualt.uid ?? '',
+    'sign': StringSign.mdSign({
+      'user_id': MDUser.defualt.uid ?? '',
+    }, MDUser.defualt.token ?? ''),
+    'current_version': AppConfig.appVersion,
+  };
 
   void _showError(String message) {
     MDTotast.error(message);

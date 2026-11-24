@@ -272,11 +272,10 @@ class _ArticleCategoryPageState extends State<_ArticleCategoryPage>
       params: {
         'page': page,
         'cate_id': widget.category.id,
-        'area_id': _filters.city?.id ?? _filters.province?.id ?? '0',
         if (_subcategory case final option?) 'sub_cate_id': option.id,
-        if (_filters.province case final option?) 'province': option.id,
-        if (_filters.year case final option?) 'year': option.id,
-        if (_filters.city case final option?) 'city': option.id,
+        if (_filters.province case final option?) 'area_id': option.id,
+        if (_filters.year case final option?) 'year_id': option.id,
+        if (_filters.city case final option?) 'city_id': option.id,
       },
     );
     if (!result.isSuccess) return RefreshResult.failed(result.msg ?? '资讯加载失败');
