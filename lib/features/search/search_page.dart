@@ -20,6 +20,126 @@ class _SearchPageState extends State<SearchPage> {
   final _resultsKey = GlobalKey<RefreshListViewState<Map<String, dynamic>>>();
   String _keywords = '';
 
+  List<Map<String, dynamic>> _popularArticles = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _loadPopularArticles();
+    });
+  }
+
+  Future<void> _loadPopularArticles() async {
+    MDTotast.showLoading();
+    final result = await MDPost.sendApiSession(cmd: .searchRecomArticle)
+        .whenComplete(MDTotast.hideLoading);
+    if (!mounted) return;
+
+    final data = result.data;
+    final nested = data?['data'];
+    final rows =
+        data?['list'] ??
+        data?['news_list'] ??
+        (nested is Map ? nested['list'] ?? nested['news_list'] : nested);
+    if (!result.isSuccess || rows is! List) return;
+    setState(() {
+      _popularArticles = rows
+          .whereType<Map>()
+          .map(
+            (row) => row.map((key, value) => MapEntry(key.toString(), value)),
+          )
+          .toList();
+    });
+  }
+
+  String _articleUrl(Map<String, dynamic> item) =>
+      item.mdString('article_link') ??
+      item.mdString('url') ??
+      item.mdStringOr('link');
+
+  Widget _articleCard(Map<String, dynamic> item) {
+    return Semantics(
+      button: true,
+      child: GestureDetector(
+        onTap: () => _openArticle(_articleUrl(item)),
+        child: ArticleCard(article: ArticleSummary(item)),
+      ),
+    );
+  }
+
+  Widget _buildPopularArticles() {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(18, 8, 18, 16),
+      children: [
+        Text(
+          '热门资讯',
+          style: TextStyle(
+            color: AppColors.bigTitle,
+            fontSize: 18,
+            fontWeight: .w700,
+          ),
+        ),
+        const SizedBox(height: 10),
+        for (final (index, article) in _popularArticles.indexed)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Material(
+              color: AppColors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+                side: BorderSide(color: AppColors.border),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: () => _openArticle(_articleUrl(article)),
+                splashFactory: NoSplash.splashFactory,
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    crossAxisAlignment: .start,
+                    children: [
+                      Container(
+                        constraints: const BoxConstraints(minWidth: 22),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.lightTheme,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          '${index + 1}',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: AppColors.theme,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          ArticleSummary(article).title,
+                          style: TextStyle(
+                            color: AppColors.bigTitle,
+                            fontSize: 15,
+                            fontWeight: .w600,
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -227,14 +347,7 @@ class _SearchPageState extends State<SearchPage> {
                           onTap: () => _openCourse(course),
                         );
                       } else {
-                        card = Semantics(
-                          button: true,
-                          child: GestureDetector(
-                            onTap: () =>
-                                _openArticle(item.mdStringOr('article_link')),
-                            child: ArticleCard(article: ArticleSummary(item)),
-                          ),
-                        );
+                        card = _articleCard(item);
                       }
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10),
@@ -242,7 +355,9 @@ class _SearchPageState extends State<SearchPage> {
                       );
                     },
                   ),
-                ),
+                )
+              else if (_popularArticles.isNotEmpty)
+                Expanded(child: _buildPopularArticles()),
             ],
           ),
         ),

@@ -7,7 +7,7 @@ enum MDCmd {
   articleNewsList('news_list', 'news_list'),
   articleFilters('zs_news_filters', 'zs_news_filters'),
   search('search', 'search'),
-
+  searchRecomArticle('news_list_recommend', 'news_list_recommend'),
 
   // v2
   thirdLogin('zs_third_login', 'third_login'),
