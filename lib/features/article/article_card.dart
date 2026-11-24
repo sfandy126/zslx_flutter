@@ -92,7 +92,7 @@ class ArticleCard extends StatelessWidget {
                   color: AppColors.content,
                 ),
                 const SizedBox(width: 5),
-                Text('${article.views} 浏览', style: metadata),
+                Text('${article.views} 人浏览', style: metadata),
               ],
             ],
           ),
