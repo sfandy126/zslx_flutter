@@ -20,7 +20,7 @@ class _TabbarPageState extends State<TabbarPage> {
   int _selectedIndex = 0;
 
   late final List<Widget> _pages = [
-    const HomePage(),
+    HomePage(onOpenNews: () => setState(() => _selectedIndex = 1)),
     const ArticlePage(),
     const CourseLearnPage(),
     MinePage(onOpenCourses: () => setState(() => _selectedIndex = 2)),

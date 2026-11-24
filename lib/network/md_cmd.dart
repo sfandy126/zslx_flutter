@@ -42,7 +42,7 @@ enum MDCmd {
   login('zs_login', 'login_v2'),
   courseDetail('zs_course_detail', 'course_detail'),
   myCourses('zs_my_courses', 'new_my_course'),
-  home('zs_home', 'up_new_home_v2'),
+  home('home_ios', 'home_ios'),
   sendCode('zs_send_code', 'send_sms_code'),
   forgotPwd('zs_forgot_pwd', 'forgot_pwd'),
   loginGuest('zs_login_guest', 'login_yk'),
