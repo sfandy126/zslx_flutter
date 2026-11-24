@@ -40,7 +40,7 @@ class _SearchPageState extends State<SearchPage> {
     final nested = data?['data'];
     final rows =
         data?['list'] ??
-        data?['news_list'] ??
+        data?['news'] ??
         (nested is Map ? nested['list'] ?? nested['news_list'] : nested);
     if (!result.isSuccess || rows is! List) return;
     setState(() {

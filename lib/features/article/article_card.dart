@@ -56,9 +56,10 @@ class ArticleCard extends StatelessWidget {
                   ),
                 if (article.recommended)
                   _badge(
-                    '♨ 推荐',
+                    '推荐',
                     AppColors.warningTitle,
                     AppColors.warningBackground,
+                    icon: Icons.local_fire_department_outlined,
                   ),
               ],
             ),
@@ -100,7 +101,12 @@ class ArticleCard extends StatelessWidget {
     );
   }
 
-  Widget _badge(String label, Color foreground, Color background) {
+  Widget _badge(
+    String label,
+    Color foreground,
+    Color background, {
+    IconData? icon,
+  }) {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: background,
@@ -108,7 +114,16 @@ class ArticleCard extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Text(label, style: TextStyle(color: foreground, fontSize: 12)),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 12, color: foreground),
+              const SizedBox(width: 3),
+            ],
+            Text(label, style: TextStyle(color: foreground, fontSize: 12)),
+          ],
+        ),
       ),
     );
   }

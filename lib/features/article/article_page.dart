@@ -271,6 +271,7 @@ class _ArticleCategoryPageState extends State<_ArticleCategoryPage>
       params: {
         'page': page,
         'cate_id': widget.category.id,
+        'source': 'website',
         if (_subcategory case final option?) 'sub_cate_id': option.id,
         if (_filters.province case final option?) 'area_id': option.id,
         if (_filters.year case final option?) 'year_id': option.id,
@@ -279,7 +280,7 @@ class _ArticleCategoryPageState extends State<_ArticleCategoryPage>
     );
     if (!result.isSuccess) return RefreshResult.failed(result.msg ?? '资讯加载失败');
     final data = result.data;
-    final rows = data?['list'] ?? data?['data'];
+    final rows = data?['list'] ?? data?['news'];
     if (data != null && rows is! List) {
       return RefreshResult.failed('资讯列表数据格式错误');
     }
