@@ -30,7 +30,7 @@ class AppColors {
   static final Color green = HexColor.fromHex('#2ED425');
 
   /// 价格颜色
-  static final Color price = HexColor.fromHex('#FE9565');
+  static final Color price = HexColor.fromHex('#E49E2C');
 
   /// 线条颜色
   static final Color line = HexColor.fromHex('#F8F8F8');

@@ -283,7 +283,7 @@ class _OrderCard extends StatelessWidget {
             _InfoRow(
               name: '实际付款',
               value: order.realMoney,
-              valueColor: AppColors.red,
+              valueColor: AppColors.price,
               valueBold: true,
             ),
             const SizedBox(height: 12),

@@ -371,7 +371,7 @@ class _FavoriteTile extends StatelessWidget {
                                     course.money.mdToPrice(),
                                     maxLines: 1,
                                     style: TextStyle(
-                                      color: AppColors.red,
+                                      color: AppColors.price,
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                     ),

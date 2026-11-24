@@ -676,25 +676,33 @@ class CompactCourseCard extends StatelessWidget {
                       ),
                     if (course.money.isNotEmpty || course.look.isNotEmpty) ...[
                       const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 6,
-                        crossAxisAlignment: WrapCrossAlignment.center,
+                      Row(
                         children: [
                           if (course.money.isNotEmpty)
-                            Text(
-                              course.money.mdToPrice(),
-                              style: TextStyle(
-                                color: AppColors.warningTitle,
-                                fontSize: 17,
-                                fontWeight: .w700,
+                            Flexible(
+                              child: Text(
+                                course.money.mdToPrice(),
+                                style: TextStyle(
+                                  color: AppColors.price,
+                                  fontSize: 17,
+                                  fontWeight: .w700,
+                                ),
                               ),
                             ),
                           if (course.look.isNotEmpty)
-                            Text(
-                              '${course.look} 人浏览',
-                              style: TextStyle(
-                                color: AppColors.content,
-                                fontSize: 11,
+                            Expanded(
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                  left: course.money.isNotEmpty ? 6 : 0,
+                                ),
+                                child: Text(
+                                  '${course.look} 人浏览',
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                    color: AppColors.content,
+                                    fontSize: 11,
+                                  ),
+                                ),
                               ),
                             ),
                         ],
