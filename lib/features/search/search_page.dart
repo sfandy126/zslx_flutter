@@ -32,16 +32,12 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> _loadPopularArticles() async {
     MDTotast.showLoading();
-    final result = await MDPost.sendApiSession(cmd: .searchRecomArticle)
+    final result = await MDPost.sendApiSession(cmd: .searchRecomArticle, params: {'scene': 'search_hot'})
         .whenComplete(MDTotast.hideLoading);
     if (!mounted) return;
 
     final data = result.data;
-    final nested = data?['data'];
-    final rows =
-        data?['list'] ??
-        data?['news'] ??
-        (nested is Map ? nested['list'] ?? nested['news_list'] : nested);
+    final rows = data?['list'];
     if (!result.isSuccess || rows is! List) return;
     setState(() {
       _popularArticles = rows
