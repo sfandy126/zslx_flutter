@@ -88,7 +88,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _openCourseList([String type = 'gk']) {
+  void _openCourseList([String type = '']) {
     AppRouter.pushNamed<void>(
       context,
       RouterNames.courseList,

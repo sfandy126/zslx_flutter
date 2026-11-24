@@ -220,7 +220,7 @@ class AppRouter {
         pageBuilder: (context, state) => _platformPage(
           key: state.pageKey,
           child: CourseListPage(
-            initialType: state.uri.queryParameters['type'] ?? 'gk',
+            initialType: state.uri.queryParameters['type'] ?? '',
           ),
         ),
       ),
