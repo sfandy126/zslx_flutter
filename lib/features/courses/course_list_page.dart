@@ -5,7 +5,7 @@ import '../../router/app_router.dart';
 import '../../utils/utils.dart';
 import '../../widgets/page_background.dart';
 
-class CourseListPage extends StatefulWidget {
+class CourseListPage extends StatelessWidget {
   const CourseListPage({
     this.initialType = '',
     this.showBackButton = true,
@@ -15,25 +15,20 @@ class CourseListPage extends StatefulWidget {
   final String initialType;
   final bool showBackButton;
 
-  @override
-  State<CourseListPage> createState() => _CourseListPageState();
-}
-
-class _CourseListPageState extends State<CourseListPage> {
   static const _types = [
-    CourseType('', '全部'),
-    CourseType('gk', '公开课'),
-    CourseType('bs', '笔试课'),
-    CourseType('ms', '面试课'),
-    CourseType('ydy', '一对一'),
-    CourseType('zx', '微课堂'),
+    _CourseType('', '全部'),
+    _CourseType('gk', '公开课'),
+    _CourseType('bs', '笔试课'),
+    _CourseType('ms', '面试课'),
+    _CourseType('ydy', '一对一'),
+    _CourseType('zx', '微课堂'),
   ];
 
-  void _openSearch() {
+  void _openSearch(BuildContext context) {
     AppRouter.pushNamed<void>(context, RouterNames.courseSearch);
   }
 
-  void _openCourse(CourseItem course) {
+  void _openCourse(BuildContext context, CourseItem course) {
     AppRouter.pushNamed<void>(
       context,
       .courseDetail,
@@ -43,7 +38,7 @@ class _CourseListPageState extends State<CourseListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final index = _types.indexWhere((type) => type.value == widget.initialType);
+    final index = _types.indexWhere((type) => type.value == initialType);
     return Scaffold(
       body: MDPageBackground(
         child: SafeArea(
@@ -58,12 +53,12 @@ class _CourseListPageState extends State<CourseListPage> {
                     title: '课程中心',
                     titleColor: AppColors.bigTitle,
                     centerTitle: false,
-                    showBackButton: widget.showBackButton,
+                    showBackButton: showBackButton,
                     backgroundColor: AppColors.transparent,
                     actions: [
                       IconButton(
                         tooltip: '搜索课程',
-                        onPressed: _openSearch,
+                        onPressed: () => _openSearch(context),
                         icon: Icon(Icons.search, color: AppColors.bigTitle),
                         style: IconButton.styleFrom(
                           splashFactory: NoSplash.splashFactory,
@@ -79,7 +74,10 @@ class _CourseListPageState extends State<CourseListPage> {
                   child: TabBarView(
                     children: [
                       for (final type in _types)
-                        _CoursePagedList(type: type, onTap: _openCourse),
+                        _CoursePagedList(
+                          type: type,
+                          onTap: (course) => _openCourse(context, course),
+                        ),
                     ],
                   ),
                 ),
@@ -92,8 +90,8 @@ class _CourseListPageState extends State<CourseListPage> {
   }
 }
 
-class CourseType {
-  const CourseType(this.value, this.title);
+class _CourseType {
+  const _CourseType(this.value, this.title);
 
   final String value;
   final String title;
@@ -102,7 +100,7 @@ class CourseType {
 class _CourseTypeBar extends StatelessWidget {
   const _CourseTypeBar({required this.types});
 
-  final List<CourseType> types;
+  final List<_CourseType> types;
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +146,7 @@ class _CourseTypeBar extends StatelessWidget {
 class _CoursePagedList extends StatefulWidget {
   const _CoursePagedList({required this.type, required this.onTap});
 
-  final CourseType type;
+  final _CourseType type;
   final ValueChanged<CourseItem> onTap;
 
   @override
@@ -216,9 +214,7 @@ class CourseItem {
     this.subtitle = '',
     this.picture = '',
     this.money = '',
-    this.oldMoney = '',
     this.look = '',
-    this.isHot = false,
     this.tags = const [],
     this.hours = '',
     this.teacher = '',
@@ -231,9 +227,7 @@ class CourseItem {
   final String subtitle;
   final String picture;
   final String money;
-  final String oldMoney;
   final String look;
-  final bool isHot;
   final List<String> tags;
   final String hours;
   final String teacher;
@@ -248,9 +242,7 @@ class CourseItem {
       subtitle: json['sub_title'].mdToString(),
       picture: json['photo'].mdToString(),
       money: json['money'].mdToString(),
-      oldMoney: json['y_money'].mdToString(),
       look: json['view'].mdToString(),
-      isHot: json['is_hot'].mdToInt() == 1,
       tags: tags is List
           ? tags.whereType<String>().where((tag) => tag.isNotEmpty).toList()
           : const [],
@@ -276,266 +268,6 @@ class CourseItem {
   }
 }
 
-class CourseCard extends StatelessWidget {
-  const CourseCard({
-    required this.course,
-    required this.onTap,
-    this.isBig = false,
-    super.key,
-  });
-
-  final CourseItem course;
-  final VoidCallback onTap;
-  final bool isBig;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-        padding: isBig ? EdgeInsets.zero : const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: isBig
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(12),
-                        ),
-                        child: AspectRatio(
-                          aspectRatio: 375 / 198,
-                          child: MDNetImage(imageUrl: course.picture),
-                        ),
-                      ),
-                      if (course.isHot)
-                        Positioned(
-                          left: 4,
-                          top: 4,
-                          child: _Tag(text: '热门', color: AppColors.red),
-                        ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          course.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: AppColors.title,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                            decoration: TextDecoration.none,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            SvgPicture.asset(
-                              'assets/images/public/scan.svg',
-                              width: 12,
-                              height: 12,
-                            ),
-                            const SizedBox(width: 2),
-                            Expanded(
-                              child: Text(
-                                '${course.look.isEmpty ? '100' : course.look} 人学习',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: AppColors.content,
-                                  fontSize: 12,
-                                  decoration: TextDecoration.none,
-                                ),
-                              ),
-                            ),
-                            _PriceView(course: course),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              )
-            : Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: SizedBox(
-                          width: 140,
-                          height: 91,
-                          child: MDNetImage(imageUrl: course.picture),
-                        ),
-                      ),
-                      if (course.isHot)
-                        Positioned(
-                          left: 4,
-                          top: 4,
-                          child: _Tag(text: '热门', color: AppColors.red),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: SizedBox(
-                      height: 91,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            course.title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: AppColors.title,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              decoration: TextDecoration.none,
-                            ),
-                          ),
-                          if (course.subtitle.isNotEmpty) ...[
-                            const SizedBox(height: 6),
-                            Text(
-                              course.subtitle,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: AppColors.content,
-                                fontSize: 12,
-                                decoration: TextDecoration.none,
-                              ),
-                            ),
-                          ],
-                          const Spacer(),
-                          Row(
-                            children: [
-                              _PriceView(course: course),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    SvgPicture.asset(
-                                      'assets/images/public/scan.svg',
-                                      width: 12,
-                                      height: 12,
-                                    ),
-                                    const SizedBox(width: 2),
-                                    Flexible(
-                                      child: Text(
-                                        '${course.look.isEmpty ? '100' : course.look} 人学习',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.right,
-                                        style: TextStyle(
-                                          color: AppColors.content,
-                                          fontSize: 12,
-                                          decoration: TextDecoration.none,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-      ),
-    );
-  }
-}
-
-class _PriceView extends StatelessWidget {
-  const _PriceView({required this.course});
-
-  final CourseItem course;
-
-  @override
-  Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 116),
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        alignment: Alignment.centerRight,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (course.oldMoney.mdToOldPrice().isNotEmpty) ...[
-              Text(
-                course.oldMoney.mdToOldPrice(),
-                style: TextStyle(
-                  color: AppColors.content,
-                  fontSize: 12,
-                  decoration: TextDecoration.lineThrough,
-                  decorationColor: AppColors.content,
-                ),
-              ),
-              const SizedBox(width: 6),
-            ],
-            Text(
-              course.money.mdToPrice(),
-              style: TextStyle(
-                color: AppColors.price,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                decoration: TextDecoration.none,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Tag extends StatelessWidget {
-  const _Tag({required this.text, required this.color});
-
-  final String text;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 18,
-      padding: const EdgeInsets.symmetric(horizontal: 7),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 11,
-          fontWeight: FontWeight.w500,
-          decoration: TextDecoration.none,
-        ),
-      ),
-    );
-  }
-}
-
 class CompactCourseCard extends StatelessWidget {
   const CompactCourseCard({
     required this.course,
@@ -549,14 +281,12 @@ class CompactCourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(20);
-    final category = switch (course.type) {
-      'gk' => '公开课',
-      'bs' => '笔试课',
-      'ms' => '面试课',
-      'ydy' => '一对一',
-      'zx' => '微课堂',
-      _ => '',
-    };
+    final category =
+        CourseListPage._types
+            .where((type) => type.value.isNotEmpty && type.value == course.type)
+            .firstOrNull
+            ?.title ??
+        '';
     final tags = course.tags;
     final hours = course.hours;
     final teacher = course.teacher;
@@ -627,8 +357,9 @@ class CompactCourseCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: .ellipsis,
                       style: TextStyle(
-                        color: AppColors.bigTitle,
-                        fontWeight: .w700,
+                        color: AppColors.title,
+                        fontSize: 15,
+                        fontWeight: .w500,
                       ),
                     ),
                     if (tags.isNotEmpty)

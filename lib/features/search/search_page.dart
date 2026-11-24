@@ -119,9 +119,9 @@ class _SearchPageState extends State<SearchPage> {
                         child: Text(
                           ArticleSummary(article).title,
                           style: TextStyle(
-                            color: AppColors.bigTitle,
+                            color: AppColors.title,
                             fontSize: 15,
-                            fontWeight: .w600,
+                            fontWeight: .w500,
                             height: 1.5,
                           ),
                         ),

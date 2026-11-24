@@ -68,9 +68,9 @@ class ArticleCard extends StatelessWidget {
           Text(
             article.title,
             style: TextStyle(
-              color: AppColors.bigTitle,
-              fontSize: 16,
-              fontWeight: .w700,
+              color: AppColors.title,
+              fontSize: 15,
+              fontWeight: .w500,
             ),
           ),
           const SizedBox(height: 12),

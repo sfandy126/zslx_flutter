@@ -137,8 +137,10 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
         }
         return RefreshResult.failed(result.msg ?? '搜索失败');
       },
-      itemBuilder: (context, item, index) =>
-          CourseCard(course: item, onTap: () => _openCourse(item)),
+      itemBuilder: (context, item, index) => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        child: CompactCourseCard(course: item, onTap: () => _openCourse(item)),
+      ),
       emptyText: '未搜索到相关课程',
     );
   }
