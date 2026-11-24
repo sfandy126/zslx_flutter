@@ -123,33 +123,33 @@ class $AssetsImagesCourseGen {
 class $AssetsImagesHomeGen {
   const $AssetsImagesHomeGen();
 
-  /// File path: assets/images/home/courseBs@3x.png
-  AssetGenImage get courseBs3x =>
-      const AssetGenImage('assets/images/home/courseBs@3x.png');
+  /// File path: assets/images/home/courseBs.svg
+  SvgGenImage get courseBs =>
+      const SvgGenImage('assets/images/home/courseBs.svg');
 
-  /// File path: assets/images/home/courseGk@3x.png
-  AssetGenImage get courseGk3x =>
-      const AssetGenImage('assets/images/home/courseGk@3x.png');
+  /// File path: assets/images/home/courseGk.svg
+  SvgGenImage get courseGk =>
+      const SvgGenImage('assets/images/home/courseGk.svg');
 
-  /// File path: assets/images/home/courseMs@3x.png
-  AssetGenImage get courseMs3x =>
-      const AssetGenImage('assets/images/home/courseMs@3x.png');
+  /// File path: assets/images/home/courseMs.svg
+  SvgGenImage get courseMs =>
+      const SvgGenImage('assets/images/home/courseMs.svg');
 
-  /// File path: assets/images/home/courseYdy@3x.png
-  AssetGenImage get courseYdy3x =>
-      const AssetGenImage('assets/images/home/courseYdy@3x.png');
+  /// File path: assets/images/home/courseYdy.svg
+  SvgGenImage get courseYdy =>
+      const SvgGenImage('assets/images/home/courseYdy.svg');
 
-  /// File path: assets/images/home/courseZx@3x.png
-  AssetGenImage get courseZx3x =>
-      const AssetGenImage('assets/images/home/courseZx@3x.png');
+  /// File path: assets/images/home/courseZx.svg
+  SvgGenImage get courseZx =>
+      const SvgGenImage('assets/images/home/courseZx.svg');
 
   /// List of all assets
-  List<AssetGenImage> get values => [
-    courseBs3x,
-    courseGk3x,
-    courseMs3x,
-    courseYdy3x,
-    courseZx3x,
+  List<SvgGenImage> get values => [
+    courseBs,
+    courseGk,
+    courseMs,
+    courseYdy,
+    courseZx,
   ];
 }
 
