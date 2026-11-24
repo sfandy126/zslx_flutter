@@ -33,6 +33,7 @@ import '../features/logins/nick_page.dart';
 import '../features/logins/off_page.dart';
 import '../features/logins/passward_page.dart';
 import '../features/logins/safe_page.dart';
+import '../features/search/search_page.dart';
 import '../features/settings/feedback_page.dart';
 import '../features/settings/about_page.dart';
 import '../features/settings/setup_page.dart';
@@ -75,6 +76,7 @@ enum RouterNames {
   favorites,
   articleFilters,
   articleDetail,
+  search,
   video,
   feedback,
   web,
@@ -408,6 +410,12 @@ class AppRouter {
                 : 2,
           ),
         ),
+      ),
+      GoRoute(
+        path: '/search',
+        name: RouterNames.search.routeName,
+        pageBuilder: (context, state) =>
+            _platformPage(key: state.pageKey, child: const SearchPage()),
       ),
       GoRoute(
         path: '/article-detail',

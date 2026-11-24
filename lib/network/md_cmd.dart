@@ -6,6 +6,7 @@ enum MDCmd {
   articleNewsCate('news_cate', 'news_cate'),
   articleNewsList('news_list', 'news_list'),
   articleFilters('zs_news_filters', 'zs_news_filters'),
+  search('search', 'search'),
 
 
   // v2

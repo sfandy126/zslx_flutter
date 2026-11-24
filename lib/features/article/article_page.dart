@@ -170,9 +170,8 @@ class _ArticlePageState extends State<ArticlePage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(18, 12, 18, 6),
                 child: OutlinedButton.icon(
-                  onPressed: () {
-                    // TODO: 接入资讯搜索页。
-                  },
+                  onPressed: () =>
+                      AppRouter.pushNamed<void>(context, RouterNames.search),
                   icon: const Icon(Icons.search),
                   label: const Text('搜索公告、真题和学习资料'),
                   style: OutlinedButton.styleFrom(
