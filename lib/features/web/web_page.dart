@@ -2,13 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:zslx_flutter/features/share/share.dart';
 import 'package:zslx_flutter/features/share/system_share.dart';
 import 'package:zslx_flutter/utils/utils.dart';
 import 'package:zslx_flutter/extensions/string_sign.dart';
 
 enum WebType { url, html }
 
-enum WebShareType { system }
+enum WebShareType { system, custom }
 
 class WebPage extends StatefulWidget {
   const WebPage({
@@ -18,6 +19,7 @@ class WebPage extends StatefulWidget {
     this.type = WebType.url,
     this.exts,
     this.shareType,
+    this.shareData,
     this.onOpenCourseDetail,
     this.onOpenAppLogin,
     this.title,
@@ -29,6 +31,7 @@ class WebPage extends StatefulWidget {
   final WebType type;
   final Map<String, String>? exts;
   final WebShareType? shareType;
+  final Future<MDShareData>? shareData;
   final ValueChanged<Map<String, dynamic>>? onOpenCourseDetail;
   final VoidCallback? onOpenAppLogin;
 
@@ -236,11 +239,33 @@ class _WebPageState extends State<WebPage> {
     }
   }
 
-  Future<void> _shareToSystem() async {
-    if (_isSharing || widget.shareType != WebShareType.system) return;
+  bool get _canShare => switch (widget.shareType) {
+    WebShareType.system => widget.url.trim().isNotEmpty,
+    WebShareType.custom =>
+      widget.type == WebType.url && widget.url.trim().isNotEmpty,
+    null => false,
+  };
+
+  Future<void> _share() async {
+    if (_isSharing || !_canShare) return;
     setState(() => _isSharing = true);
     try {
-      await SystemShare.shareFile(widget.url);
+      switch (widget.shareType) {
+        case WebShareType.system:
+          await SystemShare.shareFile(widget.url);
+        case WebShareType.custom:
+          final data =
+              await widget.shareData ??
+              MDShareData(
+                title: widget.title,
+                link: widget.url.trim(),
+                tools: const [.copyLink],
+              );
+          if (!mounted) return;
+          await MDShare.toShare(context, data);
+        case null:
+          break;
+      }
     } finally {
       if (mounted) setState(() => _isSharing = false);
     }
@@ -256,10 +281,14 @@ class _WebPageState extends State<WebPage> {
           title: widget.title ?? '',
           onBackPressed: _goBack,
           actions: [
-            if (widget.shareType == WebShareType.system)
+            if (_canShare)
               IconButton(
-                icon: const Icon(Icons.share),
-                onPressed: _isSharing ? null : _shareToSystem,
+                icon: SvgPicture.asset(
+                  'assets/images/public/zs_ui_share.svg',
+                  width: 24,
+                  height: 24,
+                ),
+                onPressed: _isSharing ? null : _share,
               ),
           ],
           bottom: _progress > 0 && _progress < 1

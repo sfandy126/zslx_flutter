@@ -32,8 +32,10 @@ class _SearchPageState extends State<SearchPage> {
 
   Future<void> _loadPopularArticles() async {
     MDTotast.showLoading();
-    final result = await MDPost.sendApiSession(cmd: .searchRecomArticle, params: {'scene': 'search_hot'})
-        .whenComplete(MDTotast.hideLoading);
+    final result = await MDPost.sendApiSession(
+      cmd: .searchRecomArticle,
+      params: {'scene': 'search_hot'},
+    ).whenComplete(MDTotast.hideLoading);
     if (!mounted) return;
 
     final data = result.data;
@@ -49,16 +51,11 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  String _articleUrl(Map<String, dynamic> item) =>
-      item.mdString('article_link') ??
-      item.mdString('url') ??
-      item.mdStringOr('link');
-
   Widget _articleCard(Map<String, dynamic> item) {
     return Semantics(
       button: true,
       child: GestureDetector(
-        onTap: () => _openArticle(_articleUrl(item)),
+        onTap: () => _openArticle(ArticleSummary(item)),
         child: ArticleCard(article: ArticleSummary(item)),
       ),
     );
@@ -88,7 +85,7 @@ class _SearchPageState extends State<SearchPage> {
               ),
               clipBehavior: Clip.antiAlias,
               child: InkWell(
-                onTap: () => _openArticle(_articleUrl(article)),
+                onTap: () => _openArticle(ArticleSummary(article)),
                 splashFactory: NoSplash.splashFactory,
                 child: Padding(
                   padding: const EdgeInsets.all(14),
@@ -211,7 +208,8 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  void _openArticle(String url) {
+  void _openArticle(ArticleSummary article) {
+    final url = article.url;
     final uri = Uri.tryParse(url);
     if (uri == null ||
         !uri.hasAuthority ||
@@ -222,7 +220,11 @@ class _SearchPageState extends State<SearchPage> {
     AppRouter.pushNamed<void>(
       context,
       RouterNames.articleDetail,
-      queryParameters: {'url': url},
+      queryParameters: {
+        'url': url,
+        'special': article.special,
+        'id': article.id,
+      },
     );
   }
 

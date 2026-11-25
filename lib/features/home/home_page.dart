@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _openArticle(String url) {
+  void _openArticle(ArticleSummary article, String url) {
     final uri = Uri.tryParse(url);
     if (uri == null ||
         !uri.hasAuthority ||
@@ -110,7 +110,11 @@ class _HomePageState extends State<HomePage> {
     AppRouter.pushNamed<void>(
       context,
       RouterNames.articleDetail,
-      queryParameters: {'url': url},
+      queryParameters: {
+        'url': url,
+        'special': article.special,
+        'id': article.id,
+      },
     );
   }
 
@@ -179,10 +183,13 @@ class _HomePageState extends State<HomePage> {
               onTap: () =>
                   AppRouter.pushNamed<void>(context, RouterNames.search),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 child: Row(
                   children: [
-                   Icon(Icons.search, color: AppColors.title, size: 20),
+                    Icon(Icons.search, color: AppColors.title, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -318,7 +325,7 @@ class _HomePageState extends State<HomePage> {
               child: Semantics(
                 button: true,
                 child: GestureDetector(
-                  onTap: () => _openArticle(url),
+                  onTap: () => _openArticle(article, url),
                   child: ArticleCard(article: article),
                 ),
               ),
