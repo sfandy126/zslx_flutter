@@ -3,12 +3,19 @@ import 'package:flutter/material.dart';
 import '../web/web_page.dart';
 
 class ArticleDetailPage extends StatelessWidget {
-  const ArticleDetailPage({required this.url, super.key});
+  const ArticleDetailPage({
+    super.key,
+    required this.url,
+    this.special,
+    this.id,
+  });
 
   final String url;
+  final String? special;
+  final String? id;
 
   @override
   Widget build(BuildContext context) {
-    return WebPage(url: url, title: '公告详情', includeAppQuery: false);
+    return WebPage(url: url);
   }
 }

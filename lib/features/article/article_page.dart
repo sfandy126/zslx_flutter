@@ -314,6 +314,25 @@ class _ArticleCategoryPageState extends State<_ArticleCategoryPage>
     _listKey.currentState?.refresh();
   }
 
+  void _openArticle(ArticleSummary article) {
+    final uri = Uri.tryParse(article.url);
+    if (uri == null ||
+        !uri.hasAuthority ||
+        !{'http', 'https'}.contains(uri.scheme)) {
+      MDTotast.error('资讯地址无效');
+      return;
+    }
+    AppRouter.pushNamed<void>(
+      context,
+      RouterNames.articleDetail,
+      queryParameters: {
+        'special': article.special,
+        'id': article.id,
+        'url': article.url,
+      },
+    );
+  }
+
   void _selectSubcategory(ArticleOption? option) {
     if (_subcategory?.id == option?.id) return;
     setState(() => _subcategory = option);
@@ -388,7 +407,13 @@ class _ArticleCategoryPageState extends State<_ArticleCategoryPage>
             padding: const EdgeInsets.fromLTRB(18, 0, 18, 16),
             itemBuilder: (_, article, _) => Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: ArticleCard(article: article),
+              child: Semantics(
+                button: true,
+                child: GestureDetector(
+                  onTap: () => _openArticle(article),
+                  child: ArticleCard(article: article),
+                ),
+              ),
             ),
           ),
         ),

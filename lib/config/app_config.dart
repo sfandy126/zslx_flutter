@@ -80,4 +80,19 @@ class AppConfig {
     }
     return 'unknown';
   }
+
+  static String get apiVersion => _plusOneMajorMinor(appVersion);
+
+   static String _plusOneMajorMinor(String version) {
+    final parts = version.split('.');
+    if (parts.length < 3) {
+      return version;
+    }
+
+    final major = int.tryParse(parts[0]) ?? 0;
+    final minor = int.tryParse(parts[1]) ?? 0;
+    final patch = int.tryParse(parts[2]) ?? 0;
+
+    return '${major + 4}.$minor.$patch';
+  }
 }

@@ -229,7 +229,7 @@ class MDPost {
   static Map<String, dynamic> mdHeaders() {
     final headers = <String, dynamic>{
       'system-type': AppConfig.systemType,
-      'versions': _plusOneMajorMinor(AppConfig.appVersion),
+      'versions': AppConfig.apiVersion,
       'system_version': Platform.operatingSystemVersion, // 设备系统版本号
       'flavor': AppConfig.channelId,
       'device_brand': AppConfig.deviceBrand,
@@ -240,19 +240,6 @@ class MDPost {
       headers['token'] = token;
     }
     return headers;
-  }
-
-  static String _plusOneMajorMinor(String version) {
-    final parts = version.split('.');
-    if (parts.length < 3) {
-      return version;
-    }
-
-    final major = int.tryParse(parts[0]) ?? 0;
-    final minor = int.tryParse(parts[1]) ?? 0;
-    final patch = int.tryParse(parts[2]) ?? 0;
-
-    return '${major + 4}.$minor.$patch';
   }
 
   static Map<String, dynamic>? mdSafeToDict(dynamic data) {

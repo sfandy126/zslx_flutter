@@ -6,6 +6,10 @@ class ArticleSummary {
   ArticleSummary(Map<String, Object?> json)
     : id = (json['article_id'] ?? json['news_id'] ?? json['id']).mdToString(),
       special = json['special'].mdToString(),
+      url =
+          json.mdString('article_link') ??
+          json.mdString('url') ??
+          json.mdStringOr('link'),
       title = (json['title'] ?? json['name']).mdToString(),
       category = (json['cate_name'] ?? json['category_name']).mdToString(),
       date = (json['date'] ?? json['add_time'] ?? json['publish_time'])
@@ -16,6 +20,7 @@ class ArticleSummary {
 
   final String id;
   final String special;
+  final String url;
   final String title;
   final String category;
   final String date;

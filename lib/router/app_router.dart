@@ -422,7 +422,11 @@ class AppRouter {
         name: RouterNames.articleDetail.routeName,
         pageBuilder: (context, state) => _platformPage(
           key: state.pageKey,
-          child: ArticleDetailPage(url: state.uri.queryParameters['url'] ?? ''),
+          child: ArticleDetailPage(
+            url: state.uri.queryParameters['url'] ?? '',
+            special: state.uri.queryParameters['special'],
+            id: state.uri.queryParameters['id'],
+          ),
         ),
       ),
       GoRoute(
@@ -485,10 +489,12 @@ class AppRouter {
           return _platformPage(
             key: state.pageKey,
             child: WebPage(
-              url: extra['url']?.toString() ?? state.uri.queryParameters['url'],
+              url:
+                  extra['url']?.toString() ??
+                  state.uri.queryParameters['url'] ??
+                  '',
               title:
                   extra['title']?.toString() ??
-                  state.uri.queryParameters['title'] ??
                   '',
               type: typeName == 'html' ? WebType.html : WebType.url,
               disableFd: state.uri.queryParameters['disableFd'] == 'true',

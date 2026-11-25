@@ -13,21 +13,19 @@ enum WebShareType { system }
 class WebPage extends StatefulWidget {
   const WebPage({
     super.key,
-    this.url,
+    required this.url,
     this.disableFd = false,
-    this.includeAppQuery = true,
     this.type = WebType.url,
     this.exts,
     this.shareType,
     this.onOpenCourseDetail,
     this.onOpenAppLogin,
-    required this.title,
+    this.title,
   });
 
-  final String? url;
-  final String title;
+  final String url;
+  final String? title;
   final bool disableFd;
-  final bool includeAppQuery;
   final WebType type;
   final Map<String, String>? exts;
   final WebShareType? shareType;
@@ -102,7 +100,22 @@ class _WebPageState extends State<WebPage> {
 
   Future<void> _loadData() async {
     final value = widget.url;
-    if (value == null || value.isEmpty) return;
+    if (value.isEmpty) return;
+
+    String? requestUserAgent;
+    try {
+      final userAgent = (await _controller.getUserAgent())?.trim();
+      const prefix = 'form=zslx system-type=ios';
+      final suffix = '$prefix app-version=${AppConfig.apiVersion}';
+      final configuredUserAgent = userAgent == null || userAgent.isEmpty
+          ? suffix
+          : '$userAgent $suffix';
+      await _controller.setUserAgent(configuredUserAgent);
+      requestUserAgent = configuredUserAgent;
+    } catch (error) {
+      Utils.log('WebPage User-Agent configuration failed: $error');
+    }
+    if (!mounted) return;
 
     if (widget.type == WebType.html) {
       try {
@@ -122,18 +135,59 @@ class _WebPageState extends State<WebPage> {
 
     final query = <String, String>{
       ...?widget.exts,
-      if (widget.includeAppQuery) ..._appQuery(),
+      if (_shouldAppendAppQuery(uri)) ..._appQuery(),
     };
+    final Uri furi = query.isEmpty
+        ? uri
+        : uri.replace(queryParameters: {...uri.queryParameters, ...query});
+    Utils.log('WebPage load URL: $furi');
+    if (requestUserAgent != null) {
+      Utils.log('WebPage request header User-Agent: $requestUserAgent');
+    }
     try {
-      await _controller.loadRequest(
-        query.isEmpty
-            ? uri
-            : uri.replace(queryParameters: {...uri.queryParameters, ...query}),
-      );
+      await _controller.loadRequest(furi);
     } catch (error) {
       _showError('网页加载失败，请稍后重试');
       Utils.log('WebPage URL load error: $error');
     }
+  }
+
+  bool _shouldAppendAppQuery(Uri uri) {
+    if (uri.scheme != 'http' && uri.scheme != 'https') return false;
+    if (uri.pathSegments.isEmpty) return true;
+
+    final lastSegment = uri.pathSegments.last;
+    final dotIndex = lastSegment.lastIndexOf('.');
+    if (dotIndex == -1 || dotIndex == lastSegment.length - 1) return true;
+
+    const webExtensions = {
+      'html',
+      'xml',
+      'png',
+      'jpg',
+      'jpeg',
+      'gif',
+      'webp',
+      'mp4',
+      'wav',
+      'mp3',
+      'pdf',
+      'txt',
+      'json',
+      'csv',
+      'xls',
+      'xlsx',
+      'doc',
+      'docx',
+      'ppt',
+      'pptx',
+      'zip',
+      'rar',
+      '7z',
+    };
+    return webExtensions.contains(
+      lastSegment.substring(dotIndex + 1).toLowerCase(),
+    );
   }
 
   Map<String, String> _appQuery() => {
@@ -199,7 +253,7 @@ class _WebPageState extends State<WebPage> {
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: MDAppBar(
-          title: widget.title,
+          title: widget.title ?? '',
           onBackPressed: _goBack,
           actions: [
             if (widget.shareType == WebShareType.system)
