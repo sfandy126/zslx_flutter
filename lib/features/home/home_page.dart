@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../router/app_router.dart';
 import '../../utils/utils.dart';
+import '../../widgets/page_background.dart';
 import '../../widgets/refresh_list_view.dart';
 import '../article/article_card.dart';
 import 'home_alert.dart';
@@ -50,9 +51,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  Future<RefreshResult<_HomeData>> _loadHome(int page) async {
-    if (page > 1) return RefreshResult.success(const [], noMore: true);
-
+  Future<RefreshResult<_HomeData>> _loadHome() async {
     final shouldRefreshAlerts = _hasLoadedHome;
     _hasLoadedHome = true;
     final resultFuture = MDPost.sendApiSession(
@@ -69,9 +68,7 @@ class _HomePageState extends State<HomePage> {
     final result = await resultFuture;
     if (result.isSuccess) {
       _liveIndex = 0;
-      return RefreshResult.success([
-        _HomeData.fromJson(result.data),
-      ], noMore: true);
+      return RefreshResult.success([_HomeData.fromJson(result.data)]);
     }
     return RefreshResult.failed(result.msg ?? '首页数据加载失败');
   }
@@ -120,98 +117,108 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [AppColors.homeSky, AppColors.homeBackground],
-          ),
-        ),
+      body: MDPageBackground(
         child: SafeArea(
           bottom: false,
-          child: RefreshListView<_HomeData>(
-            padding: const EdgeInsets.only(bottom: 16),
-            onData: _loadHome,
-            itemBuilder: (context, data, index) => _buildHomeContent(data),
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(
+                child: RefreshListView<_HomeData>(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  enableLoadMore: false,
+                  onData: (_) => _loadHome(),
+                  itemBuilder: (context, data, index) =>
+                      _buildHomeContent(data),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              SvgPicture.asset(
+                'assets/images/home/homeLogo.svg',
+                height: 42,
+                semanticsLabel: '卓仕遴选',
+              ),
+              const Spacer(),
+              IconButton(
+                tooltip: '收藏',
+                onPressed: () =>
+                    AppRouter.pushNamed<void>(context, RouterNames.favorites),
+                icon: Assets.images.mine.zsFnFavorites.svg(
+                  width: 24,
+                  height: 24,
+                ),
+                style: IconButton.styleFrom(
+                  splashFactory: NoSplash.splashFactory,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Material(
+            color: AppColors.white,
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(color: AppColors.paleBlue),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              splashFactory: NoSplash.splashFactory,
+              onTap: () =>
+                  AppRouter.pushNamed<void>(context, RouterNames.search),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                child: Row(
+                  children: [
+                   Icon(Icons.search, color: AppColors.title, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '搜索公告、课程相关资讯',
+                        style: TextStyle(
+                          color: AppColors.content,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '去搜索',
+                      style: TextStyle(color: AppColors.content, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildHomeContent(_HomeData data) {
+    const hotIconFallback = Icon(
+      Icons.local_fire_department_outlined,
+      color: AppColors.goldenOrange,
+      size: 18,
+    );
     final hotCourses = data.hotCourses
         .where((course) => _hotCategory.isEmpty || course.type == _hotCategory)
         .toList();
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Assets.images.appLogo1024.image(width: 42, height: 42),
-                  const SizedBox(width: 8),
-                  const Text(
-                    '卓仕遴选',
-                    style: TextStyle(
-                      color: AppColors.bigTitle,
-                      fontSize: 21,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    tooltip: '收藏',
-                    onPressed: () => AppRouter.pushNamed<void>(
-                      context,
-                      RouterNames.favorites,
-                    ),
-                    icon: Icon(Icons.bookmark_outline, color: AppColors.price),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-              Material(
-                color: AppColors.white,
-                shape: RoundedRectangleBorder(
-                  side: const BorderSide(color: AppColors.homeBorder),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(14),
-                  splashFactory: NoSplash.splashFactory,
-                  onTap: () =>
-                      AppRouter.pushNamed<void>(context, RouterNames.search),
-                  child: Padding(
-                    padding: const EdgeInsets.all(13),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.search, color: AppColors.bigTitle),
-                        const SizedBox(width: 8),
-                        const Expanded(
-                          child: Text(
-                            '搜索公告、课程相关资讯',
-                            style: TextStyle(color: AppColors.bigTitle),
-                          ),
-                        ),
-                        Text(
-                          '去搜索',
-                          style: TextStyle(
-                            color: AppColors.content,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
         _HomeBannerCarousel(
           banners: data.banners,
           onTap: (banner) {
@@ -228,28 +235,59 @@ class _HomePageState extends State<HomePage> {
         if (data.liveCourses.isNotEmpty) _buildLive(data.liveCourses),
         _SectionHeader(
           title: '热门课程',
-          icon: Icons.local_fire_department_outlined,
+          icon: DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColors.paleOrange,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: SizedBox(
+              width: 28,
+              height: 28,
+              child: Center(
+                child: SvgPicture.asset(
+                  'assets/images/home/zs_hot.svg',
+                  width: 18,
+                  height: 18,
+                  placeholderBuilder: (_) => hotIconFallback,
+                  errorBuilder: (_, _, _) => hotIconFallback,
+                ),
+              ),
+            ),
+          ),
           onAction: () => _openCourseList(_hotCategory),
         ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-          child: Row(
-            children: [
-              for (final (type, title) in [('', '全部'), ..._categories])
-                Padding(
-                  padding: const EdgeInsets.only(right: 6),
-                  child: ChoiceChip(
-                    label: Text(title),
-                    selected: _hotCategory == type,
-                    selectedColor: AppColors.lightTheme,
-                    backgroundColor: AppColors.white,
-                    showCheckmark: false,
-                    side: const BorderSide(color: AppColors.homeBorder),
-                    onSelected: (_) => setState(() => _hotCategory = type),
+        Theme(
+          data: Theme.of(context)
+              .copyWith(splashFactory: NoSplash.splashFactory),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Row(
+              children: [
+                for (final (type, title) in [('', '全部'), ..._categories])
+                  Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: ChoiceChip(
+                      label: Text(title),
+                      labelPadding: const EdgeInsets.symmetric(horizontal: 6),
+                      visualDensity: const VisualDensity(vertical: -2),
+                      labelStyle: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      chipAnimationStyle: ChipAnimationStyle(
+                        selectAnimation: AnimationStyle.noAnimation,
+                      ),
+                      selected: _hotCategory == type,
+                      selectedColor: AppColors.lightTheme,
+                      backgroundColor: AppColors.white,
+                      showCheckmark: false,
+                      side: const BorderSide(color: AppColors.paleBlue),
+                      onSelected: (_) => setState(() => _hotCategory = type),
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
         if (hotCourses.isEmpty)
@@ -271,7 +309,7 @@ class _HomePageState extends State<HomePage> {
         if (data.news.isNotEmpty) ...[
           _SectionHeader(
             title: '近期公告',
-            icon: Icons.auto_awesome,
+            icon: Icon(Icons.auto_awesome, color: AppColors.theme, size: 20),
             onAction: widget.onOpenNews,
           ),
           for (final (article, url) in data.news)
@@ -286,6 +324,17 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
         ],
+        const SizedBox(height: 26),
+        Text(
+          '卓仕遴选  ·  专注遴选，陪伴成长',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: AppColors.content,
+            fontSize: 10,
+            letterSpacing: 2,
+            height: 1.5,
+          ),
+        ),
       ],
     );
   }
@@ -296,14 +345,14 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
       decoration: BoxDecoration(
         color: AppColors.lightTheme,
-        border: Border.all(color: AppColors.homeBorder),
+        border: Border.all(color: AppColors.paleBlue),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         children: [
           Row(
             children: [
-              Icon(Icons.live_tv_outlined, color: AppColors.homeLive),
+              Icon(Icons.live_tv_outlined, color: AppColors.coralOrange),
               const SizedBox(width: 6),
               const Expanded(
                 child: Text(
@@ -318,7 +367,7 @@ class _HomePageState extends State<HomePage> {
               Text(
                 '● LIVE',
                 style: TextStyle(
-                  color: AppColors.homeLive,
+                  color: AppColors.coralOrange,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -357,7 +406,7 @@ class _HomePageState extends State<HomePage> {
                   decoration: BoxDecoration(
                     color: index == _liveIndex
                         ? AppColors.theme
-                        : AppColors.homeBorder,
+                        : AppColors.paleBlue,
                     borderRadius: BorderRadius.circular(3),
                   ),
                 ),
@@ -390,22 +439,24 @@ class _HomeBannerCarouselState extends State<_HomeBannerCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    const height = 180.0;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: LayoutBuilder(
+        builder: (context, constraints) =>
+            _buildBanner(constraints.maxWidth * 0.43),
+      ),
+    );
+  }
+
+  Widget _buildBanner(double height) {
     if (widget.banners.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: Container(
-            height: height,
-            color: AppColors.white.withValues(alpha: 0.8),
-            alignment: Alignment.center,
-            child: Icon(
-              Icons.image_outlined,
-              size: 42,
-              color: AppColors.grayAAA,
-            ),
-          ),
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          height: height,
+          color: AppColors.white.withValues(alpha: 0.8),
+          alignment: Alignment.center,
+          child: Icon(Icons.image_outlined, size: 42, color: AppColors.grayAAA),
         ),
       );
     }
@@ -419,15 +470,16 @@ class _HomeBannerCarouselState extends State<_HomeBannerCarousel> {
             itemCount: widget.banners.length,
             itemBuilder: (context, index, realIndex) {
               final banner = widget.banners[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => widget.onTap(banner),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: SizedBox.expand(
-                      child: MDNetImage(imageUrl: banner.imageUrl),
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => widget.onTap(banner),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: SizedBox.expand(
+                    child: MDNetImage(
+                      imageUrl: banner.imageUrl,
+                      fit: BoxFit.cover,
+                      preserveImageAspectRatio: true,
                     ),
                   ),
                 ),
@@ -510,9 +562,14 @@ class _CategorySection extends StatelessWidget {
                 child: Column(
                   children: [
                     _icons[type]!.svg(width: 54, height: 54),
+                    const SizedBox(height: 4),
                     Text(
                       title,
-                      style: const TextStyle(color: AppColors.bigTitle),
+                      style: TextStyle(
+                        color: AppColors.title,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ],
                 ),
@@ -532,7 +589,7 @@ class _SectionHeader extends StatelessWidget {
   });
 
   final String title;
-  final IconData icon;
+  final Widget icon;
   final VoidCallback? onAction;
 
   @override
@@ -543,12 +600,12 @@ class _SectionHeader extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
-            Icon(icon, color: AppColors.theme, size: 20),
+            icon,
             const SizedBox(width: 8),
             Text(
               title,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: AppColors.bigTitle,
               ),
@@ -564,13 +621,15 @@ class _SectionHeader extends StatelessWidget {
                     children: [
                       Text(
                         '更多',
-                        style: TextStyle(fontSize: 13, color: AppColors.theme),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.content,
+                        ),
                       ),
                       const SizedBox(width: 2),
-                      Icon(
-                        Icons.chevron_right,
-                        size: 18,
-                        color: AppColors.theme,
+                      Assets.images.public.arrowRight.svg(
+                        width: 14,
+                        height: 14,
                       ),
                     ],
                   ),
@@ -602,12 +661,164 @@ class _CourseCard extends StatelessWidget {
       if (course.subtitle.isNotEmpty) course.subtitle,
     ].join(' · ');
     final radius = BorderRadius.circular(14);
+    final content = Row(
+      crossAxisAlignment: live
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.stretch,
+      children: [
+        Flexible(
+          flex: 2,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 96),
+                  child: AspectRatio(
+                    aspectRatio: 1.6,
+                    child: MDNetImage(imageUrl: course.picture),
+                  ),
+                ),
+              ),
+              if (live && course.time.isNotEmpty)
+                Text(
+                  course.time,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: AppColors.content, fontSize: 11),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          flex: 3,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                course.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: AppColors.title,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              if (course.tags.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        for (final (index, tag) in course.tags.indexed)
+                          Padding(
+                            padding: EdgeInsets.only(left: index == 0 ? 0 : 4),
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: index.isEven
+                                    ? AppColors.paleOrange
+                                    : AppColors.lightTheme,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 1,
+                                ),
+                                child: Text(
+                                  tag,
+                                  style: TextStyle(
+                                    color: index.isEven
+                                        ? AppColors.warningTitle
+                                        : AppColors.theme,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              if (metadata.isNotEmpty)
+                Text(
+                  metadata,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: AppColors.content, fontSize: 10),
+                ),
+              if (!live) const Spacer(),
+              const SizedBox(height: 6),
+              if (live)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    '进入课堂 ↗',
+                    style: TextStyle(color: AppColors.theme),
+                  ),
+                )
+              else
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: Wrap(
+                        spacing: 6,
+                        children: [
+                          Text(
+                            course.money.mdToPrice(),
+                            style: TextStyle(
+                              color: AppColors.price,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          if (course.oldMoney.mdToOldPrice().isNotEmpty)
+                            Text(
+                              course.oldMoney.mdToOldPrice(),
+                              style: TextStyle(
+                                color: AppColors.content,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    if (course.look.isNotEmpty) ...[
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          '${course.look}人浏览',
+                          textAlign: TextAlign.right,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: AppColors.content,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
     return Container(
       margin: live ? EdgeInsets.zero : const EdgeInsets.fromLTRB(16, 0, 16, 10),
       child: Material(
         color: AppColors.white,
         shape: RoundedRectangleBorder(
-          side: const BorderSide(color: AppColors.homeBorder),
+          side: const BorderSide(color: AppColors.paleBlue),
           borderRadius: radius,
         ),
         child: InkWell(
@@ -615,115 +826,10 @@ class _CourseCard extends StatelessWidget {
           splashFactory: NoSplash.splashFactory,
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Flexible(
-                  flex: 2,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxHeight: 96),
-                          child: AspectRatio(
-                            aspectRatio: 1.6,
-                            child: MDNetImage(imageUrl: course.picture),
-                          ),
-                        ),
-                      ),
-                      if (live && course.time.isNotEmpty)
-                        Text(
-                          course.time,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: AppColors.content,
-                            fontSize: 11,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  flex: 3,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        course.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.bigTitle,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      if (metadata.isNotEmpty)
-                        Text(
-                          metadata,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: AppColors.content,
-                            fontSize: 12,
-                          ),
-                        ),
-                      if (course.tags.isNotEmpty)
-                        Text(
-                          course.tags.join(' · '),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: AppColors.theme,
-                            fontSize: 11,
-                          ),
-                        ),
-                      const SizedBox(height: 6),
-                      if (live)
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            '进入课堂 ↗',
-                            style: TextStyle(color: AppColors.theme),
-                          ),
-                        )
-                      else
-                        Wrap(
-                          spacing: 6,
-                          children: [
-                            Text(
-                              course.money.mdToPrice(),
-                              style: TextStyle(color: AppColors.price),
-                            ),
-                            if (course.oldMoney.mdToOldPrice().isNotEmpty)
-                              Text(
-                                course.oldMoney.mdToOldPrice(),
-                                style: TextStyle(
-                                  color: AppColors.content,
-                                  decoration: TextDecoration.lineThrough,
-                                ),
-                              ),
-                            if (course.look.isNotEmpty)
-                              Text(
-                                '${course.look} 人学习',
-                                style: TextStyle(
-                                  color: AppColors.content,
-                                  fontSize: 12,
-                                ),
-                              ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            padding: live
+                ? const EdgeInsets.all(10)
+                : const EdgeInsets.fromLTRB(10, 10, 12, 10),
+            child: live ? content : IntrinsicHeight(child: content),
           ),
         ),
       ),
@@ -750,7 +856,9 @@ class _HomeData {
               'cate_name': item['sub_cat_name'] ?? item['cate_name'],
               'date': item['time'] ?? item['date'],
             }),
-            (item['article_link'] ?? item['url'] ?? item['link']).mdToString(),
+            item.mdString('article_link') ??
+                item.mdString('url') ??
+                item.mdStringOr('link'),
           ),
       ];
 
@@ -762,10 +870,10 @@ class _HomeData {
 
 class _HomeBanner {
   _HomeBanner.fromJson(Map<String, dynamic> json)
-    : imageUrl = (json['banner_url'] ?? json['image_url']).mdToString(),
-      jumpType = (json['behavior_type'] ?? json['jump_type']).mdToString(),
-      jumpId = (json['behavior_id'] ?? json['jump_id']).mdToString(),
-      link = json['link'].mdToString();
+    : imageUrl = json.mdString('banner_url') ?? json.mdStringOr('image_url'),
+      jumpType = json.mdString('behavior_type') ?? json.mdStringOr('jump_type'),
+      jumpId = json.mdString('behavior_id') ?? json.mdStringOr('jump_id'),
+      link = json.mdStringOr('link');
 
   final String imageUrl;
   final String jumpType;
@@ -775,19 +883,24 @@ class _HomeBanner {
 
 class _HomeCourse {
   _HomeCourse.fromJson(Map<String, dynamic> json, {bool live = false})
-    : id = ((live ? json['course_id'] : null) ?? json['id']).mdToString(),
-      type = ((live ? json['course_type'] : null) ?? json['type']).mdToString(),
-      picture = (json['img'] ?? json['photo'] ?? json['picture']).mdToString(),
-      title = (json['name'] ?? json['title']).mdToString(),
-      subtitle = (json['sub_title'] ?? json['subtitle']).mdToString(),
-      look = (json['view'] ?? json['look']).mdToString(),
-      money = json['money'].mdToString(),
-      oldMoney = json['old_money'].mdToString(),
-      teacher = json['teacher_name'].mdToString(),
-      hours = json['keshi'].mdToString(),
+    : id = (live ? json.mdString('course_id') : null) ?? json.mdStringOr('id'),
+      type =
+          (live ? json.mdString('course_type') : null) ??
+          json.mdStringOr('type'),
+      picture =
+          json.mdString('img') ??
+          json.mdString('photo') ??
+          json.mdStringOr('picture'),
+      title = json.mdString('name') ?? json.mdStringOr('title'),
+      subtitle = json.mdString('sub_title') ?? json.mdStringOr('subtitle'),
+      look = json.mdString('view') ?? json.mdStringOr('look'),
+      money = json.mdStringOr('money'),
+      oldMoney = json.mdStringOr('old_money'),
+      teacher = json.mdStringOr('teacher_name'),
+      hours = json.mdStringOr('keshi'),
       time = [
-        (json['start_time_text'] ?? json['start']).mdToString(),
-        (json['end_time_text'] ?? json['end']).mdToString(),
+        json.mdString('start_time_text') ?? json.mdStringOr('start'),
+        json.mdString('end_time_text') ?? json.mdStringOr('end'),
       ].where((value) => value.isNotEmpty).join('–'),
       tags = switch (json['label_list'] ?? json['tag']) {
         List values =>

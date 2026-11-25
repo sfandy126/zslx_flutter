@@ -130,10 +130,10 @@ class _CourseTypeBar extends StatelessWidget {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 13,
+                    horizontal: 12,
                     vertical: 6,
                   ),
-                  child: Text(type.title),
+                  child: Text(type.title, style: const TextStyle(fontSize: 13)),
                 ),
               ),
             ),
@@ -306,143 +306,149 @@ class CompactCourseCard extends StatelessWidget {
         splashFactory: NoSplash.splashFactory,
         child: Padding(
           padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              Flexible(
-                flex: 2,
-                child: Stack(
-                  alignment: Alignment.bottomLeft,
-                  children: [
-                    AspectRatio(
-                      aspectRatio: 1.72,
-                      child: MDNetImage(
-                        imageUrl: course.picture,
-                        borderRadius: BorderRadius.circular(8),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Flexible(
+                  flex: 2,
+                  child: Stack(
+                    alignment: Alignment.bottomLeft,
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 1.72,
+                        child: MDNetImage(
+                          imageUrl: course.picture,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                    ),
-                    if (course.isLive || category.isNotEmpty)
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: AppColors.theme,
-                          borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(6),
-                            bottomLeft: Radius.circular(8),
+                      if (course.isLive || category.isNotEmpty)
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: AppColors.theme,
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(6),
+                              bottomLeft: Radius.circular(8),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            child: Text(
+                              course.isLive ? '正在直播' : category,
+                              style: TextStyle(
+                                color: AppColors.white,
+                                fontSize: 10,
+                              ),
+                            ),
                           ),
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      Text(
+                        course.title,
+                        maxLines: 1,
+                        overflow: .ellipsis,
+                        style: TextStyle(
+                          color: AppColors.title,
+                          fontSize: 14,
+                          fontWeight: .w500,
+                        ),
+                      ),
+                      if (tags.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Wrap(
+                            spacing: 4,
+                            runSpacing: 4,
+                            children: [
+                              for (final tag in tags)
+                                DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.lightTheme,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                      vertical: 2,
+                                    ),
+                                    child: Text(
+                                      tag,
+                                      style: TextStyle(
+                                        color: AppColors.theme,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
+                        ),
+                      if (summary.isNotEmpty || course.subtitle.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
                           child: Text(
-                            course.isLive ? '正在直播' : category,
+                            summary.isEmpty ? course.subtitle : summary,
+                            maxLines: 1,
+                            overflow: .ellipsis,
                             style: TextStyle(
-                              color: AppColors.white,
+                              color: AppColors.content,
                               fontSize: 10,
                             ),
                           ),
                         ),
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                flex: 3,
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Text(
-                      course.title,
-                      maxLines: 2,
-                      overflow: .ellipsis,
-                      style: TextStyle(
-                        color: AppColors.title,
-                        fontSize: 15,
-                        fontWeight: .w500,
-                      ),
-                    ),
-                    if (tags.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Wrap(
-                          spacing: 4,
-                          runSpacing: 4,
+                      if (course.money.isNotEmpty ||
+                          course.look.isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        const Spacer(),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            for (final tag in tags)
-                              DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: AppColors.lightTheme,
-                                  borderRadius: BorderRadius.circular(4),
+                            if (course.money.isNotEmpty)
+                              Expanded(
+                                child: Text(
+                                  course.money.mdToPrice(),
+                                  style: TextStyle(
+                                    color: AppColors.price,
+                                    fontSize: 16,
+                                    fontWeight: .w500,
+                                  ),
                                 ),
+                              ),
+                            if (course.look.isNotEmpty)
+                              Expanded(
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 4,
-                                    vertical: 2,
+                                  padding: EdgeInsets.only(
+                                    left: course.money.isNotEmpty ? 6 : 0,
                                   ),
                                   child: Text(
-                                    tag,
+                                    '${course.look}人浏览',
+                                    textAlign: TextAlign.right,
                                     style: TextStyle(
-                                      color: AppColors.theme,
-                                      fontSize: 10,
+                                      color: AppColors.content,
+                                      fontSize: 11,
                                     ),
                                   ),
                                 ),
                               ),
                           ],
                         ),
-                      ),
-                    if (summary.isNotEmpty || course.subtitle.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5),
-                        child: Text(
-                          summary.isEmpty ? course.subtitle : summary,
-                          maxLines: 1,
-                          overflow: .ellipsis,
-                          style: TextStyle(
-                            color: AppColors.content,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ),
-                    if (course.money.isNotEmpty || course.look.isNotEmpty) ...[
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          if (course.money.isNotEmpty)
-                            Flexible(
-                              child: Text(
-                                course.money.mdToPrice(),
-                                style: TextStyle(
-                                  color: AppColors.price,
-                                  fontSize: 17,
-                                  fontWeight: .w700,
-                                ),
-                              ),
-                            ),
-                          if (course.look.isNotEmpty)
-                            Expanded(
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                  left: course.money.isNotEmpty ? 6 : 0,
-                                ),
-                                child: Text(
-                                  '${course.look} 人浏览',
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(
-                                    color: AppColors.content,
-                                    fontSize: 11,
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

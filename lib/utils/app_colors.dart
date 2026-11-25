@@ -14,12 +14,14 @@ class AppColors {
   /// 浅主色系
   static final Color lightTheme = HexColor.fromHex('#EFF9FE');
 
-  /// 导航栏颜色、分类颜色、大标题颜色
-  static const Color homeSky = Color(0xFFDDF2FC);
-  static const Color homeBackground = Color(0xFFF3F7FD);
-  static const Color homeBorder = Color(0xFFD9E9F6);
-  static const Color homeLive = Color(0xFFE85F3D);
+  static const Color lightSkyBlue = Color(0xFFDDF2FC);
+  static const Color blueWhite = Color(0xFFF3F7FD);
+  static const Color paleBlue = Color(0xFFD9E9F6);
+  static const Color coralOrange = Color(0xFFE85F3D);
+  static const Color goldenOrange = Color(0xFFDC8D22);
+  static const Color paleOrange = Color(0xFFFFF4DC);
 
+  /// 导航栏颜色、分类颜色、大标题颜色
   static const Color bigTitle = Color(0xFF102D50);
 
   /// 标题色

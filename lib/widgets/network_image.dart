@@ -8,6 +8,7 @@ class MDNetImage extends StatelessWidget {
     this.width,
     this.height,
     this.fit = BoxFit.cover,
+    this.preserveImageAspectRatio = false,
     this.borderRadius = BorderRadius.zero,
     this.isAvatar = false,
     super.key,
@@ -19,6 +20,7 @@ class MDNetImage extends StatelessWidget {
   final double? width;
   final double? height;
   final BoxFit fit;
+  final bool preserveImageAspectRatio;
   final BorderRadiusGeometry borderRadius;
   final bool isAvatar;
 
@@ -45,7 +47,10 @@ class MDNetImage extends StatelessWidget {
                 height: height,
                 fit: fit,
                 memCacheWidth: cacheDimension(width ?? constraints.maxWidth),
-                memCacheHeight: cacheDimension(height ?? constraints.maxHeight),
+                // A single decode dimension keeps the source aspect ratio.
+                memCacheHeight: preserveImageAspectRatio
+                    ? null
+                    : cacheDimension(height ?? constraints.maxHeight),
                 fadeInDuration: Duration.zero,
                 fadeOutDuration: Duration.zero,
                 disablePlaceholderOnCacheHit: false,

@@ -59,6 +59,7 @@ class _CourseSearchPageState extends State<CourseSearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: _keywords.isNotEmpty,
       body: DefaultTextStyle(
         style: const TextStyle(decoration: TextDecoration.none),
         child: Column(
@@ -171,12 +172,17 @@ class _SearchField extends StatelessWidget {
         controller: controller,
         focusNode: focusNode,
         textInputAction: TextInputAction.search,
+        onTapOutside: (_) => focusNode.unfocus(),
         onSubmitted: onSubmitted,
         cursorColor: AppColors.theme,
         decoration: InputDecoration(
           hintText: '搜索课程',
           hintStyle: TextStyle(color: AppColors.grayAAA, fontSize: 14),
-          prefixIcon: Icon(Icons.search, size: 20, color: AppColors.grayAAA),
+          prefixIconConstraints: const BoxConstraints(),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Icon(Icons.search, size: 20, color: AppColors.grayAAA),
+          ),
           suffixIcon: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: onClear,
