@@ -105,7 +105,7 @@ class _WebPageState extends State<WebPage> {
     String? requestUserAgent;
     try {
       final userAgent = (await _controller.getUserAgent())?.trim();
-      const prefix = 'form=zslx system-type=ios';
+      final prefix = 'form=zslx source=app system-type=${AppConfig.systemType}';
       final suffix = '$prefix app-version=${AppConfig.apiVersion}';
       final configuredUserAgent = userAgent == null || userAgent.isEmpty
           ? suffix
