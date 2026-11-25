@@ -18,6 +18,7 @@ class AppColors {
   static const Color blueWhite = Color(0xFFF3F7FD);
   static const Color paleBlue = Color(0xFFD9E9F6);
   static const Color coralOrange = Color(0xFFE85F3D);
+  static const Color seaGreen = Color(0xFF329879);
   static const Color goldenOrange = Color(0xFFDC8D22);
   static const Color paleOrange = Color(0xFFFFF4DC);
 

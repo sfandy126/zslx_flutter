@@ -9,7 +9,7 @@ import 'wx_share.dart';
 class _ShareItem {
   const _ShareItem(this.icon, this.label, this.action);
 
-  final Object icon;
+  final Widget icon;
   final String label;
   final void Function() action;
 }
@@ -19,18 +19,11 @@ Future<void> showCustomShare(
   MDShareData data, {
   void Function(MDShareChannel channel)? onComplete,
 }) async {
-  if (data.isEmpty) {
-    MDTotast.message('分享内容为空');
-    return;
-  }
+  if (data.isEmpty) return;
 
-  final (platformItems, toolItems) = await _buildItems(
-    context,
-    data,
-    onComplete,
-  );
+  final items = await _buildItems(data, onComplete);
   if (!context.mounted) return;
-  if (platformItems.isEmpty && toolItems.isEmpty) {
+  if (items.isEmpty) {
     MDTotast.message('暂无可用的分享方式');
     return;
   }
@@ -40,48 +33,51 @@ Future<void> showCustomShare(
     backgroundColor: AppColors.white,
     isScrollControlled: false,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
-    builder: (_) => SafeArea(
-      top: false,
-      child: _SharePanel(platforms: platformItems, tools: toolItems),
-    ),
+    builder: (_) => SafeArea(top: false, child: _SharePanel(items: items)),
   );
 }
 
-Future<(List<_ShareItem>, List<_ShareItem>)> _buildItems(
-  BuildContext context,
+Future<List<_ShareItem>> _buildItems(
   MDShareData data,
   void Function(MDShareChannel channel)? onComplete,
 ) async {
-  final platforms = <_ShareItem>[];
-  final tools = <_ShareItem>[];
+  final items = <_ShareItem>[];
+  final hasWechat =
+      (data.channels.contains(MDShareChannel.wx) ||
+          data.channels.contains(MDShareChannel.wxzone)) &&
+      await WxShare.isInstalled();
 
   for (final channel in data.channels) {
     switch (channel) {
       case .wx:
-        if (await WxShare.isInstalled()) {
-          platforms.add(
+        if (hasWechat) {
+          items.add(
             _ShareItem(
-              Assets.images.public.wx,
+              _shareIcon('wechat', AppColors.seaGreen),
               '微信好友',
               () => _executeWx(data, .session, onComplete),
             ),
           );
         }
       case .wxzone:
-        if (await WxShare.isInstalled()) {
-          platforms.add(
+        if (hasWechat) {
+          items.add(
             _ShareItem(
-              Assets.images.public.wxzone,
-              '微信朋友圈',
+              _shareIcon('zone', AppColors.seaGreen),
+              '朋友圈',
               () => _executeWx(data, .timeline, onComplete),
             ),
           );
         }
       case .system:
-        platforms.add(
-          _ShareItem(Icons.ios_share, '更多', () => MDShare.toSystem(data)),
+        items.add(
+          _ShareItem(
+            Icon(Icons.ios_share, color: AppColors.theme),
+            '更多',
+            () => MDShare.toSystem(data),
+          ),
         );
     }
   }
@@ -90,16 +86,25 @@ Future<(List<_ShareItem>, List<_ShareItem>)> _buildItems(
     switch (tool) {
       case .copyLink:
         if (data.method != .link) break;
-        tools.add(
+        items.add(
           _ShareItem(
-            Icons.link,
+            _shareIcon('link', AppColors.articleCategoryIndicator),
             '复制链接',
             () => _ShareActions.copyLink(data.link!),
           ),
         );
     }
   }
-  return (platforms, tools);
+  return items;
+}
+
+Widget _shareIcon(String name, Color color) {
+  return SvgPicture.asset(
+    'assets/images/public/zs_ui_$name.svg',
+    width: 24,
+    height: 24,
+    colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+  );
 }
 
 Future<void> _executeWx(
@@ -163,62 +168,59 @@ Future<bool> _sendToWx(MDShareData data, WeChatScene scene) async {
 }
 
 class _SharePanel extends StatelessWidget {
-  const _SharePanel({required this.platforms, required this.tools});
-
-  final List<_ShareItem> platforms;
-  final List<_ShareItem> tools;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const SizedBox(height: 24),
-        _ShareRow(items: platforms),
-        if (tools.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Container(height: 0.5, color: AppColors.line),
-          const SizedBox(height: 16),
-          _ShareRow(items: tools),
-        ],
-        const SizedBox(height: 16),
-        Container(height: 8, color: AppColors.background),
-        SizedBox(
-          height: 52,
-          width: double.infinity,
-          child: TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.title,
-              textStyle: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColors.title,
-              ),
-            ),
-            child: const Text('取消'),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ShareRow extends StatelessWidget {
-  const _ShareRow({required this.items});
+  const _SharePanel({required this.items});
 
   final List<_ShareItem> items;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (final (index, item) in items.indexed) ...[
-            if (index > 0) const SizedBox(width: 24),
-            _ShareCell(item: item),
-          ],
+          Center(
+            child: Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.paleBlue,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            '分享',
+            style: TextStyle(
+              color: AppColors.bigTitle,
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 24),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              spacing: 24,
+              children: [for (final item in items) _ShareCell(item: item)],
+            ),
+          ),
+          const SizedBox(height: 32),
+          OutlinedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.content,
+              minimumSize: const Size.fromHeight(44),
+              side: const BorderSide(color: AppColors.paleBlue),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              splashFactory: NoSplash.splashFactory,
+            ),
+            child: const Text('关闭'),
+          ),
         ],
       ),
     );
@@ -232,33 +234,34 @@ class _ShareCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = item.icon;
     return InkWell(
       onTap: () {
         Navigator.of(context).pop();
         item.action();
       },
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon is SvgGenImage)
-              icon.svg(width: 44, height: 44)
-            else if (icon is IconData)
-              Icon(icon, size: 44, color: AppColors.theme)
-            else
-              const SizedBox(width: 44, height: 44),
-            const SizedBox(height: 6),
-            Text(
-              item.label,
-              style: TextStyle(fontSize: 12, color: AppColors.content),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+      splashFactory: NoSplash.splashFactory,
+      borderRadius: BorderRadius.circular(12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColors.paleBlue),
+              borderRadius: BorderRadius.circular(16),
             ),
-          ],
-        ),
+            child: item.icon,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            item.label,
+            style: TextStyle(fontSize: 12, color: AppColors.content),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }

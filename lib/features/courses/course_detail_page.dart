@@ -288,12 +288,17 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
 
   Future<void> _shareCourse() async {
     final info = _detail?.info;
-    final url = info?.shareUrl ?? '';
+    final url = info?.shareUrl.trim() ?? '';
     if (url.isEmpty) return;
     try {
       await MDShare.toShare(
         context,
-        MDShareData(text: info?.title, link: url, url: info?.picture),
+        MDShareData(
+          text: info?.title,
+          link: url,
+          url: info?.picture,
+          tools: const [.copyLink],
+        ),
       );
     } catch (error) {
       Utils.log('CourseDetailPage share failed: $error');
@@ -578,7 +583,7 @@ new ResizeObserver(reportHeight).observe(document.documentElement);
                       AppRouter.maybePop<void>(context);
                     },
                     actions: [
-                      if (detail?.info.shareUrl.isNotEmpty ?? false)
+                      if (detail?.info.shareUrl.trim().isNotEmpty ?? false)
                         IconButton(
                           tooltip: '分享课程',
                           onPressed: _shareCourse,
